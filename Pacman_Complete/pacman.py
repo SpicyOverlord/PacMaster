@@ -2,7 +2,6 @@ import pygame
 from pygame.locals import *
 
 from PacMaster.agent import calculateNextMove
-from vector import Vector2
 from constants import *
 from entity import Entity
 from sprites import PacmanSprites
