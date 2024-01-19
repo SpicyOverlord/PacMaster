@@ -5,6 +5,6 @@ from Pacman_Complete.constants import STOP, CHASE
 def calculateNextMove(game):
     obs = Observation(game)
 
-    print(obs.getGhostModeAsStr())
+    print(obs.getGhostModesAsStr())
 
     return STOP
