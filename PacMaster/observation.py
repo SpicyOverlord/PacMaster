@@ -36,15 +36,21 @@ class Observation(object):
                    default=None)
 
     # ------------------ Ghost Functions ------------------
-    def getGhostMode(self) -> int:
-        return self.ghostGroup.blinky.mode.current
+    def getGhostModes(self) -> list[int]:
+        return [ghost.mode.current for ghost in self.getGhosts()]
+
+    def getGhostModesAsStr(self) -> list[str]:
+        modesMap = {SCATTER: "scatter", CHASE: "chase", FREIGHT: "freight", SPAWN: "spawn"}
+        return [modesMap.get(mode, f"unknown mode-int: '{mode}'") for mode in self.getGhostModes()]
 
     def getGhostPositions(self) -> list[Vector2]:
-        return [self.ghostGroup.blinky.position, self.ghostGroup.pinky.position, self.ghostGroup.inky.position,
-                self.ghostGroup.clyde.position]
+        return [ghost.position for ghost in self.getGhosts()]
 
     def getClosestGhostPosition(self) -> Vector2:
         return min(self.getGhostPositions(), key=lambda g: self.squaredDistance(g, self.pacman.position), default=None)
+
+    def getGhosts(self) -> list[Ghost]:
+        return [self.ghostGroup.blinky, self.ghostGroup.pinky, self.ghostGroup.inky,self.ghostGroup.clyde]
 
     def getBlinky(self) -> Blinky:
         return self.ghostGroup.blinky
@@ -55,7 +61,7 @@ class Observation(object):
     def getInky(self) -> Inky:
         return self.ghostGroup.inky.position
 
-    def getClyde(self) -> Inky:
+    def getClyde(self) -> Clyde:
         return self.ghostGroup.clyde.position
 
     # ------------------ Helper Functions ------------------
