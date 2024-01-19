@@ -269,6 +269,7 @@ class GameController(object):
         pygame.display.update()
 
 
+game = None
 if __name__ == "__main__":
     game = GameController()
     game.startGame()
