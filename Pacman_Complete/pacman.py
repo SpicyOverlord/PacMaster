@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 
-from PacMaster.Observation import Observation
+from PacMaster.agent import calculateNextMove
 from vector import Vector2
 from constants import *
 from entity import Entity
@@ -51,6 +51,9 @@ class Pacman(Entity):
                 self.reverseDirection()
 
     def getValidKey(self):
+        from run import game
+        calculateNextMove(game)
+
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_UP]:
             return UP
