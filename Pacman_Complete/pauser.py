@@ -4,7 +4,7 @@ class Pause(object):
         self.timer = 0
         self.pauseTime = None
         self.func = None
-
+        
     def update(self, dt):
         if self.pauseTime is not None:
             self.timer += dt
@@ -15,7 +15,7 @@ class Pause(object):
                 return self.func
         return None
 
-    def setPause(self, pauseTime=None, func=None):
+    def setPause(self, playerPaused=False, pauseTime=None, func=None):
         self.timer = 0
         self.func = func
         self.pauseTime = pauseTime

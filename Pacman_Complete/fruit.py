@@ -1,7 +1,7 @@
-from Pacman_Complete.entity import Entity
-from Pacman_Complete.constants import *
-from Pacman_Complete.sprites import FruitSprites
-
+import pygame
+from entity import Entity
+from constants import *
+from sprites import FruitSprites
 
 class Fruit(Entity):
     def __init__(self, node, level=0):
@@ -11,7 +11,7 @@ class Fruit(Entity):
         self.lifespan = 5
         self.timer = 0
         self.destroy = False
-        self.points = 100 + level * 20
+        self.points = 100 + level*20
         self.setBetweenNodes(RIGHT)
         self.sprites = FruitSprites(self, level)
 

@@ -1,9 +1,10 @@
-from Pacman_Complete.vector import Vector2
-from Pacman_Complete.constants import *
-from Pacman_Complete.entity import Entity
-from Pacman_Complete.modes import ModeController
-from Pacman_Complete.sprites import GhostSprites
-
+import pygame
+from pygame.locals import *
+from vector import Vector2
+from constants import *
+from entity import Entity
+from modes import ModeController
+from sprites import GhostSprites
 
 class Ghost(Entity):
     def __init__(self, node, pacman=None, blinky=None):
@@ -54,12 +55,14 @@ class Ghost(Entity):
         self.mode.setFreightMode()
         if self.mode.current == FREIGHT:
             self.setSpeed(50)
-            self.directionMethod = self.randomDirection
+            self.directionMethod = self.randomDirection         
 
     def normalMode(self):
         self.setSpeed(100)
         self.directionMethod = self.goalDirection
         self.homeNode.denyAccess(DOWN, self)
+
+
 
 
 class Blinky(Ghost):
@@ -78,7 +81,7 @@ class Pinky(Ghost):
         self.sprites = GhostSprites(self)
 
     def scatter(self):
-        self.goal = Vector2(TILEWIDTH * NCOLS, 0)
+        self.goal = Vector2(TILEWIDTH*NCOLS, 0)
 
     def chase(self):
         self.goal = self.pacman.position + self.pacman.directions[self.pacman.direction] * TILEWIDTH * 4
@@ -92,7 +95,7 @@ class Inky(Ghost):
         self.sprites = GhostSprites(self)
 
     def scatter(self):
-        self.goal = Vector2(TILEWIDTH * NCOLS, TILEHEIGHT * NROWS)
+        self.goal = Vector2(TILEWIDTH*NCOLS, TILEHEIGHT*NROWS)
 
     def chase(self):
         vec1 = self.pacman.position + self.pacman.directions[self.pacman.direction] * TILEWIDTH * 2
@@ -108,12 +111,12 @@ class Clyde(Ghost):
         self.sprites = GhostSprites(self)
 
     def scatter(self):
-        self.goal = Vector2(0, TILEHEIGHT * NROWS)
+        self.goal = Vector2(0, TILEHEIGHT*NROWS)
 
     def chase(self):
         d = self.pacman.position - self.position
         ds = d.magnitudeSquared()
-        if ds <= (TILEWIDTH * 8) ** 2:
+        if ds <= (TILEWIDTH * 8)**2:
             self.scatter()
         else:
             self.goal = self.pacman.position + self.pacman.directions[self.pacman.direction] * TILEWIDTH * 4
@@ -166,3 +169,4 @@ class GhostGroup(object):
     def render(self, screen):
         for ghost in self:
             ghost.render(screen)
+

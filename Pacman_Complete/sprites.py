@@ -1,22 +1,21 @@
 import pygame
+from constants import *
 import numpy as np
-from Pacman_Complete.constants import *
-from Pacman_Complete.animation import Animator
+from animation import Animator
 
 BASETILEWIDTH = 16
 BASETILEHEIGHT = 16
 DEATH = 5
 
-
 class Spritesheet(object):
     def __init__(self):
         self.sheet = pygame.image.load("spritesheet_mspacman.png").convert()
-        transcolor = self.sheet.get_at((0, 0))
+        transcolor = self.sheet.get_at((0,0))
         self.sheet.set_colorkey(transcolor)
         width = int(self.sheet.get_width() / BASETILEWIDTH * TILEWIDTH)
         height = int(self.sheet.get_height() / BASETILEHEIGHT * TILEHEIGHT)
         self.sheet = pygame.transform.scale(self.sheet, (width, height))
-
+        
     def getImage(self, x, y, width, height):
         x *= TILEWIDTH
         y *= TILEHEIGHT
@@ -28,19 +27,17 @@ class PacmanSprites(Spritesheet):
     def __init__(self, entity):
         Spritesheet.__init__(self)
         self.entity = entity
-        self.entity.image = self.getStartImage()
+        self.entity.image = self.getStartImage()         
         self.animations = {}
         self.defineAnimations()
         self.stopimage = (8, 0)
 
     def defineAnimations(self):
-        self.animations[LEFT] = Animator(((8, 0), (0, 0), (0, 2), (0, 0)))
-        self.animations[RIGHT] = Animator(((10, 0), (2, 0), (2, 2), (2, 0)))
-        self.animations[UP] = Animator(((10, 2), (6, 0), (6, 2), (6, 0)))
-        self.animations[DOWN] = Animator(((8, 2), (4, 0), (4, 2), (4, 0)))
-        self.animations[DEATH] = Animator(
-            ((0, 12), (2, 12), (4, 12), (6, 12), (8, 12), (10, 12), (12, 12), (14, 12), (16, 12), (18, 12), (20, 12)),
-            speed=6, loop=False)
+        self.animations[LEFT] = Animator(((8,0), (0, 0), (0, 2), (0, 0)))
+        self.animations[RIGHT] = Animator(((10,0), (2, 0), (2, 2), (2, 0)))
+        self.animations[UP] = Animator(((10,2), (6, 0), (6, 2), (6, 0)))
+        self.animations[DOWN] = Animator(((8,2), (4, 0), (4, 2), (4, 0)))
+        self.animations[DEATH] = Animator(((0, 12), (2, 12), (4, 12), (6, 12), (8, 12), (10, 12), (12, 12), (14, 12), (16, 12), (18, 12), (20, 12)), speed=6, loop=False)
 
     def update(self, dt):
         if self.entity.alive == True:
@@ -69,13 +66,13 @@ class PacmanSprites(Spritesheet):
         return self.getImage(8, 0)
 
     def getImage(self, x, y):
-        return Spritesheet.getImage(self, x, y, 2 * TILEWIDTH, 2 * TILEHEIGHT)
+        return Spritesheet.getImage(self, x, y, 2*TILEWIDTH, 2*TILEHEIGHT)
 
 
 class GhostSprites(Spritesheet):
     def __init__(self, entity):
         Spritesheet.__init__(self)
-        self.x = {BLINKY: 0, PINKY: 2, INKY: 4, CLYDE: 6}
+        self.x = {BLINKY:0, PINKY:2, INKY:4, CLYDE:6}
         self.entity = entity
         self.entity.image = self.getStartImage()
 
@@ -101,26 +98,26 @@ class GhostSprites(Spritesheet):
                 self.entity.image = self.getImage(8, 6)
             elif self.entity.direction == UP:
                 self.entity.image = self.getImage(8, 4)
-
+               
     def getStartImage(self):
         return self.getImage(self.x[self.entity.name], 4)
 
     def getImage(self, x, y):
-        return Spritesheet.getImage(self, x, y, 2 * TILEWIDTH, 2 * TILEHEIGHT)
+        return Spritesheet.getImage(self, x, y, 2*TILEWIDTH, 2*TILEHEIGHT)
 
 
 class FruitSprites(Spritesheet):
     def __init__(self, entity, level):
         Spritesheet.__init__(self)
         self.entity = entity
-        self.fruits = {0: (16, 8), 1: (18, 8), 2: (20, 8), 3: (16, 10), 4: (18, 10), 5: (20, 10)}
+        self.fruits = {0:(16,8), 1:(18,8), 2:(20,8), 3:(16,10), 4:(18,10), 5:(20,10)}
         self.entity.image = self.getStartImage(level % len(self.fruits))
 
     def getStartImage(self, key):
         return self.getImage(*self.fruits[key])
 
     def getImage(self, x, y):
-        return Spritesheet.getImage(self, x, y, 2 * TILEWIDTH, 2 * TILEHEIGHT)
+        return Spritesheet.getImage(self, x, y, 2*TILEWIDTH, 2*TILEHEIGHT)
 
 
 class LifeSprites(Spritesheet):
@@ -135,10 +132,10 @@ class LifeSprites(Spritesheet):
     def resetLives(self, numlives):
         self.images = []
         for i in range(numlives):
-            self.images.append(self.getImage(0, 0))
+            self.images.append(self.getImage(0,0))
 
     def getImage(self, x, y):
-        return Spritesheet.getImage(self, x, y, 2 * TILEWIDTH, 2 * TILEHEIGHT)
+        return Spritesheet.getImage(self, x, y, 2*TILEWIDTH, 2*TILEHEIGHT)
 
 
 class MazeSprites(Spritesheet):
@@ -161,12 +158,12 @@ class MazeSprites(Spritesheet):
                     sprite = self.getImage(x, y)
                     rotval = int(self.rotdata[row][col])
                     sprite = self.rotate(sprite, rotval)
-                    background.blit(sprite, (col * TILEWIDTH, row * TILEHEIGHT))
+                    background.blit(sprite, (col*TILEWIDTH, row*TILEHEIGHT))
                 elif self.data[row][col] == '=':
                     sprite = self.getImage(10, 8)
-                    background.blit(sprite, (col * TILEWIDTH, row * TILEHEIGHT))
+                    background.blit(sprite, (col*TILEWIDTH, row*TILEHEIGHT))
 
         return background
 
     def rotate(self, sprite, value):
-        return pygame.transform.rotate(sprite, value * 90)
+        return pygame.transform.rotate(sprite, value*90)

@@ -1,6 +1,5 @@
 import math
 
-
 class Vector2(object):
     def __init__(self, x=0, y=0):
         self.x = x
@@ -34,7 +33,7 @@ class Vector2(object):
         return False
 
     def magnitudeSquared(self):
-        return self.x ** 2 + self.y ** 2
+        return self.x**2 + self.y**2
 
     def magnitude(self):
         return math.sqrt(self.magnitudeSquared())
@@ -49,4 +48,4 @@ class Vector2(object):
         return int(self.x), int(self.y)
 
     def __str__(self):
-        return "<" + str(self.x) + ", " + str(self.y) + ">"
+        return "<"+str(self.x)+", "+str(self.y)+">"
