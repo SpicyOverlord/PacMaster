@@ -1,4 +1,5 @@
-from constants import *
+from Pacman_Complete.constants import *
+
 
 class MainMode(object):
     def __init__(self):
@@ -30,7 +31,7 @@ class ModeController(object):
         self.time = None
         self.mainmode = MainMode()
         self.current = self.mainmode.mode
-        self.entity = entity 
+        self.entity = entity
 
     def update(self, dt):
         self.mainmode.update(dt)

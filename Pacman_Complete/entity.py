@@ -1,14 +1,14 @@
 import pygame
-from pygame.locals import *
-from vector import Vector2
-from constants import *
 from random import randint
+from Pacman_Complete.vector import Vector2
+from Pacman_Complete.constants import *
+
 
 class Entity(object):
     def __init__(self, node):
         self.name = None
-        self.directions = {UP:Vector2(0, -1),DOWN:Vector2(0, 1), 
-                          LEFT:Vector2(-1, 0), RIGHT:Vector2(1, 0), STOP:Vector2()}
+        self.directions = {UP: Vector2(0, -1), DOWN: Vector2(0, 1),
+                           LEFT: Vector2(-1, 0), RIGHT: Vector2(1, 0), STOP: Vector2()}
         self.direction = STOP
         self.setSpeed(100)
         self.radius = 10
@@ -25,8 +25,8 @@ class Entity(object):
         self.position = self.node.position.copy()
 
     def update(self, dt):
-        self.position += self.directions[self.direction]*self.speed*dt
-         
+        self.position += self.directions[self.direction] * self.speed * dt
+
         if self.overshotTarget():
             self.node = self.target
             directions = self.validDirections()
@@ -41,7 +41,7 @@ class Entity(object):
                 self.target = self.getNewTarget(self.direction)
 
             self.setPosition()
-          
+
     def validDirection(self, direction):
         if direction is not STOP:
             if self.name in self.node.access[direction]:
@@ -68,7 +68,7 @@ class Entity(object):
         temp = self.node
         self.node = self.target
         self.target = temp
-        
+
     def oppositeDirection(self, direction):
         if direction is not STOP:
             if direction == self.direction * -1:
@@ -86,12 +86,12 @@ class Entity(object):
         return directions
 
     def randomDirection(self, directions):
-        return directions[randint(0, len(directions)-1)]
+        return directions[randint(0, len(directions) - 1)]
 
     def goalDirection(self, directions):
         distances = []
         for direction in directions:
-            vec = self.node.position  + self.directions[direction]*TILEWIDTH - self.goal
+            vec = self.node.position + self.directions[direction] * TILEWIDTH - self.goal
             distances.append(vec.magnitudeSquared())
         index = distances.index(min(distances))
         return directions[index]

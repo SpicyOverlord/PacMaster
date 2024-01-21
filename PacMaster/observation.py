@@ -1,6 +1,7 @@
-import math
-from Pacman_Complete.ghosts import *
+from Pacman_Complete.constants import SCATTER, CHASE, FREIGHT, SPAWN
+from Pacman_Complete.ghosts import Blinky, Ghost, Pinky, Inky, Clyde
 from Pacman_Complete.nodes import Node, NodeGroup
+from Pacman_Complete.vector import Vector2
 
 
 class Observation(object):
@@ -29,10 +30,10 @@ class Observation(object):
         return [powerPellet.position for powerPellet in self.pelletGroup.powerpellets]
 
     def getClosestPelletPosition(self) -> Vector2:
-        return min(self.getPelletPositions(), key=lambda p: self.squaredDistance(p, self.pacman.position), default=None)
+        return min(self.getPelletPositions(), key=lambda p: self.manhattenDistance(p, self.pacman.position), default=None)
 
     def getClosestPowerPelletPosition(self) -> Vector2:
-        return min(self.getPowerPelletPositions(), key=lambda p: self.squaredDistance(p, self.pacman.position),
+        return min(self.getPowerPelletPositions(), key=lambda p: self.manhattenDistance(p, self.pacman.position),
                    default=None)
 
     # ------------------ Ghost Functions ------------------
@@ -47,7 +48,7 @@ class Observation(object):
         return [ghost.position for ghost in self.getGhosts()]
 
     def getClosestGhostPosition(self) -> Vector2:
-        return min(self.getGhostPositions(), key=lambda g: self.squaredDistance(g, self.pacman.position), default=None)
+        return min(self.getGhostPositions(), key=lambda g: self.manhattenDistance(g, self.pacman.position), default=None)
 
     def getGhosts(self) -> list[Ghost]:
         return [self.ghostGroup.blinky, self.ghostGroup.pinky, self.ghostGroup.inky,self.ghostGroup.clyde]
@@ -68,8 +69,5 @@ class Observation(object):
     def roundPosition(self, vector2: Vector2) -> Vector2:
         return Vector2(round(vector2.x), round(vector2.y))
 
-    def squaredDistance(self, a, b) -> int:
-        return (a.x - b.x) ** 2 + (a.y - b.y) ** 2
-
-    def distance(self, a, b) -> float:
-        return math.sqrt(self.squaredDistance(a, b))
+    def manhattenDistance(self, a: Vector2, b: Vector2) -> int:
+        return abs(a.x - b.x) + abs(a.y - b.y)

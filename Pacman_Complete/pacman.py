@@ -1,14 +1,19 @@
 import pygame
 from pygame.locals import *
+from PacMaster.agents.Iagent import IAgent
+from Pacman_Complete.constants import *
+from Pacman_Complete.entity import Entity
+from Pacman_Complete.sprites import PacmanSprites
 
-from PacMaster.agent import calculateNextMove
-from constants import *
-from entity import Entity
-from sprites import PacmanSprites
 
 class Pacman(Entity):
-    def __init__(self, node):
+    def __init__(self, node, isHumanPlayer: bool, agent: IAgent = None):
         Entity.__init__(self, node)
+
+        self.isHumanPlayer = isHumanPlayer
+        self.agent = agent
+
+
         self.name = PACMAN
         self.color = YELLOW
         self.direction = LEFT
@@ -50,19 +55,19 @@ class Pacman(Entity):
                 self.reverseDirection()
 
     def getValidKey(self):
-        from run import game
-        calculateNextMove(game)
-
-        key_pressed = pygame.key.get_pressed()
-        if key_pressed[K_UP]:
-            return UP
-        if key_pressed[K_DOWN]:
-            return DOWN
-        if key_pressed[K_LEFT]:
-            return LEFT
-        if key_pressed[K_RIGHT]:
-            return RIGHT
-        return STOP
+        if self.isHumanPlayer:
+            key_pressed = pygame.key.get_pressed()
+            if key_pressed[K_UP]:
+                return UP
+            if key_pressed[K_DOWN]:
+                return DOWN
+            if key_pressed[K_LEFT]:
+                return LEFT
+            if key_pressed[K_RIGHT]:
+                return RIGHT
+            return STOP
+        else:
+            return self.agent.calculateNextMove()
 
     def eatPellets(self, pelletList):
         for pellet in pelletList:
