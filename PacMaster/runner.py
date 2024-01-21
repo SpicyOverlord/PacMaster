@@ -4,7 +4,7 @@ from Pacman_Complete.run import GameController
 
 
 def runGameWithAgent(agentClass: type[IAgent]) -> int:
-    game = GameController(gameSpeed=3, startLives=1, isHumanPlayer=True)
+    game = GameController(gameSpeed=3, startLives=3, isHumanPlayer=False)
     agent = agentClass(gameController=game)
     game.startGame(agent=agent)
     while True:

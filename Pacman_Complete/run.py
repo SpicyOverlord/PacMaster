@@ -124,7 +124,7 @@ class GameController(object):
                         if not self.pause.paused:
                             self.textgroup.hideText()
                             self.showEntities()
-                        else:
+                        elif self.isHumanPlayer:
                             self.textgroup.showText(PAUSETXT)
                             # self.hideEntities()
 
@@ -143,7 +143,7 @@ class GameController(object):
             if self.pellets.isEmpty():
                 self.flashBG = True
                 self.hideEntities()
-                self.pause.setPause(pauseTime=3, func=self.nextLevel)
+                self.pause.setPause(pauseTime=3 if self.isHumanPlayer else 0, func=self.nextLevel)
 
     def checkGhostEvents(self):
         for ghost in self.ghosts:
@@ -164,11 +164,11 @@ class GameController(object):
                         self.pacman.die()
                         self.ghosts.hide()
                         if self.lives <= 0:
-                            self.textgroup.showText(GAMEOVERTXT)
-                            # self.pause.setPause(pauseTime=3, func=self.endGame)
-                            self.pause.setPause(pauseTime=1, func=self.endGame)
+                            if self.isHumanPlayer:
+                                self.textgroup.showText(GAMEOVERTXT)
+                            self.pause.setPause(pauseTime=3 if self.isHumanPlayer else 0, func=self.endGame)
                         else:
-                            self.pause.setPause(pauseTime=3, func=self.resetLevel)
+                            self.pause.setPause(pauseTime=3 if self.isHumanPlayer else 0, func=self.resetLevel)
 
     def checkFruitEvents(self):
         if self.pellets.numEaten == 50 or self.pellets.numEaten == 140:
@@ -210,12 +210,13 @@ class GameController(object):
         return
 
     def resetLevel(self):
-        self.pause.paused = True
+        #self.pause.paused = True
 
         self.pacman.reset()
         self.ghosts.reset()
         self.fruit = None
-        self.textgroup.showText(READYTXT)
+        if self.isHumanPlayer:
+            self.textgroup.showText(READYTXT)
 
     def updateScore(self, points):
         self.score += points
