@@ -10,6 +10,4 @@ class FirstAgent(IAgent):
     def calculateNextMove(self):
         obs = Observation(self.gameController)
 
-        print("CALCULATING NEXT MOVE (not implemented...)")
-        print(obs.getPacmanPosition())
         return STOP
