@@ -3,4 +3,4 @@ from PacMaster.utils import *
 
 # runGameWithHuman()
 
-print(avgOfX(FirstAgent, 10))
+print(minAvgMaxOfXGames(FirstAgent, 2))
