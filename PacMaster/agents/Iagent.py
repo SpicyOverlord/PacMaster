@@ -17,7 +17,6 @@ class IAgent(ABC):
 
     def takeStats(self, obs: Observation):
         self.actionsTaken += 1
-        self.ghostDistanceSum += obs.getAverageGhostDistance()
         self.dangerLevelSum += obs.CalculateDangerLevel()
         pass
 
