@@ -20,6 +20,7 @@ class GameController(object):
         self.gameSpeed = gameSpeed
         self.isHumanPlayer = isHumanPlayer
         self.gameOver = False
+        self.actionsTaken = 0
 
         self.screen = pygame.display.set_mode(SCREENSIZE, 0, 32)
         self.background = None
@@ -95,8 +96,10 @@ class GameController(object):
         if self.pacman.alive:
             if not self.pause.paused:
                 self.pacman.update(dt)
+                self.actionsTaken += 1
         else:
             self.pacman.update(dt)
+            self.actionsTaken += 1
 
         if self.flashBG:
             self.flashTimer += dt

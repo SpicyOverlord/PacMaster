@@ -71,3 +71,30 @@ class Observation(object):
 
     def manhattenDistance(self, a: Vector2, b: Vector2) -> int:
         return abs(a.x - b.x) + abs(a.y - b.y)
+
+    # ------------------ Custom Functions ------------------
+    def CalculateDangerLevel(self):
+        dangerLevel = 0.0
+        minDistance = 9999999
+        totalDistance = 0.0
+        numberOfCloseGhosts = 0
+        dangerThreshold = 5  # Threshold distance for a ghost to be considered 'close'
+
+        for ghostPosition in self.getGhostPositions():
+            distance = self.manhattenDistance(self.pacman.position, ghostPosition)
+            totalDistance += distance
+            minDistance = min(minDistance, distance)
+
+            if distance < dangerThreshold:
+                numberOfCloseGhosts += 1
+
+        # Adjust danger level based on the closest ghost
+        dangerLevel += (1 / (minDistance + 1)) * 10000  # Adding 1 to avoid division by zero
+
+        # Further adjust based on the number of close ghosts
+        dangerLevel += numberOfCloseGhosts * 5000  # Weight for each close ghost
+
+        # Normalize based on total distance to avoid high values in less dangerous situations
+        normalizedDanger = dangerLevel / (totalDistance + 1)
+
+        return normalizedDanger

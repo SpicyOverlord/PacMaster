@@ -9,5 +9,8 @@ class FirstAgent(IAgent):
 
     def calculateNextMove(self):
         obs = Observation(self.gameController)
+        self.takeStats(obs)
+
 
         return STOP
+
