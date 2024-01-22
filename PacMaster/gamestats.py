@@ -24,15 +24,16 @@ class GameStats(object):
         # Calculate total pellets eaten
         maxPelletsPerLevel = 240
         normalizedPelletScores = [pelletsEaten / maxPelletsPerLevel for pelletsEaten in totalPelletsEaten]
-        weightedPelletScore = sum(normalizedPelletScores) / len(normalizedPelletScores) * weights['pellets']
+        weightedAveragePelletScore = sum(normalizedPelletScores) / len(normalizedPelletScores) * weights['pellets']
 
         # Calculate weighted average score
         maxBaseScorePerLevel = 2600
         normalizedBaseScores = [score / maxBaseScorePerLevel for score in baseScores]
-        weightedBaseScore = sum(normalizedBaseScores) / len(normalizedBaseScores) * weights['score']
+        weightedAverageBaseScore = sum(normalizedBaseScores) / len(normalizedBaseScores) * weights['score']
 
         # Combined Score Calculation
-        combinedScore = (weightedBaseScore + weightedPelletScore) * averageEfficiency
+        # basically makes averageEfficiency only change 50% of the combined score
+        combinedScore = 0.5 * (averageEfficiency + 1) * (weightedAverageBaseScore + weightedAveragePelletScore)
 
         # Statistical Analysis
         median_score = sorted(baseScores)[len(baseScores) // 2]
@@ -41,5 +42,5 @@ class GameStats(object):
         std_deviation = variance ** 0.5
 
         return {"combinedScore": combinedScore, "averageEfficiency": averageEfficiency,
-                "weightedBaseScore": weightedBaseScore, "weightedPelletScore": weightedPelletScore,
+                "weightedAverageBaseScore": weightedAverageBaseScore, "weightedAveragePelletScore": weightedAveragePelletScore,
                 "medianScore": median_score, "stdDeviation": std_deviation}
