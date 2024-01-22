@@ -8,8 +8,7 @@ class IAgent(ABC):
     def __init__(self, gameController):
         self.gameController = gameController
         self.actionsTaken = 0
-        self.ghostDistanceSum = 0
-        self.dangerLevelSum = 0
+        self.pelletsEatenThisLevel = 0
 
     @abstractmethod
     def calculateNextMove(self):
@@ -17,6 +16,6 @@ class IAgent(ABC):
 
     def takeStats(self, obs: Observation):
         self.actionsTaken += 1
-        self.dangerLevelSum += obs.CalculateDangerLevel()
+        self.pelletsEatenThisLevel = obs.getPelletsEaten()
         pass
 

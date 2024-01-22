@@ -1,5 +1,5 @@
-from PacMaster.agents.FirstAgent import FirstAgent
+from PacMaster.agents.HumanAgent import HumanAgent
 from PacMaster.utils import *
 
 # runGameWithHuman()
-print(minAvgMaxOfXGames(FirstAgent, 2))
+calculatePerformanceOverXGames(HumanAgent, gameCount=2, gameSpeed=5)

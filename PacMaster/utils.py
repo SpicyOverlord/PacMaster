@@ -17,9 +17,9 @@ def runGameWithHuman(gameSpeed=1, startLives=3) -> int:
             return game.score
 
 
-def runGameWithAgent(agentClass: type[IAgent], gameSpeed=1, startLives=3) -> GameStats:
+def runGameWithAgent(agentType: type[IAgent], gameSpeed=1, startLives=3) -> GameStats:
     game = GameController(gameSpeed=gameSpeed, startLives=startLives, isHumanPlayer=False)
-    agent = agentClass(gameController=game)
+    agent = agentType(gameController=game)
     game.startGame(agent=agent)
     while True:
         game.update()
@@ -27,8 +27,12 @@ def runGameWithAgent(agentClass: type[IAgent], gameSpeed=1, startLives=3) -> Gam
             return GameStats(game, agent)
 
 
-def minAvgMaxOfXGames(agentClass: type[IAgent], gameCount: int, gameSpeed=10) -> dict[str, Union[int, float]]:
-    scores = []
+def calculatePerformanceOverXGames(agentClass: type[IAgent], gameCount: int, gameSpeed=5):
+    gameStats = []
     for i in range(gameCount):
-        scores.append(runGameWithAgent(agentClass, gameSpeed=gameSpeed, startLives=1).score)
-    return {"min": min(scores), "avg": sum(scores) / len(scores), "max": max(scores), "gameCount": gameCount}
+        gameStats.append(runGameWithAgent(agentClass, gameSpeed=gameSpeed, startLives=1))
+
+    performance = GameStats.calculateCombinedRating(gameStats)
+    print(f"Performance over {gameCount} games: {performance}")
+
+

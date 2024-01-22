@@ -1,3 +1,5 @@
+from collections import Counter
+
 from Pacman_Complete.constants import SCATTER, CHASE, FREIGHT, SPAWN
 from Pacman_Complete.ghosts import Blinky, Ghost, Pinky, Inky, Clyde
 from Pacman_Complete.nodes import Node, NodeGroup
@@ -23,6 +25,8 @@ class Observation(object):
         return self.nodes.getNoteFromTiles((x, y))
 
     # ------------------ Pellet Functions ------------------
+    def getPelletsEaten(self) -> int:
+        return self.pelletGroup.numEaten
     def getPelletPositions(self) -> list[Vector2]:
         return [pellet.position for pellet in self.pelletGroup.pelletList]
 
@@ -30,7 +34,8 @@ class Observation(object):
         return [powerPellet.position for powerPellet in self.pelletGroup.powerpellets]
 
     def getClosestPelletPosition(self) -> Vector2:
-        return min(self.getPelletPositions(), key=lambda p: self.manhattenDistance(p, self.pacman.position), default=None)
+        return min(self.getPelletPositions(), key=lambda p: self.manhattenDistance(p, self.pacman.position),
+                   default=None)
 
     def getClosestPowerPelletPosition(self) -> Vector2:
         return min(self.getPowerPelletPositions(), key=lambda p: self.manhattenDistance(p, self.pacman.position),
@@ -40,6 +45,13 @@ class Observation(object):
     def getGhostModes(self) -> list[int]:
         return [ghost.mode.current for ghost in self.getGhosts()]
 
+    def getGhostCommonMode(self) -> int:
+        return Counter(self.getGhostModes()).most_common(1)[0][0]
+
+    def getGhostCommonModeAsStr(self) -> str:
+        modesMap = {SCATTER: "scatter", CHASE: "chase", FREIGHT: "freight", SPAWN: "spawn"}
+        return modesMap[self.getGhostCommonMode()]
+
     def getGhostModesAsStr(self) -> list[str]:
         modesMap = {SCATTER: "scatter", CHASE: "chase", FREIGHT: "freight", SPAWN: "spawn"}
         return [modesMap.get(mode, f"unknown mode-int: '{mode}'") for mode in self.getGhostModes()]
@@ -48,10 +60,11 @@ class Observation(object):
         return [ghost.position for ghost in self.getGhosts()]
 
     def getClosestGhostPosition(self) -> Vector2:
-        return min(self.getGhostPositions(), key=lambda g: self.manhattenDistance(g, self.pacman.position), default=None)
+        return min(self.getGhostPositions(), key=lambda g: self.manhattenDistance(g, self.pacman.position),
+                   default=None)
 
     def getGhosts(self) -> list[Ghost]:
-        return [self.ghostGroup.blinky, self.ghostGroup.pinky, self.ghostGroup.inky,self.ghostGroup.clyde]
+        return [self.ghostGroup.blinky, self.ghostGroup.pinky, self.ghostGroup.inky, self.ghostGroup.clyde]
 
     def getBlinky(self) -> Blinky:
         return self.ghostGroup.blinky
@@ -74,14 +87,19 @@ class Observation(object):
 
     # ------------------ Custom Functions ------------------
     def CalculateDangerLevel(self):
+
         dangerLevel = 0.0
         minDistance = 9999999
         totalDistance = 0.0
         numberOfCloseGhosts = 0
         dangerThreshold = 5  # Threshold distance for a ghost to be considered 'close'
 
-        for ghostPosition in self.getGhostPositions():
-            distance = self.manhattenDistance(self.pacman.position, ghostPosition)
+        for ghost in self.getGhosts():
+            # ignore ghost if it is in freight mode
+            if ghost.mode.current == FREIGHT:
+                continue
+
+            distance = self.manhattenDistance(self.pacman.position, ghost.position)
             totalDistance += distance
             minDistance = min(minDistance, distance)
 
