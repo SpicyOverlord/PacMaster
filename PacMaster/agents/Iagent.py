@@ -1,6 +1,6 @@
 from abc import abstractmethod, ABC
 
-from PacMaster.observation import Observation
+from PacMaster.utils.observation import Observation
 
 
 class IAgent(ABC):

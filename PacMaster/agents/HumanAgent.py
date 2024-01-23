@@ -2,7 +2,7 @@ import pygame
 from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
 
 from PacMaster.agents.Iagent import IAgent
-from PacMaster.observation import Observation
+from PacMaster.utils.observation import Observation
 from Pacman_Complete.constants import *
 
 

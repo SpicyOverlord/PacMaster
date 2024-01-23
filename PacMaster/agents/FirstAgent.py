@@ -1,8 +1,5 @@
-import pygame
-from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
-
 from PacMaster.agents.Iagent import IAgent
-from PacMaster.observation import Observation
+from PacMaster.utils.observation import Observation
 from Pacman_Complete.constants import *
 
 
@@ -14,18 +11,15 @@ class FirstAgent(IAgent):
         obs = Observation(self.gameController)
         self.takeStats(obs)
 
-        closestNodePosition = obs.getClosestNodePosition()
-        closestGhostPosition = obs.getClosestGhostPosition()
-        closestNode = obs.getNode(closestNodePosition)
+        closestMapNode = obs.getClosestMapNode()
 
-        minDirection = RIGHT
-        minDistance = 0
-        for direction in [RIGHT, LEFT, UP, DOWN]:
-            if closestNode.neighbors[direction] is not None:
-                distance = obs.manhattenDistance(closestNode.neighbors[direction].position, closestGhostPosition)
+        MinDirection = STOP
+        minDangerLevel = 99999
+        for neighbor in closestMapNode.neighbors:
+            dangerLevel = obs.calculateDangerLevel(neighbor.position)
 
-                if distance > minDistance:
-                    minDirection = direction
-                    minDistance = distance
+            if dangerLevel < minDangerLevel:
+                MinDirection = obs.map.getFromToDirection(closestMapNode, neighbor)
+                minDangerLevel = dangerLevel
 
-        return minDirection
+        return MinDirection

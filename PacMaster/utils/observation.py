@@ -1,35 +1,36 @@
 from collections import Counter
 
+from PacMaster.utils.map import Map, MapNode
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Blinky, Ghost, Pinky, Inky, Clyde
-from Pacman_Complete.nodes import Node, NodeGroup
 from Pacman_Complete.vector import Vector2
+from PacMaster.utils.utils import manhattenDistance, roundVector
 
 
 class Observation(object):
     def __init__(self, game):
         self.ghostGroup = game.ghosts
         self.pelletGroup = game.pellets
-        self.nodesGroup = game.nodes
         self.pacman = game.pacman
+        self.map = Map(game.nodes)
 
     # ------------------ Pacman Functions ------------------
     def getPacmanPosition(self) -> Vector2:
-        return self.roundVector(self.pacman.position)
+        return roundVector(self.pacman.position)
 
-    # ------------------ Node Functions ------------------
-    def getNodeGroup(self) -> NodeGroup:
-        return self.nodesGroup
+    # ------------------ Map Functions ------------------
 
-    def getNode(self, vector: Vector2 = None) -> Node:
-        return self.nodesGroup.nodesLUT[(vector.x, vector.y)]
+    def getMapNode(self, vector: Vector2 = None) -> MapNode:
+        return self.map.getClosestMapNode(vector)
 
-    def getNodePositions(self):
-        return [node.position for node in self.nodesGroup.nodesLUT.values()]
+    def getMapNodes(self):
+        return self.map.mapNodes
 
-    def getClosestNodePosition(self) -> Vector2:
-        return min(self.getNodePositions(), key=lambda node: self.manhattenDistance(node, self.getPacmanPosition()),
-                   default=None)
+    def getClosestMapNode(self, vector: Vector2 = None) -> MapNode:
+        if vector is None:
+            vector = self.getPacmanPosition()
+
+        return self.map.getClosestMapNode(vector)
 
     # ------------------ Pellet Functions ------------------
     def getPelletsEaten(self) -> int:
@@ -42,11 +43,12 @@ class Observation(object):
         return [powerPellet.position for powerPellet in self.pelletGroup.powerpellets]
 
     def getClosestPelletPosition(self) -> Vector2:
-        return min(self.getPelletPositions(), key=lambda p: self.manhattenDistance(p, self.getPacmanPosition()),
+        return min(self.getPelletPositions(), key=lambda pellet: manhattenDistance(pellet, self.getPacmanPosition()),
                    default=None)
 
     def getClosestPowerPelletPosition(self) -> Vector2:
-        return min(self.getPowerPelletPositions(), key=lambda p: self.manhattenDistance(p, self.getPacmanPosition()),
+        return min(self.getPowerPelletPositions(),
+                   key=lambda pellet: manhattenDistance(pellet, self.getPacmanPosition()),
                    default=None)
 
     # ------------------ Ghost Functions ------------------
@@ -65,10 +67,13 @@ class Observation(object):
         return [modesMap.get(mode, f"unknown mode-int: '{mode}'") for mode in self.getGhostModes()]
 
     def getGhostPositions(self) -> list[Vector2]:
-        return [self.roundVector(ghost.position) for ghost in self.getGhosts()]
+        return [roundVector(ghost.position) for ghost in self.getGhosts()]
 
-    def getClosestGhostPosition(self) -> Vector2:
-        return min(self.getGhostPositions(), key=lambda g: self.manhattenDistance(g, self.getPacmanPosition()),
+    def getClosestGhostPosition(self, vector: Vector2 = None) -> Vector2:
+        if vector is None:
+            vector = self.getPacmanPosition()
+
+        return min(self.getGhostPositions(), key=lambda ghost: manhattenDistance(ghost, vector),
                    default=None)
 
     def getGhosts(self) -> list[Ghost]:
@@ -86,26 +91,10 @@ class Observation(object):
     def getClyde(self) -> Clyde:
         return self.ghostGroup.clyde
 
-    # ------------------ Direction Functions ------------------
-    def getOppositeDirection(self, direction: int) -> int:
-        if direction == UP:
-            return DOWN
-        elif direction == DOWN:
-            return UP
-        elif direction == LEFT:
-            return RIGHT
-        elif direction == RIGHT:
-            return LEFT
-
-    # ------------------ Helper Functions ------------------
-    def roundVector(self, vector2: Vector2) -> Vector2:
-        return Vector2(round(vector2.x), round(vector2.y))
-
-    def manhattenDistance(self, a: Vector2, b: Vector2) -> int:
-        return abs(a.x - b.x) + abs(a.y - b.y)
-
     # ------------------ Custom Functions ------------------
-    def CalculateDangerLevel(self):
+    def calculateDangerLevel(self, vector: Vector2 = None):
+        if vector is None:
+            vector = self.getPacmanPosition()
 
         dangerLevel = 0.0
         minDistance = 9999999
@@ -118,7 +107,7 @@ class Observation(object):
             if ghost.mode.current == FREIGHT:
                 continue
 
-            distance = self.manhattenDistance(self.getPacmanPosition(), self.roundVector(ghost.position))
+            distance = manhattenDistance(vector, roundVector(ghost.position))
             totalDistance += distance
             minDistance = min(minDistance, distance)
 

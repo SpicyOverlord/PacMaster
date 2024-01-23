@@ -10,6 +10,9 @@ class GameStats(object):
         self.totalPelletsEaten = game.level * 240 + agent.pelletsEatenThisLevel
         self.efficiency = self.totalPelletsEaten * 10 / agent.actionsTaken / 2
 
+    def __str__(self):
+        return f"GameStats(actionsTaken={self.actionsTaken}, score={self.score}, levelsCompleted={self.levelsCompleted}, totalPelletsEaten={self.totalPelletsEaten}, efficiency={round(self.efficiency, 3)})"
+
     @staticmethod
     def calculateCombinedRating(gameStats: list['GameStats']):
         weights = {'score': 1, 'pellets': 0.8}
@@ -36,11 +39,19 @@ class GameStats(object):
         combinedScore = 0.5 * (averageEfficiency + 1) * (weightedAverageBaseScore + weightedAveragePelletScore)
 
         # Statistical Analysis
-        median_score = sorted(baseScores)[len(baseScores) // 2]
-        mean_score = sum(normalizedBaseScores) / len(normalizedBaseScores)
-        variance = sum((s - mean_score) ** 2 for s in normalizedBaseScores) / len(normalizedBaseScores)
-        std_deviation = variance ** 0.5
+        medianScore = sorted(baseScores)[len(baseScores) // 2]
+        averageNormalizedScore = sum(normalizedBaseScores) / len(normalizedBaseScores)
+        variance = sum((s - averageNormalizedScore) ** 2 for s in normalizedBaseScores) / len(normalizedBaseScores)
+        stdDeviation = variance ** 0.5
+        averageScore = sum(baseScores) / len(baseScores)
 
-        return {"combinedScore": combinedScore, "averageEfficiency": averageEfficiency,
-                "weightedAverageBaseScore": weightedAverageBaseScore, "weightedAveragePelletScore": weightedAveragePelletScore,
-                "medianScore": median_score, "stdDeviation": std_deviation}
+        return {"combinedScore": round(combinedScore, 3),
+                "averageEfficiency": round(averageEfficiency, 3),
+                "weightedAverageBaseScore": round(weightedAverageBaseScore, 3),
+                "weightedAveragePelletScore": round(weightedAveragePelletScore, 3),
+
+                "medianScore": medianScore,
+                "averageScore": round(averageScore, 3),
+                "maxScore": max(baseScores),
+                "minScore": min(baseScores),
+                "stdDeviation": round(stdDeviation, 3)}
