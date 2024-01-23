@@ -55,19 +55,19 @@ class Pacman(Entity):
                 self.reverseDirection()
 
     def getValidKey(self):
-        if self.isHumanPlayer:
-            key_pressed = pygame.key.get_pressed()
-            if key_pressed[K_UP]:
-                return UP
-            if key_pressed[K_DOWN]:
-                return DOWN
-            if key_pressed[K_LEFT]:
-                return LEFT
-            if key_pressed[K_RIGHT]:
-                return RIGHT
-            return STOP
-        else:
-            return self.agent.calculateNextMove()
+        # if self.isHumanPlayer:
+        #     key_pressed = pygame.key.get_pressed()
+        #     if key_pressed[K_UP]:
+        #         return UP
+        #     if key_pressed[K_DOWN]:
+        #         return DOWN
+        #     if key_pressed[K_LEFT]:
+        #         return LEFT
+        #     if key_pressed[K_RIGHT]:
+        #         return RIGHT
+        #     return STOP
+        # else:
+        return self.agent.calculateNextMove()
 
     def eatPellets(self, pelletList):
         for pellet in pelletList:

@@ -1,3 +1,4 @@
+from PacMaster.agents.HumanAgent import HumanAgent
 from PacMaster.agents.Iagent import IAgent
 from PacMaster.utils.gamestats import GameStats
 from Pacman_Complete.run import GameController
@@ -5,7 +6,8 @@ from Pacman_Complete.run import GameController
 
 def runGameWithHuman(gameSpeed=1, startLives=3) -> int:
     game = GameController(gameSpeed=gameSpeed, startLives=startLives, isHumanPlayer=True)
-    game.startGame()
+    agent = HumanAgent(gameController=game)
+    game.startGame(agent=agent)
     while True:
         game.update()
         if game.gameOver:
@@ -32,12 +34,12 @@ def calculatePerformanceOverXGames(agentClass: type[IAgent], gameCount: int, gam
     gameStats = []
     for i in range(gameCount):
         if logging:
-            print(f"Running game {i+1}...")
+            print(f"Running game {i + 1}...")
 
         gameStats.append(runGameWithAgent(agentClass, gameSpeed=gameSpeed, startLives=1))
 
         if logging:
-            print(f"Game {i+1} result: {gameStats[i]}")
+            print(f"Game {i + 1} result: {gameStats[i]}")
 
     performance = GameStats.calculateCombinedRating(gameStats)
 

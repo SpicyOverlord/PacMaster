@@ -52,6 +52,21 @@ class Observation(object):
                    default=None)
 
     # ------------------ Ghost Functions ------------------
+
+    def isGhostBetween(self, vector1: Vector2, vector2: Vector2) -> bool:
+        for ghost in self.getGhosts():
+            if ghost.mode.current == FREIGHT:
+                continue
+
+            if ghost.position.x == vector1.x and ghost.position.x == vector2.x:
+                if min(vector1.y, vector2.y) <= ghost.position.y <= max(vector1.y, vector2.y):
+                    return True
+            elif ghost.position.y == vector1.y and ghost.position.y == vector2.y:
+                if min(vector1.x, vector2.x) <= ghost.position.x <= max(vector1.x, vector2.x):
+                    return True
+
+        return False
+
     def getGhostModes(self) -> list[int]:
         return [ghost.mode.current for ghost in self.getGhosts()]
 

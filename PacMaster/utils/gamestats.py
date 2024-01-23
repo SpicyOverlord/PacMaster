@@ -11,7 +11,7 @@ class GameStats(object):
         self.efficiency = self.totalPelletsEaten * 10 / agent.actionsTaken / 2
 
     def __str__(self):
-        return f"GameStats(actionsTaken={self.actionsTaken}, score={self.score}, levelsCompleted={self.levelsCompleted}, totalPelletsEaten={self.totalPelletsEaten}, efficiency={round(self.efficiency, 3)})"
+        return f"GameStats(score={self.score}, efficiency={round(self.efficiency, 3)}, totalPelletsEaten={self.totalPelletsEaten}, actionsTaken={self.actionsTaken}, levelsCompleted={self.levelsCompleted})"
 
     @staticmethod
     def calculateCombinedRating(gameStats: list['GameStats']):
