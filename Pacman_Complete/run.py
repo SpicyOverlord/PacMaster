@@ -116,6 +116,14 @@ class GameController(object):
         else:
             self.pacman.update(dt)
 
+        # check if pacman position is outside the map
+        # max: <416, 512>
+        # min: <0, 0>
+        if 0 <= self.pacman.position.x <= 416 and 0 <= self.pacman.position.y <= 512:
+            pass
+        else:
+            print("INVALID PACMAN POSITION: ", self.pacman.position)
+
         if self.flashBG:
             self.flashTimer += dt
             if self.flashTimer >= self.flashTime:
@@ -191,7 +199,6 @@ class GameController(object):
         if self.pellets.numEaten == 50 or self.pellets.numEaten == 140:
             if self.fruit is None:
                 self.fruit = Fruit(self.nodes.getNodeFromTiles(9, 20), self.level)
-                print(self.fruit)
         if self.fruit is not None:
             if self.pacman.collideCheck(self.fruit):
                 self.updateScore(self.fruit.points)
