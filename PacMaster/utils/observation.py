@@ -24,6 +24,10 @@ class Observation(object):
     def getPacmanGoal(self) -> Vector2:
         return self.pacman.goal
 
+    def validatePacmanPosition(self) -> bool:
+        pacmanPosition = self.getPacmanPosition()
+        return 0 <= pacmanPosition.x <= 416 and 0 <= pacmanPosition.y <= 512
+
     # ------------------ Map Functions ------------------
 
     def getMapNode(self, vector: Vector2 = None) -> MapNode:
@@ -39,10 +43,11 @@ class Observation(object):
         return self.map.getClosestMapNode(vector)
 
     def getOnNode(self) -> MapNode | None:
+        pacmanPosition = self.getPacmanPosition()
         closestMapNode = self.getClosestMapNode()
-        closestMapNodeDistance = manhattenDistance(self.getPacmanPosition(), closestMapNode.position)
+        closestMapNodeDistance = manhattenDistance(pacmanPosition, closestMapNode.position)
 
-        if closestMapNodeDistance < 10:
+        if closestMapNodeDistance <= 4:
             return closestMapNode
 
         return None
@@ -53,9 +58,7 @@ class Observation(object):
             if mapNode.position.x == pacmanPosition.x or mapNode.position.y == pacmanPosition.y:
                 for neighbor in mapNode.neighbors:
                     if self.isBetweenMapNodes(mapNode.position, pacmanPosition, neighbor.mapNode.position):
-                        return mapNode, neighbor.mapNode, mapNode.position.x == pacmanPosition.x
-
-        return None, None, False
+                        return mapNode, neighbor.mapNode, mapNode.position.y == pacmanPosition.y
 
     def isBetweenMapNodes(self, mapNode1: MapNode, betweenVector: Vector2, mapNode2: MapNode) -> bool:
         if betweenVector.x == mapNode1.x and betweenVector.x == mapNode2.x and \
@@ -173,4 +176,4 @@ class Observation(object):
         # Normalize based on total distance to avoid high values in less dangerous situations
         normalizedDanger = dangerLevel / (totalDistance + 1)
 
-        return normalizedDanger
+        return round(normalizedDanger, 5)

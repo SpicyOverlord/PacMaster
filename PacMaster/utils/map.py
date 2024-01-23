@@ -70,7 +70,10 @@ class Map(object):
         if mapNode is not None:
             return mapNode
 
-        return min(self.mapNodes, key=lambda node: manhattenDistance(node.position, vector), default=None)
+        # return min(self.mapNodes, key=lambda node: manhattenDistance(node.position, vector), default=None)
+        return min(self.mapNodes, key=lambda node:
+        manhattenDistance(node.position, vector) if node.position.x == vector.x or node.position.y == vector.y
+        else 99999, default=None)
 
     def getMapNode(self, vector: Vector2) -> MapNode:
         return self.mapNodeDict.get((vector.x, vector.y), None)

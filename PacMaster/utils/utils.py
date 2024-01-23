@@ -2,8 +2,12 @@ from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
 
 
-def roundVector(vector2: Vector2) -> Vector2:
-    return Vector2(round(vector2.x), round(vector2.y))
+def roundVector(vector: Vector2) -> Vector2:
+    return Vector2(round(vector.x), round(vector.y))
+
+
+def clampVectorToNonNegative(vector: Vector2):
+    return Vector2(max(0, vector.x), max(0, vector.y))
 
 
 def manhattenDistance(a: Vector2, b: Vector2) -> int:

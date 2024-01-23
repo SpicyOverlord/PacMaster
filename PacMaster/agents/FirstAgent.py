@@ -14,6 +14,11 @@ class FirstAgent(IAgent):
         obs = Observation(self.gameController)
         self.takeStats(obs)
 
+        # make sure that pacman position is not outside the map
+        if not obs.validatePacmanPosition():
+            print("Invalid pacman position")
+            return STOP
+
         # if we are on a node, we can calculate the best direction to go
         onMapNode = obs.getOnNode()
         if onMapNode is not None:
@@ -48,6 +53,8 @@ class FirstAgent(IAgent):
         mapNode2DangerLevel = obs.calculateDangerLevel(mapNode2.position)
         if mapNode1DangerLevel < mapNode2DangerLevel:
             return self.__getDirection__(obs, mapNode1, isXAxis)
+        elif mapNode1DangerLevel == mapNode2DangerLevel:
+            return STOP
         else:
             return self.__getDirection__(obs, mapNode2, isXAxis)
 

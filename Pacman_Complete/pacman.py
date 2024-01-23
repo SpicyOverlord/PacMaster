@@ -13,7 +13,6 @@ class Pacman(Entity):
         self.isHumanPlayer = isHumanPlayer
         self.agent = agent
 
-
         self.name = PACMAN
         self.color = YELLOW
         self.direction = LEFT

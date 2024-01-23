@@ -14,6 +14,9 @@ class HumanAgent(IAgent):
         obs = Observation(self.gameController)
         self.takeStats(obs)
 
+        if self.actionsTaken % 10 == 0:
+            print(obs.getPacmanPosition())
+
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_UP]:
             return UP
