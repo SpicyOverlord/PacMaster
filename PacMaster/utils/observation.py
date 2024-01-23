@@ -117,7 +117,9 @@ class Observation(object):
             if ghost.mode.current in (FREIGHT, SPAWN):
                 continue
 
-            distance = manhattenDistance(vector, roundVector(ghost.position))
+            _, distance = self.map.getShortestPath(vector, roundVector(ghost.position))
+            # distance = manhattenDistance(vector, roundVector(ghost.position))
+
             totalDistance += distance
             minDistance = min(minDistance, distance)
 
