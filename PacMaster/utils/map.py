@@ -18,13 +18,20 @@ class MapNode(object):
         neighbor = Neighbor(node, direction, distance)
         self.neighbors.append(neighbor)
 
-    def isNeighborTo(self, node: 'MapNode'):
-        return node in [neighbor.node for neighbor in self.neighbors]
+    def isNeighborTo(self, node: 'MapNode') -> bool:
+        return node in [neighbor.mapNode for neighbor in self.neighbors]
+
+    def getNeighborByDirection(self, direction: int) -> 'Neighbor':
+        for neighbor in self.neighbors:
+            if neighbor.direction == direction:
+                return neighbor
+
+        return None
 
 
 class Neighbor(object):
-    def __init__(self, node: 'MapNode', direction: int, distance: int):
-        self.node = node
+    def __init__(self, mapNode: 'MapNode', direction: int, distance: int):
+        self.mapNode = mapNode
         self.direction = direction
         self.distance = distance
 

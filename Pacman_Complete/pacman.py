@@ -67,7 +67,10 @@ class Pacman(Entity):
         #         return RIGHT
         #     return STOP
         # else:
-        return self.agent.calculateNextMove()
+        answer = self.agent.calculateNextMove()
+        if answer is None:
+            raise Exception(f"Agent did not return a valid direction. returned '{answer}'")
+        return answer
 
     def eatPellets(self, pelletList):
         for pellet in pelletList:

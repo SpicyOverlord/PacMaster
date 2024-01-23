@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from collections import Counter
+from typing import Optional
 
 from PacMaster.utils.map import Map, MapNode
 from Pacman_Complete.constants import *
@@ -18,6 +21,9 @@ class Observation(object):
     def getPacmanPosition(self) -> Vector2:
         return roundVector(self.pacman.position)
 
+    def getPacmanGoal(self) -> Vector2:
+        return self.pacman.goal
+
     # ------------------ Map Functions ------------------
 
     def getMapNode(self, vector: Vector2 = None) -> MapNode:
@@ -31,6 +37,35 @@ class Observation(object):
             vector = self.getPacmanPosition()
 
         return self.map.getClosestMapNode(vector)
+
+    def getOnNode(self) -> MapNode | None:
+        closestMapNode = self.getClosestMapNode()
+        closestMapNodeDistance = manhattenDistance(self.getPacmanPosition(), closestMapNode.position)
+
+        if closestMapNodeDistance < 10:
+            return closestMapNode
+
+        return None
+
+    def getBetweenMapNodes(self) -> tuple[MapNode, MapNode, bool] | tuple[None, None, bool]:
+        pacmanPosition = self.getPacmanPosition()
+        for mapNode in self.map.mapNodes:
+            if mapNode.position.x == pacmanPosition.x or mapNode.position.y == pacmanPosition.y:
+                for neighbor in mapNode.neighbors:
+                    if self.isBetweenMapNodes(mapNode.position, pacmanPosition, neighbor.mapNode.position):
+                        return mapNode, neighbor.mapNode, mapNode.position.x == pacmanPosition.x
+
+        return None, None, False
+
+    def isBetweenMapNodes(self, mapNode1: MapNode, betweenVector: Vector2, mapNode2: MapNode) -> bool:
+        if betweenVector.x == mapNode1.x and betweenVector.x == mapNode2.x and \
+                min(mapNode1.y, mapNode2.y) <= betweenVector.y <= max(mapNode1.y, mapNode2.y):
+            return True
+        if betweenVector.y == mapNode1.y and betweenVector.y == mapNode2.y and \
+                min(mapNode1.x, mapNode2.x) <= betweenVector.x <= max(mapNode1.x, mapNode2.x):
+            return True
+
+        return False
 
     # ------------------ Pellet Functions ------------------
     def getPelletsEaten(self) -> int:
@@ -53,19 +88,19 @@ class Observation(object):
 
     # ------------------ Ghost Functions ------------------
 
-    def isGhostBetween(self, vector1: Vector2, vector2: Vector2) -> bool:
+    def getGhostBetweenMapNodes(self, mapNode1: MapNode, mapNode2: MapNode) -> Ghost:
         for ghost in self.getGhosts():
             if ghost.mode.current == FREIGHT:
                 continue
 
-            if ghost.position.x == vector1.x and ghost.position.x == vector2.x:
-                if min(vector1.y, vector2.y) <= ghost.position.y <= max(vector1.y, vector2.y):
-                    return True
-            elif ghost.position.y == vector1.y and ghost.position.y == vector2.y:
-                if min(vector1.x, vector2.x) <= ghost.position.x <= max(vector1.x, vector2.x):
-                    return True
+            if ghost.position.x == mapNode1.x and ghost.position.x == mapNode2.x and \
+                    min(mapNode1.y, mapNode2.y) <= ghost.position.y <= max(mapNode1.y, mapNode2.y):
+                return ghost
+            if ghost.position.y == mapNode1.y and ghost.position.y == mapNode2.y and \
+                    min(mapNode1.x, mapNode2.x) <= ghost.position.x <= max(mapNode1.x, mapNode2.x):
+                return ghost
 
-        return False
+        return None
 
     def getGhostModes(self) -> list[int]:
         return [ghost.mode.current for ghost in self.getGhosts()]
