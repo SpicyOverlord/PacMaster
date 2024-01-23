@@ -19,56 +19,13 @@ class Observation(object):
 
     # ------------------ Pacman Functions ------------------
     def getPacmanPosition(self) -> Vector2:
+        if self.pacman.overshotTarget():
+            return self.getPacmanTarget()
+
         return roundVector(self.pacman.position)
 
-    def getPacmanGoal(self) -> Vector2:
-        return self.pacman.goal
-
-    def validatePacmanPosition(self) -> bool:
-        pacmanPosition = self.getPacmanPosition()
-        return 0 <= pacmanPosition.x <= 416 and 0 <= pacmanPosition.y <= 512
-
-    # ------------------ Map Functions ------------------
-
-    def getMapNode(self, vector: Vector2 = None) -> MapNode:
-        return self.map.getClosestMapNode(vector)
-
-    def getMapNodes(self):
-        return self.map.mapNodes
-
-    def getClosestMapNode(self, vector: Vector2 = None) -> MapNode:
-        if vector is None:
-            vector = self.getPacmanPosition()
-
-        return self.map.getClosestMapNode(vector)
-
-    def getOnNode(self) -> MapNode | None:
-        pacmanPosition = self.getPacmanPosition()
-        closestMapNode = self.getClosestMapNode()
-        closestMapNodeDistance = manhattenDistance(pacmanPosition, closestMapNode.position)
-
-        if closestMapNodeDistance <= 4:
-            return closestMapNode
-
-        return None
-
-    def getBetweenMapNodes(self) -> tuple[MapNode, MapNode, bool] | tuple[None, None, bool]:
-        pacmanPosition = self.getPacmanPosition()
-        for mapNode in self.map.mapNodes:
-            if mapNode.position.x == pacmanPosition.x or mapNode.position.y == pacmanPosition.y:
-                for neighbor in mapNode.neighbors:
-                    if self.isBetweenMapNodes(mapNode.position, pacmanPosition, neighbor.mapNode.position):
-                        return mapNode, neighbor.mapNode, mapNode.position.y == pacmanPosition.y
-
-    def isBetweenMapNodes(self, mapNode1: MapNode, betweenVector: Vector2, mapNode2: MapNode) -> bool:
-        if betweenVector.x == mapNode1.x and betweenVector.x == mapNode2.x and \
-                min(mapNode1.y, mapNode2.y) <= betweenVector.y <= max(mapNode1.y, mapNode2.y):
-            return True
-        if betweenVector.y == mapNode1.y and betweenVector.y == mapNode2.y and \
-                min(mapNode1.x, mapNode2.x) <= betweenVector.x <= max(mapNode1.x, mapNode2.x):
-            return True
-
-        return False
+    def getPacmanTarget(self) -> Vector2:
+        return self.pacman.target.position
 
     # ------------------ Pellet Functions ------------------
     def getPelletsEaten(self) -> int:
@@ -153,11 +110,11 @@ class Observation(object):
         minDistance = 9999999
         totalDistance = 0.0
         numberOfCloseGhosts = 0
-        dangerThreshold = 5  # Threshold distance for a ghost to be considered 'close'
+        dangerThreshold = 50  # Threshold distance for a ghost to be considered 'close'
 
         for ghost in self.getGhosts():
             # ignore ghost if it is in freight mode
-            if ghost.mode.current == FREIGHT:
+            if ghost.mode.current in (FREIGHT, SPAWN):
                 continue
 
             distance = manhattenDistance(vector, roundVector(ghost.position))
@@ -168,10 +125,12 @@ class Observation(object):
                 numberOfCloseGhosts += 1
 
         # Adjust danger level based on the closest ghost
-        dangerLevel += (1 / (minDistance + 1)) * 10000  # Adding 1 to avoid division by zero
+        closestGhostValue = (1 / (minDistance + 1)) * 50000  # Adding 1 to avoid division by zero
 
         # Further adjust based on the number of close ghosts
-        dangerLevel += numberOfCloseGhosts * 5000  # Weight for each close ghost
+        closeGhostValue = numberOfCloseGhosts * 200  # Weight for each close ghost
+
+        dangerLevel = closestGhostValue + closeGhostValue
 
         # Normalize based on total distance to avoid high values in less dangerous situations
         normalizedDanger = dangerLevel / (totalDistance + 1)

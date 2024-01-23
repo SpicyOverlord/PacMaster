@@ -1,7 +1,6 @@
 from PacMaster.agents.Iagent import IAgent
 from PacMaster.utils.map import MapNode
 from PacMaster.utils.observation import Observation
-from PacMaster.utils.utils import manhattenDistance
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Ghost
 
@@ -14,18 +13,15 @@ class FirstAgent(IAgent):
         obs = Observation(self.gameController)
         self.takeStats(obs)
 
-        # make sure that pacman position is not outside the map
-        if not obs.validatePacmanPosition():
-            print("Invalid pacman position:", obs.getPacmanPosition())
-            return STOP
+        pacmanPosition = obs.getPacmanPosition()
 
         # if we are on a node, we can calculate the best direction to go
-        onMapNode = obs.getOnNode()
+        onMapNode = obs.map.getOnNode(pacmanPosition)
         if onMapNode is not None:
-            return self.__getLeastDangerousDirectionFromNode__(obs, obs.getClosestMapNode())
+            return self.__getLeastDangerousDirectionFromNode__(obs, obs.map.getClosestMapNode(pacmanPosition))
 
         # else calculate which of the two directions is the least dangerous
-        mapNode1, mapNode2, isXAxis = obs.getBetweenMapNodes()
+        mapNode1, mapNode2, isXAxis = obs.map.getBetweenMapNodes(pacmanPosition)
         if mapNode1 is None:
             raise Exception("No map node pair found around pacman")
 

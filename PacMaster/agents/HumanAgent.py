@@ -14,11 +14,6 @@ class HumanAgent(IAgent):
         obs = Observation(self.gameController)
         self.takeStats(obs)
 
-        # make sure that pacman position is not outside the map
-        if not obs.validatePacmanPosition():
-            print("Invalid pacman position:", obs.getPacmanPosition())
-            return STOP
-
         if self.actionsTaken % 10 == 0:
             print(obs.getPacmanPosition())
 
