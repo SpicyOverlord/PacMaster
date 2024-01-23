@@ -1,8 +1,8 @@
 from PacMaster.agents.FirstAgent import FirstAgent
 from PacMaster.utils.runnerFunctions import *
 
-# runGameWithHuman()
-calculatePerformanceOverXGames(FirstAgent, gameCount=50, gameSpeed=1, logging=True)
+runGameWithHuman()
+# calculatePerformanceOverXGames(FirstAgent, gameCount=50, gameSpeed=1, logging=True)
 
 
 

@@ -249,3 +249,5 @@ class GameController(object):
 
         pygame.display.update()
 
+
+print("Hello stupid, you are executing the wrong file! Run PacMaster/runner.py instead.")

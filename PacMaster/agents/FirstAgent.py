@@ -16,7 +16,7 @@ class FirstAgent(IAgent):
 
         # make sure that pacman position is not outside the map
         if not obs.validatePacmanPosition():
-            print("Invalid pacman position")
+            print("Invalid pacman position:", obs.getPacmanPosition())
             return STOP
 
         # if we are on a node, we can calculate the best direction to go
