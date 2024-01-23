@@ -14,11 +14,19 @@ class MapNode(object):
 
         self.neighbors = []
 
-    def addNeighbor(self, node: 'MapNode'):
-        self.neighbors.append(node)
+    def addNeighbor(self, node: 'MapNode', direction: int, distance: int):
+        neighbor = Neighbor(node, direction, distance)
+        self.neighbors.append(neighbor)
 
     def isNeighborTo(self, node: 'MapNode'):
-        return node in self.neighbors
+        return node in [neighbor.node for neighbor in self.neighbors]
+
+
+class Neighbor(object):
+    def __init__(self, node: 'MapNode', direction: int, distance: int):
+        self.node = node
+        self.direction = direction
+        self.distance = distance
 
 
 class Map(object):
@@ -30,34 +38,32 @@ class Map(object):
 
     def __setNodeNeighbors__(self):
         for mapNode in self.mapNodes:
-            for neighborNode in mapNode.node.neighbors.values():
+            for neighborDirection, neighborNode in mapNode.node.neighbors.items():
                 if neighborNode is None:
                     continue
 
                 neighborMapNode = self.getClosestMapNode(neighborNode.position)
                 if neighborMapNode is None:
-                    raise Exception("No neighbor found for node at position: " + str(neighborNode.position))
+                    raise Exception("No node found for neighbor at position: " + str(neighborNode.position))
 
-                mapNode.addNeighbor(neighborMapNode)
+                distance = 0
+                direction = neighborDirection
+                if neighborDirection == PORTAL:
+                    if neighborMapNode.position.x == 0:
+                        direction = RIGHT
+                    else:
+                        direction = LEFT
+                else:
+                    distance = manhattenDistance(mapNode.position, neighborMapNode.position)
+
+                mapNode.addNeighbor(neighborMapNode, direction, distance)
 
     def getClosestMapNode(self, vector: Vector2) -> MapNode:
-        mapNode = self.mapNodeDict.get((vector.x, vector.y), None)
+        mapNode = self.getMapNode(vector)
         if mapNode is not None:
             return mapNode
 
         return min(self.mapNodes, key=lambda node: manhattenDistance(node.position, vector), default=None)
 
-    def getFromToDirection(self, fromNode: MapNode, toNode: MapNode):
-        if not fromNode.isNeighborTo(toNode):
-            raise Exception("Nodes are not neighbors")
-
-        if fromNode.x == toNode.x:
-            if fromNode.y > toNode.y:
-                return UP
-            else:
-                return DOWN
-        else:
-            if fromNode.x > toNode.x:
-                return LEFT
-            else:
-                return RIGHT
+    def getMapNode(self, vector: Vector2) -> MapNode:
+        return self.mapNodeDict.get((vector.x, vector.y), None)

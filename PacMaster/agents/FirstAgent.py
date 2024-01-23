@@ -13,13 +13,15 @@ class FirstAgent(IAgent):
 
         closestMapNode = obs.getClosestMapNode()
 
-        MinDirection = STOP
+        minDirection = STOP
         minDangerLevel = 99999
         for neighbor in closestMapNode.neighbors:
-            dangerLevel = obs.calculateDangerLevel(neighbor.position)
+            if obs.isGhostBetween(closestMapNode.position, neighbor.node.position):
+                continue
 
+            dangerLevel = obs.calculateDangerLevel(neighbor.node.position)
             if dangerLevel < minDangerLevel:
-                MinDirection = obs.map.getFromToDirection(closestMapNode, neighbor)
+                minDirection = neighbor.direction
                 minDangerLevel = dangerLevel
 
-        return MinDirection
+        return minDirection
