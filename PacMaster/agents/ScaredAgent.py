@@ -8,7 +8,7 @@ from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Ghost
 
 
-class FirstAgent(IAgent):
+class ScaredAgent(IAgent):
     def __init__(self, gameController):
         super().__init__(gameController)
 
@@ -18,10 +18,8 @@ class FirstAgent(IAgent):
 
         pacmanPosition = obs.getPacmanPosition()
 
-        # draw the line from pacman to his target
-        # DebugDrawer.addDashedLine(pacmanPosition, obs.getPacmanTarget(), DebugDrawer().GREEN)
-
-        self.drawGhostPaths(obs)
+        # self.drawGhostPath(obs, BLINKY)
+        # self.drawGhostPaths(obs)
 
         # if we are on a node, we can calculate the best direction to go
         onMapNode = obs.map.getOnNode(pacmanPosition)

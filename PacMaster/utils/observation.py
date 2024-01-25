@@ -89,6 +89,17 @@ class Observation(object):
     def getGhosts(self) -> list[Ghost]:
         return [self.ghostGroup.blinky, self.ghostGroup.pinky, self.ghostGroup.inky, self.ghostGroup.clyde]
 
+    def getGhost(self, ghost: int) -> Ghost:
+        if ghost == BLINKY:
+            return self.getBlinky()
+        elif ghost == PINKY:
+            return self.getPinky()
+        elif ghost == INKY:
+            return self.getInky()
+        elif ghost == CLYDE:
+            return self.getClyde()
+        else:
+            raise Exception(f"Unknown ghost: {ghost}")
     def getBlinky(self) -> Blinky:
         return self.ghostGroup.blinky
 
