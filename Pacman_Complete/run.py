@@ -16,13 +16,14 @@ from PacMaster.agents.Iagent import IAgent
 
 
 class GameController(object):
-    def __init__(self, gameSpeed: int, startLives: int, isHumanPlayer: bool = False):
+    def __init__(self, gameSpeed: int, startLives: int, isHumanPlayer: bool = False,
+                 startLevel: int = 0, ghostsEnabled: bool = True):
         pygame.init()
 
         self.gameSpeed = gameSpeed
         self.isHumanPlayer = isHumanPlayer
         self.gameOver = False
-        self.actionsTaken = 0
+        self.ghostsEnabled = ghostsEnabled
 
         self.screen = pygame.display.set_mode(SCREENSIZE, 0, 32)
         DebugDrawer.setScreen(self.screen)
@@ -33,7 +34,7 @@ class GameController(object):
         self.clock = pygame.time.Clock()
         self.fruit = None
         self.pause = Pause(isHumanPlayer)
-        self.level = 0
+        self.level = startLevel
         self.lives = startLives
         self.score = 0
         self.textgroup = TextGroup()
@@ -90,7 +91,9 @@ class GameController(object):
         self.textgroup.update(dt)
         self.pellets.update(dt)
         if not self.pause.paused:
-            self.ghosts.update(dt)
+            if self.ghostsEnabled:
+                self.ghosts.update(dt)
+
             if self.fruit is not None:
                 self.fruit.update(dt)
             self.checkPelletEvents()
@@ -100,10 +103,8 @@ class GameController(object):
         if self.pacman.alive:
             if not self.pause.paused:
                 self.pacman.update(dt)
-                self.actionsTaken += 1
         else:
             self.pacman.update(dt)
-            self.actionsTaken += 1
 
         if self.flashBG:
             self.flashTimer += dt

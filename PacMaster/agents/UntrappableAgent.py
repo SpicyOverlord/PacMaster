@@ -8,7 +8,7 @@ from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Ghost
 
 
-class ScaredAgent(IAgent):
+class UntrappableAgent(IAgent):
     def __init__(self, gameController):
         super().__init__(gameController)
 

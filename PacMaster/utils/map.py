@@ -68,8 +68,8 @@ class Map(object):
         self.__setNodeNeighbors__()
 
     def __setNodeNeighbors__(self):
-        for mapNode in self.mapNodes:
-            for neighborDirection, neighborNode in mapNode.node.neighbors.items():
+        for currentMapNode in self.mapNodes:
+            for neighborDirection, neighborNode in currentMapNode.node.neighbors.items():
                 if neighborNode is None:
                     continue
 
@@ -85,9 +85,9 @@ class Map(object):
                     else:
                         direction = LEFT
                 else:
-                    distance = manhattanDistance(mapNode.position, neighborMapNode.position)
+                    distance = manhattanDistance(currentMapNode.position, neighborMapNode.position)
 
-                mapNode.addNeighbor(neighborMapNode, direction, distance)
+                currentMapNode.addNeighbor(neighborMapNode, direction, distance)
 
     def getMapNode(self, vector: Vector2) -> MapNode:
         return self.mapNodeDict.get((vector.x, vector.y), None)
@@ -132,7 +132,7 @@ class Map(object):
 
         return False
 
-    def getOrCreateCustomMapNodeOnVector(self, vector: Vector2) -> (MapNode, bool):
+    def __getOrCreateCustomMapNodeOnVector__(self, vector: Vector2) -> (MapNode, bool):
         mapNode = self.getOnNode(vector)
 
         if mapNode is None:
@@ -156,8 +156,8 @@ class Map(object):
         return mapNode, True
 
     def getShortestPath(self, startVector: Vector2, endVector: Vector2) -> (list[Vector2], int) | (None, None):
-        startMapNode, startIsCustom = self.getOrCreateCustomMapNodeOnVector(startVector)
-        endMapNode, endIsCustom = self.getOrCreateCustomMapNodeOnVector(endVector)
+        startMapNode, startIsCustom = self.__getOrCreateCustomMapNodeOnVector__(startVector)
+        endMapNode, endIsCustom = self.__getOrCreateCustomMapNodeOnVector__(endVector)
 
         startMapNodeDistance = manhattanDistance(startMapNode.position, startVector)
         endMapNodeDistance = manhattanDistance(endMapNode.position, endVector)
@@ -205,3 +205,7 @@ class Map(object):
             return path, int(distances[endMapNode])
         else:
             return None, None
+
+    def isPositionInDangerZone(self, vector: Vector2) -> bool:
+
+        pass
