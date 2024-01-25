@@ -10,8 +10,12 @@ def clampVectorToNonNegative(vector: Vector2):
     return Vector2(max(0, vector.x), max(0, vector.y))
 
 
-def manhattenDistance(a: Vector2, b: Vector2) -> int:
+def manhattanDistance(a: Vector2, b: Vector2) -> int:
     return abs(a.x - b.x) + abs(a.y - b.y)
+
+
+def distanceSquared(a: Vector2, b: Vector2) -> int:
+    return (a.x - b.x) ** 2 + (a.y - b.y) ** 2
 
 
 def getOppositeDirection(direction: int) -> int:

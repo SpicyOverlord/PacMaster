@@ -7,7 +7,7 @@ from PacMaster.utils.map import Map, MapNode
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Blinky, Ghost, Pinky, Inky, Clyde
 from Pacman_Complete.vector import Vector2
-from PacMaster.utils.utils import manhattenDistance, roundVector
+from PacMaster.utils.utils import manhattanDistance, roundVector
 
 
 class Observation(object):
@@ -38,17 +38,17 @@ class Observation(object):
         return [powerPellet.position for powerPellet in self.pelletGroup.powerpellets]
 
     def getClosestPelletPosition(self) -> Vector2:
-        return min(self.getPelletPositions(), key=lambda pellet: manhattenDistance(pellet, self.getPacmanPosition()),
+        return min(self.getPelletPositions(), key=lambda pellet: manhattanDistance(pellet, self.getPacmanPosition()),
                    default=None)
 
     def getClosestPowerPelletPosition(self) -> Vector2:
         return min(self.getPowerPelletPositions(),
-                   key=lambda pellet: manhattenDistance(pellet, self.getPacmanPosition()),
+                   key=lambda pellet: manhattanDistance(pellet, self.getPacmanPosition()),
                    default=None)
 
     # ------------------ Ghost Functions ------------------
 
-    def getGhostBetweenMapNodes(self, mapNode1: MapNode, mapNode2: MapNode) -> Ghost:
+    def getGhostBetweenMapNodes(self, mapNode1: MapNode, mapNode2: MapNode) -> Ghost | None:
         for ghost in self.getGhosts():
             if ghost.mode.current == FREIGHT:
                 continue
@@ -83,7 +83,7 @@ class Observation(object):
         if vector is None:
             vector = self.getPacmanPosition()
 
-        return min(self.getGhostPositions(), key=lambda ghost: manhattenDistance(ghost, vector),
+        return min(self.getGhostPositions(), key=lambda ghost: manhattanDistance(ghost, vector),
                    default=None)
 
     def getGhosts(self) -> list[Ghost]:

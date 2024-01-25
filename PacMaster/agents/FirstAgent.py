@@ -1,4 +1,7 @@
+import pygame
+
 from PacMaster.agents.Iagent import IAgent
+from PacMaster.utils.debugDrawer import DebugDrawer
 from PacMaster.utils.map import MapNode
 from PacMaster.utils.observation import Observation
 from Pacman_Complete.constants import *
@@ -14,6 +17,11 @@ class FirstAgent(IAgent):
         self.takeStats(obs)
 
         pacmanPosition = obs.getPacmanPosition()
+
+        # draw the line from pacman to his target
+        # DebugDrawer.addDashedLine(pacmanPosition, obs.getPacmanTarget(), DebugDrawer().GREEN)
+
+        self.drawGhostPaths(obs)
 
         # if we are on a node, we can calculate the best direction to go
         onMapNode = obs.map.getOnNode(pacmanPosition)

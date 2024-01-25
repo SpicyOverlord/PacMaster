@@ -1,8 +1,7 @@
 from __future__ import annotations
-
 import heapq
 
-from PacMaster.utils.utils import manhattenDistance
+from PacMaster.utils.utils import manhattanDistance, distanceSquared
 from Pacman_Complete.constants import *
 from Pacman_Complete.nodes import NodeGroup, Node
 from Pacman_Complete.vector import Vector2
@@ -28,7 +27,7 @@ class MapNode(object):
 
     def __lt__(self, other):
         # Prioritize based on distance to the nearest edge, as nodes closer to any edge are more dangerous
-        return self.distance_to_nearest_edge() < other.distance_to_nearest_edge()
+        return self.distance_to_nearest_edge() > other.distance_to_nearest_edge()
 
     def __eq__(self, other):
         if not isinstance(other, MapNode):
@@ -46,12 +45,12 @@ class MapNode(object):
     def hasNeighbor(self, node: 'MapNode') -> bool:
         return node in [neighbor.mapNode for neighbor in self.neighbors]
 
-    def getNeighborByDirection(self, direction: int) -> 'Neighbor':
-        for neighbor in self.neighbors:
-            if neighbor.direction == direction:
-                return neighbor
-
-        return None
+    # def getNeighborByDirection(self, direction: int) -> 'Neighbor' | None:
+    #     for neighbor in self.neighbors:
+    #         if neighbor.direction == direction:
+    #             return neighbor
+    #
+    #     return None
 
 
 class Neighbor(object):
@@ -86,25 +85,28 @@ class Map(object):
                     else:
                         direction = LEFT
                 else:
-                    distance = manhattenDistance(mapNode.position, neighborMapNode.position)
+                    distance = manhattanDistance(mapNode.position, neighborMapNode.position)
 
                 mapNode.addNeighbor(neighborMapNode, direction, distance)
 
     def getMapNode(self, vector: Vector2) -> MapNode:
         return self.mapNodeDict.get((vector.x, vector.y), None)
 
-    def getClosestMapNode(self, vector: Vector2) -> MapNode:
+    def getClosestMapNode(self, vector: Vector2, snapToGrid: bool = True) -> MapNode:
         mapNode = self.getMapNode(vector)
         if mapNode is not None:
             return mapNode
 
-        return min(self.mapNodes, key=lambda node:
-        manhattenDistance(node.position, vector) if node.position.x == vector.x or node.position.y == vector.y
-        else 99999, default=None)
+        if snapToGrid:
+            return min(self.mapNodes, key=lambda node:
+            manhattanDistance(node.position, vector) if node.position.x == vector.x or node.position.y == vector.y
+            else 99999, default=None)
+
+        return min(self.mapNodes, key=lambda node: distanceSquared(node.position, vector), default=None)
 
     def getOnNode(self, vector: Vector2) -> MapNode | None:
         closestMapNode = self.getClosestMapNode(vector)
-        closestMapNodeDistance = manhattenDistance(vector, closestMapNode.position)
+        closestMapNodeDistance = manhattanDistance(vector, closestMapNode.position)
 
         if closestMapNodeDistance <= 4:
             return closestMapNode
@@ -117,6 +119,8 @@ class Map(object):
                 for neighbor in mapNode.neighbors:
                     if self.isBetweenMapNodes(mapNode.position, vector, neighbor.mapNode.position):
                         return mapNode, neighbor.mapNode, mapNode.position.y == vector.y
+
+        return None, None, False
 
     def isBetweenMapNodes(self, mapNode1: MapNode, betweenVector: Vector2, mapNode2: MapNode) -> bool:
         if betweenVector.x == mapNode1.x and betweenVector.x == mapNode2.x and \
@@ -135,22 +139,28 @@ class Map(object):
             mapNode = MapNode(Node(vector.x, vector.y))
             startMapNodeA, startMapNodeB, isXAxis = self.getBetweenMapNodes(vector)
 
-            if isXAxis:
-                mapNode.addNeighbor(startMapNodeA, LEFT, manhattenDistance(mapNode.position, startMapNodeA.position))
-                mapNode.addNeighbor(startMapNodeB, RIGHT, manhattenDistance(mapNode.position, startMapNodeB.position))
+            if startMapNodeA is not None:
+                if isXAxis:
+                    mapNode.addNeighbor(startMapNodeA, LEFT,
+                                        manhattanDistance(mapNode.position, startMapNodeA.position))
+                    mapNode.addNeighbor(startMapNodeB, RIGHT,
+                                        manhattanDistance(mapNode.position, startMapNodeB.position))
+                else:
+                    mapNode.addNeighbor(startMapNodeA, UP, manhattanDistance(mapNode.position, startMapNodeA.position))
+                    mapNode.addNeighbor(startMapNodeB, DOWN,
+                                        manhattanDistance(mapNode.position, startMapNodeB.position))
             else:
-                mapNode.addNeighbor(startMapNodeA, UP, manhattenDistance(mapNode.position, startMapNodeA.position))
-                mapNode.addNeighbor(startMapNodeB, DOWN, manhattenDistance(mapNode.position, startMapNodeB.position))
+                mapNode = self.getClosestMapNode(vector, snapToGrid=False)
         else:
             return mapNode, False
         return mapNode, True
 
-    def getShortestPath(self, startVector: Vector2, endVector: Vector2) -> (list[MapNode], int) | (None, None):
+    def getShortestPath(self, startVector: Vector2, endVector: Vector2) -> (list[Vector2], int) | (None, None):
         startMapNode, startIsCustom = self.getOrCreateCustomMapNodeOnVector(startVector)
         endMapNode, endIsCustom = self.getOrCreateCustomMapNodeOnVector(endVector)
 
-        startMapNodeDistance = manhattenDistance(startMapNode.position, startVector)
-        endMapNodeDistance = manhattenDistance(endMapNode.position, endVector)
+        startMapNodeDistance = manhattanDistance(startMapNode.position, startVector)
+        endMapNodeDistance = manhattanDistance(endMapNode.position, endVector)
 
         # Priority queue: elements are tuples (distance, MapNode)
         priorityQueue = [(startMapNodeDistance, startMapNode)]
@@ -188,7 +198,7 @@ class Map(object):
         path = []
         current = endMapNode
         while current:
-            path.insert(0, current)
+            path.insert(0, current.position)
             current = previousNodes[current]
 
         if path[0] == startMapNode:

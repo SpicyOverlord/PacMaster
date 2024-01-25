@@ -19,7 +19,7 @@ def runGameWithHuman(gameSpeed=1, startLives=3) -> int:
 
 def runGameWithAgent(agentType: type[IAgent], gameSpeed=3, startLives=3) -> GameStats:
     if gameSpeed < 0.1 or 10 < gameSpeed:
-        raise ValueError(f"gameSpeed ({gameSpeed}) must be between 1 and 10 (inclusive). Otherwise the game breaks.")
+        raise ValueError(f"gameSpeed ({gameSpeed}) must be between 0.1 and 10 (inclusive). Otherwise the game breaks.")
 
     game = GameController(gameSpeed=gameSpeed, startLives=startLives, isHumanPlayer=False)
     agent = agentType(gameController=game)

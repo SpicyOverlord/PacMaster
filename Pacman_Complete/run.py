@@ -1,5 +1,7 @@
 import pygame
 from pygame.locals import *
+
+from PacMaster.utils.debugDrawer import DebugDrawer
 from Pacman_Complete.constants import *
 from Pacman_Complete.pacman import Pacman
 from Pacman_Complete.nodes import NodeGroup
@@ -23,6 +25,8 @@ class GameController(object):
         self.actionsTaken = 0
 
         self.screen = pygame.display.set_mode(SCREENSIZE, 0, 32)
+        DebugDrawer.setScreen(self.screen)
+
         self.background = None
         self.background_norm = None
         self.background_flash = None
@@ -247,8 +251,9 @@ class GameController(object):
             y = SCREENHEIGHT - self.fruitCaptured[i].get_height()
             self.screen.blit(self.fruitCaptured[i], (x, y))
 
-        pygame.display.update()
+        DebugDrawer.drawShapes()
 
+        pygame.display.update()
 
 if __name__ == '__main__':
     print("Hello stupid, you are executing the wrong file! Run PacMaster/runner.py instead.")
