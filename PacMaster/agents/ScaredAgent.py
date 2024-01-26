@@ -1,7 +1,7 @@
 import pygame
 
 from PacMaster.agents.Iagent import IAgent
-from PacMaster.utils.debugDrawer import DebugDrawer
+from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.map import MapNode
 from PacMaster.utils.observation import Observation
 from Pacman_Complete.constants import *
@@ -17,22 +17,18 @@ class ScaredAgent(IAgent):
         self.takeStats(obs)
 
         pacmanPosition = obs.getPacmanPosition()
+        mapPos = obs.map.createMapPosition(pacmanPosition)
 
         # if we are on a node, we can calculate the best direction to go
-        onMapNode = obs.map.getOnNode(pacmanPosition)
-        if onMapNode is not None:
+        if not mapPos.isBetweenMapNodes:
             return self.__getLeastDangerousDirectionFromNode__(obs, obs.map.getClosestMapNode(pacmanPosition))
 
         # else calculate which of the two directions is the least dangerous
-        mapNode1, mapNode2, isXAxis = obs.map.getBetweenMapNodes(pacmanPosition)
-        if mapNode1 is None:
-            raise Exception("No map node pair found around pacman")
-
-        ghostBetweenMapNodes = obs.getGhostBetweenMapNodes(mapNode1, mapNode2)
+        ghostBetweenMapNodes = obs.getGhostBetweenMapNodes(mapPos.mapNode1, mapPos.mapNode2)
         if ghostBetweenMapNodes is not None:
-            return self.__fleeFromGhost__(obs, ghostBetweenMapNodes, isXAxis)
+            return self.__fleeFromGhost__(obs, ghostBetweenMapNodes, mapPos.isXAxis)
         else:
-            return self.__getLeastDangerousDirection__(obs, mapNode1, mapNode2, isXAxis)
+            return self.__getLeastDangerousDirection__(obs, mapPos.mapNode1, mapPos.mapNode2, mapPos.isXAxis)
 
     def __getDirection__(self, obs: Observation, mapNode: MapNode, isXAxis: bool) -> int:
         if isXAxis:
@@ -60,7 +56,7 @@ class ScaredAgent(IAgent):
     def __getLeastDangerousDirectionFromNode__(self, obs: Observation, onMapNode: MapNode) -> int:
         minNeighbor = None
         minDangerLevel = 99999
-        for neighbor in onMapNode.neighbors:
+        for neighbor in onMapNode.neighborContainers:
             ghostBetween = obs.getGhostBetweenMapNodes(onMapNode, neighbor.mapNode)
             if ghostBetween is not None:
                 continue

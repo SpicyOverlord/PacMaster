@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from typing import Optional
 
-from PacMaster.utils.map import Map, MapNode
+from PacMaster.utils.map import Map, MapNode, MapPosition
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Blinky, Ghost, Pinky, Inky, Clyde
 from Pacman_Complete.vector import Vector2
@@ -11,11 +11,11 @@ from PacMaster.utils.utils import manhattanDistance, roundVector
 
 
 class Observation(object):
-    def __init__(self, game):
-        self.ghostGroup = game.ghosts
-        self.pelletGroup = game.pellets
-        self.pacman = game.pacman
-        self.map = Map(game.nodes)
+    def __init__(self, gameController):
+        self.ghostGroup = gameController.ghosts
+        self.pelletGroup = gameController.pellets
+        self.pacman = gameController.pacman
+        self.map = Map(self, gameController.nodes, self.getGhosts())
 
     # ------------------ Pacman Functions ------------------
     def getPacmanPosition(self) -> Vector2:
@@ -79,15 +79,23 @@ class Observation(object):
     def getGhostPositions(self) -> list[Vector2]:
         return [roundVector(ghost.position) for ghost in self.getGhosts()]
 
-    def getClosestGhostPosition(self, vector: Vector2 = None) -> Vector2:
+    def getClosestGhost(self, vector: Vector2 = None) -> Ghost:
         if vector is None:
             vector = self.getPacmanPosition()
 
-        return min(self.getGhostPositions(), key=lambda ghost: manhattanDistance(ghost, vector),
-                   default=None)
+        # return the closest ghost to the given vector
+        closestGhost = None
+        closestGhostDistance = 9999999
+        for ghost in self.getGhosts():
+            distance = self.map.calculateDistance(ghost.position, vector, True, ghost.direction)
+            if distance < closestGhostDistance:
+                closestGhost = ghost
+                closestGhostDistance = distance
+
+        return closestGhost
 
     def getGhosts(self) -> list[Ghost]:
-        return [self.ghostGroup.blinky, self.ghostGroup.pinky, self.ghostGroup.inky, self.ghostGroup.clyde]
+        return [self.getBlinky(), self.getPinky(), self.getInky(), self.getClyde()]
 
     def getGhost(self, ghost: int) -> Ghost:
         if ghost == BLINKY:
@@ -100,6 +108,7 @@ class Observation(object):
             return self.getClyde()
         else:
             raise Exception(f"Unknown ghost: {ghost}")
+
     def getBlinky(self) -> Blinky:
         return self.ghostGroup.blinky
 
@@ -117,33 +126,49 @@ class Observation(object):
         if vector is None:
             vector = self.getPacmanPosition()
 
-        dangerLevel = 0.0
+        wayTooCloseThreshold = TILEWIDTH * 3  # Threshold distance for a ghost to be considered 'close'
+        tooCloseThreshold = TILEWIDTH * 5  # Threshold distance for a ghost to be considered 'close'
+        tooFarAwayThreshold = TILESIZE * 17  # Threshold distance for a ghost to be considered 'too far away'
+        dangerZoneMultiplier = 3  # Multiplier for danger level if vector is in danger zone
+        ghostInDangerZoneMultiplier = 10  # Multiplier for danger level if ghost is in danger zone
+
         minDistance = 9999999
         totalDistance = 0.0
         numberOfCloseGhosts = 0
-        dangerThreshold = 50  # Threshold distance for a ghost to be considered 'close'
+        numberOfReallyCloseGhosts = 0
 
         for ghost in self.getGhosts():
             # ignore ghost if it is in freight mode
             if ghost.mode.current in (FREIGHT, SPAWN):
                 continue
 
-            _, distance = self.map.getShortestPath(vector, roundVector(ghost.position))
-            # distance = manhattenDistance(vector, roundVector(ghost.position))
+            distance = self.map.calculateDistance(vector, roundVector(ghost.position))
+
+            # ignore ghost if it is too far away
+            if distance > tooFarAwayThreshold:
+                continue
 
             totalDistance += distance
             minDistance = min(minDistance, distance)
 
-            if distance < dangerThreshold:
+            if distance < wayTooCloseThreshold:
+                numberOfReallyCloseGhosts += 1
+            elif distance < tooCloseThreshold:
                 numberOfCloseGhosts += 1
 
         # Adjust danger level based on the closest ghost
         closestGhostValue = (1 / (minDistance + 1)) * 50000  # Adding 1 to avoid division by zero
-
         # Further adjust based on the number of close ghosts
         closeGhostValue = numberOfCloseGhosts * 200  # Weight for each close ghost
-
+        closeGhostValue += numberOfReallyCloseGhosts * 500
+        # Calculate danger level
         dangerLevel = closestGhostValue + closeGhostValue
+
+        mapPos = MapPosition(self.map, vector)
+        if mapPos.isInDangerZone:
+            dangerLevel *= dangerZoneMultiplier
+            if mapPos.dangerZone.isGhostInDangerZone:
+                dangerLevel *= ghostInDangerZoneMultiplier
 
         # Normalize based on total distance to avoid high values in less dangerous situations
         normalizedDanger = dangerLevel / (totalDistance + 1)

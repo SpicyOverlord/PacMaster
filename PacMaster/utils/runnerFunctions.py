@@ -17,13 +17,13 @@ def runGameWithHuman(gameSpeed=1, startLives=3) -> int:
             return game.score
 
 
-def runGameWithAgent(agentType: type[IAgent], gameSpeed=3, startLives=3,
-                     startLevel: int = 0, ghostsEnabled: bool = True) -> GameStats:
+def runGameWithAgent(agentType: type[IAgent], gameSpeed=3, startLives=3, startLevel: int = 0,
+                     ghostsEnabled: bool = True, freightEnabled: bool = True) -> GameStats:
     if gameSpeed < 0.1 or 10 < gameSpeed:
         raise ValueError(f"gameSpeed ({gameSpeed}) must be between 0.1 and 10 (inclusive). Otherwise the game breaks.")
 
     game = GameController(gameSpeed=gameSpeed, startLives=startLives, isHumanPlayer=False,
-                          startLevel=startLevel, ghostsEnabled=ghostsEnabled)
+                          startLevel=startLevel, ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled)
     agent = agentType(gameController=game)
     game.startGame(agent=agent)
     while True:
@@ -33,14 +33,15 @@ def runGameWithAgent(agentType: type[IAgent], gameSpeed=3, startLives=3,
 
 
 def calculatePerformanceOverXGames(agentClass: type[IAgent], gameCount: int, gameSpeed=5,
-                                   startLevel: int = 0, ghostsEnabled: bool = True, logging=False):
+                                   startLevel: int = 0, ghostsEnabled: bool = True, freightEnabled: bool = True,
+                                   logging=False):
     gameStats = []
     for i in range(gameCount):
         if logging:
             print(f"Running game {i + 1}...")
 
-        gameStats.append(runGameWithAgent(agentClass, gameSpeed=gameSpeed, startLives=1,
-                                          startLevel=startLevel, ghostsEnabled=ghostsEnabled))
+        gameStats.append(runGameWithAgent(agentClass, gameSpeed=gameSpeed, startLives=1, startLevel=startLevel,
+                                          ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled))
 
         if logging:
             print(f"Game {i + 1} result: {gameStats[i]}")

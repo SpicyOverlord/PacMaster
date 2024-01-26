@@ -19,14 +19,15 @@ def distanceSquared(a: Vector2, b: Vector2) -> int:
 
 
 def getOppositeDirection(direction: int) -> int:
-    if direction == UP:
-        return DOWN
-    elif direction == DOWN:
-        return UP
-    elif direction == LEFT:
-        return RIGHT
-    elif direction == RIGHT:
-        return LEFT
+    return direction * -1
+    # if direction == UP:
+    #     return DOWN
+    # elif direction == DOWN:
+    #     return UP
+    # elif direction == LEFT:
+    #     return RIGHT
+    # elif direction == RIGHT:
+    #     return LEFT
 
 
 def directionToString(direction: int):
@@ -40,3 +41,9 @@ def directionToString(direction: int):
         return "RIGHT"
 
     raise Exception(f"Direction '{direction}' not recognized")
+
+
+def isPortalPath(startVector: Vector2, endVector: Vector2) -> bool:
+    # real distance is TILESIZE * 26, but we want to be safe
+    portalDistance = TILESIZE * 24
+    return abs(startVector.x - endVector.x) > portalDistance and startVector.y == endVector.y

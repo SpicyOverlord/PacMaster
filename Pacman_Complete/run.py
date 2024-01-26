@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 
-from PacMaster.utils.debugDrawer import DebugDrawer
+from PacMaster.utils.debugHelper import DebugHelper
 from Pacman_Complete.constants import *
 from Pacman_Complete.pacman import Pacman
 from Pacman_Complete.nodes import NodeGroup
@@ -17,16 +17,17 @@ from PacMaster.agents.Iagent import IAgent
 
 class GameController(object):
     def __init__(self, gameSpeed: int, startLives: int, isHumanPlayer: bool = False,
-                 startLevel: int = 0, ghostsEnabled: bool = True):
+                 startLevel: int = 0, ghostsEnabled: bool = True, freightEnabled: bool = True):
         pygame.init()
 
         self.gameSpeed = gameSpeed
         self.isHumanPlayer = isHumanPlayer
         self.gameOver = False
         self.ghostsEnabled = ghostsEnabled
+        self.freightEnabled = freightEnabled
 
         self.screen = pygame.display.set_mode(SCREENSIZE, 0, 32)
-        DebugDrawer.setScreen(self.screen)
+        DebugHelper.setScreen(self.screen)
 
         self.background = None
         self.background_norm = None
@@ -119,6 +120,14 @@ class GameController(object):
         if afterPauseMethod is not None:
             afterPauseMethod()
         self.checkEvents()
+
+        # don't draw over the game if paused
+        if self.pause.paused:
+            return
+        if DebugHelper.shouldPause:
+            DebugHelper.shouldPause = False
+            self.pause.setPause()
+
         self.render()
 
     def checkEvents(self):
@@ -135,6 +144,11 @@ class GameController(object):
                         elif self.isHumanPlayer:
                             self.textgroup.showText(PAUSETXT)
                             # self.hideEntities()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # 1 is the left mouse button
+                    # Get the mouse position
+                    pos = pygame.mouse.get_pos()
+                    print(f"Mouse clicked at {pos}")
 
     def checkPelletEvents(self):
         pellet = self.pacman.eatPellets(self.pellets.pelletList)
@@ -147,7 +161,8 @@ class GameController(object):
                 self.ghosts.clyde.startNode.allowAccess(LEFT, self.ghosts.clyde)
             self.pellets.pelletList.remove(pellet)
             if pellet.name == POWERPELLET:
-                self.ghosts.startFreight()
+                if freightEnabled:
+                    self.ghosts.startFreight()
             if self.pellets.isEmpty():
                 self.flashBG = True
                 self.hideEntities()
@@ -233,7 +248,7 @@ class GameController(object):
     def render(self):
         self.screen.blit(self.background, (0, 0))
 
-        self.nodes.render(self.screen)
+        # self.nodes.render(self.screen)
 
         self.pellets.render(self.screen)
         if self.fruit is not None:
@@ -252,7 +267,7 @@ class GameController(object):
             y = SCREENHEIGHT - self.fruitCaptured[i].get_height()
             self.screen.blit(self.fruitCaptured[i], (x, y))
 
-        DebugDrawer.drawShapes()
+        DebugHelper.drawShapes()
 
         pygame.display.update()
 
