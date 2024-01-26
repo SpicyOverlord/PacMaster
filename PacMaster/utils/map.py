@@ -13,7 +13,7 @@ class MapNode(object):
     def __init__(self, node: Node):
         self.node = node
 
-        self.position = node.position
+        self.position = roundVector(node.position)
         self.x = self.position.x
         self.y = self.position.y
 
@@ -43,19 +43,26 @@ class MapNode(object):
     def __hash__(self):
         return int(self.x * 10000 + self.y)
 
-    def addNeighbor(self, node: 'MapNode', direction: int, distance: int):
-        neighbor = NeighborContainer(node, direction, distance)
+    def addNeighbor(self, mapNode: 'MapNode', direction: int, distance: int):
+        neighbor = NeighborContainer(mapNode, direction, distance)
         self.neighborContainers.append(neighbor)
 
-    def hasNeighbor(self, node: 'MapNode') -> bool:
-        return node in [neighbor.mapNode for neighbor in self.neighborContainers]
+    def hasNeighbor(self, mapNode: 'MapNode') -> bool:
+        return mapNode in [neighbor.mapNode for neighbor in self.neighborContainers]
 
-    # def getNeighborByDirection(self, direction: int) -> 'Neighbor' | None:
-    #     for neighbor in self.neighbors:
-    #         if neighbor.direction == direction:
-    #             return neighbor
-    #
-    #     return None
+    def getNeighbor(self, mapNode: 'MapNode') -> NeighborContainer | None:
+        for neighborContainer in self.neighborContainers:
+            if neighborContainer.mapNode == mapNode:
+                return neighborContainer
+
+        return None
+
+    def getNeighborInDirection(self, direction: int) -> NeighborContainer | None:
+        for neighborContainer in self.neighborContainers:
+            if neighborContainer.direction == direction:
+                return neighborContainer
+
+        return None
 
 
 class NeighborContainer(object):
@@ -175,7 +182,7 @@ class MapPosition(object):
     def __init__(self, map: Map, vector: Vector2):
         self.position = vector
 
-        self.mapNode1 = map.getOnNode(vector)
+        self.mapNode1 = map.getMapNode(vector)
         if self.mapNode1 is None:
             self.mapNode1, self.mapNode2, self.isXAxis = map.getBetweenMapNodes(vector)
             self.isBetweenMapNodes = True
@@ -213,7 +220,7 @@ class Map(object):
                 if neighborNode is None:
                     continue
 
-                neighborMapNode = self.getOnNode(neighborNode.position)
+                neighborMapNode = self.getMapNode(neighborNode.position)
                 if neighborMapNode is None:
                     raise Exception("No node found for neighbor at position: " + str(neighborNode.position))
 
@@ -244,23 +251,23 @@ class Map(object):
 
         return min(self.mapNodes, key=lambda node: distanceSquared(node.position, vector), default=None)
 
-    def getOnNode(self, vector: Vector2) -> MapNode | None:
-        closestMapNode = self.getClosestMapNode(vector)
-        closestMapNodeDistance = manhattanDistance(vector, closestMapNode.position)
+    # def getOnNode(self, vector: Vector2) -> MapNode | None:
+    #     closestMapNode = self.getClosestMapNode(vector)
+    #     closestMapNodeDistance = manhattanDistance(vector, closestMapNode.position)
+    #
+    #     if closestMapNodeDistance <= 4:
+    #         return closestMapNode
+    #
+    #     return None
 
-        if closestMapNodeDistance <= 4:
-            return closestMapNode
-
-        return None
-
-    def getBetweenMapNodes(self, vector: Vector2) -> tuple[MapNode, MapNode, bool]:
+    def getBetweenMapNodes(self, vector: Vector2) -> tuple[MapNode, MapNode, bool] | tuple[None, None, bool]:
         for mapNode in self.mapNodes:
             if mapNode.position.x == vector.x or mapNode.position.y == vector.y:
                 for neighbor in mapNode.neighborContainers:
                     if self.isBetweenMapNodes(mapNode, vector, neighbor.mapNode):
                         return mapNode, neighbor.mapNode, mapNode.position.y == vector.y
 
-        raise Exception("No map node pair found around vector: " + str(vector))
+        return None, None, False
 
     def isBetweenMapNodes(self, mapNode1: MapNode, betweenVector: Vector2, mapNode2: MapNode) -> bool:
         # skip if it is a portal
@@ -276,39 +283,58 @@ class Map(object):
 
         return False
 
-    def __getOrCreateCustomMapNodeOnVector__(self, vector: Vector2) -> (MapNode, bool):
-        mapNode = self.getOnNode(vector)
+    def __getOrCreateCustomMapNodeOnVector__(self, vector: Vector2,
+                                             isGhost: bool = False, ghostDirection: int = STOP) -> (MapNode, bool):
+        vector = roundVector(vector)
 
-        if mapNode is None:
-            mapNode = MapNode(Node(vector.x, vector.y))
-            startMapNodeA, startMapNodeB, isXAxis = self.getBetweenMapNodes(vector)
+        mapNode = self.getMapNode(vector)
+
+        if isGhost and mapNode is not None:
+            ghostDidntComeFromDirection = mapNode.getNeighborInDirection(getOppositeDirection(ghostDirection)) is None
+        else:
+            ghostDidntComeFromDirection = False
+
+        if mapNode is None or (isGhost and mapNode is not None and ghostDidntComeFromDirection):
+            customMapNode = MapNode(Node(vector.x, vector.y))
+
+            if isGhost and ghostDidntComeFromDirection:
+                neighborContainer = mapNode.getNeighborInDirection(ghostDirection)
+                if mapNode.x == neighborContainer.mapNode.x and mapNode.y < neighborContainer.mapNode.y or \
+                        mapNode.y == neighborContainer.mapNode.y and mapNode.x < neighborContainer.mapNode.x:
+                    startMapNodeA = mapNode
+                    startMapNodeB = neighborContainer.mapNode
+                else:
+                    startMapNodeA = neighborContainer.mapNode
+                    startMapNodeB = mapNode
+
+                isXAxis = startMapNodeA.position.y == startMapNodeB.position.y
+            else:
+                startMapNodeA, startMapNodeB, isXAxis = self.getBetweenMapNodes(vector)
 
             if startMapNodeA is not None:
                 if isXAxis:
-                    mapNode.addNeighbor(startMapNodeA, LEFT,
-                                        manhattanDistance(mapNode.position, startMapNodeA.position))
-                    mapNode.addNeighbor(startMapNodeB, RIGHT,
-                                        manhattanDistance(mapNode.position, startMapNodeB.position))
+                    customMapNode.addNeighbor(startMapNodeA, LEFT,
+                                              manhattanDistance(customMapNode.position, startMapNodeA.position))
+                    customMapNode.addNeighbor(startMapNodeB, RIGHT,
+                                              manhattanDistance(customMapNode.position, startMapNodeB.position))
                 else:
-                    mapNode.addNeighbor(startMapNodeA, UP, manhattanDistance(mapNode.position, startMapNodeA.position))
-                    mapNode.addNeighbor(startMapNodeB, DOWN,
-                                        manhattanDistance(mapNode.position, startMapNodeB.position))
+                    customMapNode.addNeighbor(startMapNodeA, UP,
+                                              manhattanDistance(customMapNode.position, startMapNodeA.position))
+                    customMapNode.addNeighbor(customMapNode, DOWN,
+                                              manhattanDistance(customMapNode.position, startMapNodeB.position))
             else:
-                mapNode = self.getClosestMapNode(vector, snapToGrid=False)
+                customMapNode = self.getClosestMapNode(vector, snapToGrid=False)
+            return customMapNode, True
         else:
             return mapNode, False
-        return mapNode, True
 
     def calculateShortestPath(self, startVector: Vector2, endVector: Vector2,
                               isGhost: bool = False, ghostDirection: int = STOP) -> (list[Vector2], int) | (None, None):
-        # # TODO: maybe this is a bad idea?
-        # startVector = roundVector(startVector)
-        # endVector = roundVector(endVector)
 
         if isGhost and ghostDirection == STOP:
             raise Exception("Ghost direction cannot be STOP (the default value)")
 
-        startMapNode, startIsCustom = self.__getOrCreateCustomMapNodeOnVector__(startVector)
+        startMapNode, startIsCustom = self.__getOrCreateCustomMapNodeOnVector__(startVector, isGhost, ghostDirection)
 
         # fix bug when target is at the corners of the map, when the ghosts are in SCATTER mode
         if isGhost and (endVector.x == 0 and endVector.y == 0 or
@@ -344,19 +370,19 @@ class Map(object):
             # get opposite direction if isGhost, as ghosts cannot turn around 180 degrees
             if isGhost:
                 oppositeDirection = getOppositeDirection(fromDirections[currentNode])
-
             # Explore neighbors
-            for neighbor in currentNode.neighborContainers:
-                if isGhost and neighbor.direction == oppositeDirection:
+            for neighborContainer in currentNode.neighborContainers:
+                # skip if isGhost and neighbor is in opposite direction (ghosts can't 180)
+                if isGhost and neighborContainer.direction == oppositeDirection:
                     continue
 
-                distance = currentDistance + neighbor.distance
-                if neighbor.mapNode not in distances or distance < distances[neighbor.mapNode]:
-                    previousNodes[neighbor.mapNode] = currentNode
-                    distances[neighbor.mapNode] = distance
-                    fromDirections[neighbor.mapNode] = neighbor.direction
+                distance = currentDistance + neighborContainer.distance
+                if neighborContainer.mapNode not in distances or distance < distances[neighborContainer.mapNode]:
+                    previousNodes[neighborContainer.mapNode] = currentNode
+                    distances[neighborContainer.mapNode] = distance
+                    fromDirections[neighborContainer.mapNode] = neighborContainer.direction
 
-                    heapq.heappush(priorityQueue, (distance, neighbor.mapNode))
+                    heapq.heappush(priorityQueue, (distance, neighborContainer.mapNode))
 
             # is currentMapNode is next to endMapNode, add EndMapNode to PriorityQueue
             # only if end is custom, as then it is not a neighbor to any of the standard nodes
@@ -365,11 +391,15 @@ class Map(object):
                 if endMapNode not in distances or distance < distances[endMapNode]:
                     distances[endMapNode] = distance
                     previousNodes[endMapNode] = currentNode
+                    fromDirections[endMapNode] = getOppositeDirection(endMapNode.getNeighbor(currentNode).direction)
 
                     heapq.heappush(priorityQueue, (distance, endMapNode))
 
         if endMapNode not in previousNodes.keys():
-            print("Warning: current not in previousNodes.keys()")
+            return [], 0
+            # raise Exception("No path found between:" +
+            #                 " startVector: " + str(startVector) + " startNode: " + str(startMapNode) +
+            #                 " endVector: " + str(endVector) + " endNode: " + str(endMapNode))
 
         # Reconstruct the shortest path
         path = []

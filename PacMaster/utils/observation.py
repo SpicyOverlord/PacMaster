@@ -127,10 +127,10 @@ class Observation(object):
             vector = self.getPacmanPosition()
 
         wayTooCloseThreshold = TILEWIDTH * 3  # Threshold distance for a ghost to be considered 'close'
-        tooCloseThreshold = TILEWIDTH * 5  # Threshold distance for a ghost to be considered 'close'
+        tooCloseThreshold = TILEWIDTH * 7  # Threshold distance for a ghost to be considered 'close'
         tooFarAwayThreshold = TILESIZE * 17  # Threshold distance for a ghost to be considered 'too far away'
-        dangerZoneMultiplier = 3  # Multiplier for danger level if vector is in danger zone
-        ghostInDangerZoneMultiplier = 10  # Multiplier for danger level if ghost is in danger zone
+        dangerZoneMultiplier = 1  # Multiplier for danger level if vector is in danger zone
+        ghostInDangerZoneMultiplier = 1  # Multiplier for danger level if ghost is in danger zone
 
         minDistance = 9999999
         totalDistance = 0.0
@@ -138,12 +138,20 @@ class Observation(object):
         numberOfReallyCloseGhosts = 0
 
         for ghost in self.getGhosts():
+            # TODO remove this later
+            if ghost.name != BLINKY:
+                continue
+
             # ignore ghost if it is in freight mode
             if ghost.mode.current in (FREIGHT, SPAWN):
                 continue
 
-            distance = self.map.calculateDistance(vector, roundVector(ghost.position))
+            path, distance = self.map.calculateShortestPath(startVector=ghost.position, endVector=vector,
+                                                            isGhost=True, ghostDirection=ghost.direction)
 
+            # ignore ghost if it can't reach position (this only happens if it is in the start area)
+            if len(path) == 0:
+                continue
             # ignore ghost if it is too far away
             if distance > tooFarAwayThreshold:
                 continue

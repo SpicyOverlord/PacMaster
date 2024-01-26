@@ -18,12 +18,17 @@ class UntrappableAgent(IAgent):
         obs = Observation(self.gameController)
         self.takeStats(obs)
 
-        self.drawGhostPaths(obs)
+        DebugHelper.drawMap(obs)
+        DebugHelper.drawDangerLevels(obs)
+
+        # DebugHelper.drawGhostPaths(obs)
+        # DebugHelper.pauseGame()
 
         pacmanPosition = obs.getPacmanPosition()
         mapPos = obs.map.createMapPosition(pacmanPosition)
 
-        DebugHelper.drawDashedPath(self.last, DebugHelper.GREEN)
+        if len(self.last) > 0:
+            DebugHelper.drawDashedPath(self.last, DebugHelper.GREEN)
         if mapPos.isInDangerZone:
             DebugHelper.drawDangerZone(mapPos.dangerZone)
 
