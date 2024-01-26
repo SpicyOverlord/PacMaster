@@ -13,7 +13,7 @@ class MapNode(object):
     def __init__(self, node: Node):
         self.node = node
 
-        self.position = roundVector(node.position)
+        self.position = node.position
         self.x = self.position.x
         self.y = self.position.y
 
@@ -301,9 +301,9 @@ class Map(object):
 
     def calculateShortestPath(self, startVector: Vector2, endVector: Vector2,
                               isGhost: bool = False, ghostDirection: int = STOP) -> (list[Vector2], int) | (None, None):
-        # TODO: maybe this is a bad idea?
-        startVector = roundVector(startVector)
-        endVector = roundVector(endVector)
+        # # TODO: maybe this is a bad idea?
+        # startVector = roundVector(startVector)
+        # endVector = roundVector(endVector)
 
         if isGhost and ghostDirection == STOP:
             raise Exception("Ghost direction cannot be STOP (the default value)")
