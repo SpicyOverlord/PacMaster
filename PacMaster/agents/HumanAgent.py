@@ -5,6 +5,7 @@ from PacMaster.agents.Iagent import IAgent
 from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.observation import Observation
 from Pacman_Complete.constants import *
+from Pacman_Complete.vector import Vector2
 
 
 class HumanAgent(IAgent):
@@ -16,13 +17,13 @@ class HumanAgent(IAgent):
         self.takeStats(obs)
 
         # TEST
-        # if self.actionsTaken % 10 == 0:
-        #     print(obs.getPacmanPosition())
+        DebugHelper.drawMap(obs)
+        DebugHelper.drawDangerLevels(obs)
 
-        # DebugHelper.drawMap(obs.map)
-        mapPos = obs.map.createMapPosition(obs.getPacmanPosition())
-        if mapPos.isInDangerZone:
-            DebugHelper.drawDangerZone(mapPos.dangerZone)
+
+        # mapPos = obs.map.createMapPosition(obs.getPacmanPosition())
+        # if mapPos.isInDangerZone:
+        #     DebugHelper.drawDangerZone(mapPos.dangerZone)
         # DebugHelper.drawDot(mapPos.mapNode1.position, DebugHelper.YELLOW, 5)
         # if mapPos.isBetweenMapNodes:
         #     DebugHelper.drawDot(mapPos.mapNode2.position, DebugHelper.YELLOW, 5)

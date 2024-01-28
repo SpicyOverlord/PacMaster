@@ -127,17 +127,21 @@ class DebugHelper(object):
                 DebugHelper.drawLine(mapNode.position, neighbor.mapNode.position, DebugHelper.WHITE, 2)
 
     @staticmethod
+    def drawDangerLevel(obs: Observation, vector: Vector2):
+        dangerLevel = obs.calculateDangerLevel(vector)
+        if dangerLevel < 1:
+            dangerLevel = 1
+            DebugHelper.drawDot(vector, DebugHelper.WHITE, dangerLevel)
+        elif dangerLevel > 10:
+            dangerLevel = 10
+            DebugHelper.drawDot(vector, DebugHelper.RED, dangerLevel)
+        else:
+            DebugHelper.drawDot(vector, DebugHelper.YELLOW, dangerLevel)
+
+    @staticmethod
     def drawDangerLevels(obs: Observation):
         for mapNode in obs.map.mapNodes:
-            dangerLevel = obs.calculateDangerLevel(mapNode.position)
-            if dangerLevel < 1:
-                dangerLevel = 1
-                DebugHelper.drawDot(mapNode.position, DebugHelper.WHITE, dangerLevel)
-            elif dangerLevel > 10:
-                dangerLevel = 10
-                DebugHelper.drawDot(mapNode.position, DebugHelper.RED, dangerLevel)
-            else:
-                DebugHelper.drawDot(mapNode.position, DebugHelper.YELLOW, dangerLevel)
+            DebugHelper.drawDangerLevel(obs, mapNode.position)
 
     @staticmethod
     def __drawDashedLine__(startVector: Vector2, endVector: Vector2,

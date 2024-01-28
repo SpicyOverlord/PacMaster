@@ -2,7 +2,8 @@ from __future__ import annotations
 import heapq
 from typing import List
 
-from PacMaster.utils.utils import manhattanDistance, distanceSquared, isPortalPath, getOppositeDirection, roundVector
+from PacMaster.utils.utils import manhattanDistance, distanceSquared, isPortalPath, getOppositeDirection, roundVector, \
+    directionToString
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Ghost
 from Pacman_Complete.nodes import NodeGroup, Node
@@ -284,30 +285,33 @@ class Map(object):
         return False
 
     def __getOrCreateCustomMapNodeOnVector__(self, vector: Vector2,
-                                             isGhost: bool = False, ghostDirection: int = STOP) -> (MapNode, bool):
-        vector = roundVector(vector)
+                                             ghost: Ghost = None) -> (MapNode, bool):
+        isGhost = ghost is not None
 
+        vector = roundVector(vector)
         mapNode = self.getMapNode(vector)
 
-        if isGhost and mapNode is not None:
-            ghostDidntComeFromDirection = mapNode.getNeighborInDirection(getOppositeDirection(ghostDirection)) is None
-        else:
-            ghostDidntComeFromDirection = False
+        customMapNodeForGhostIsNeeded = isGhost and mapNode is not None and ghost.target.position != mapNode.position
 
-        if mapNode is None or (isGhost and mapNode is not None and ghostDidntComeFromDirection):
+        # create custom MapNode
+        if mapNode is None or customMapNodeForGhostIsNeeded:
             customMapNode = MapNode(Node(vector.x, vector.y))
 
-            if isGhost and ghostDidntComeFromDirection:
-                neighborContainer = mapNode.getNeighborInDirection(ghostDirection)
-                if mapNode.x == neighborContainer.mapNode.x and mapNode.y < neighborContainer.mapNode.y or \
-                        mapNode.y == neighborContainer.mapNode.y and mapNode.x < neighborContainer.mapNode.x:
-                    startMapNodeA = mapNode
-                    startMapNodeB = neighborContainer.mapNode
-                else:
-                    startMapNodeA = neighborContainer.mapNode
-                    startMapNodeB = mapNode
+            if customMapNodeForGhostIsNeeded:
+                neighborContainer = mapNode.getNeighborInDirection(ghost.direction)
+                customMapNode.addNeighbor(neighborContainer.mapNode, ghost.direction,
+                                          manhattanDistance(customMapNode.position, neighborContainer.mapNode.position))
 
-                isXAxis = startMapNodeA.position.y == startMapNodeB.position.y
+                return customMapNode, True
+                # if mapNode.x == neighborContainer.mapNode.x and mapNode.y < neighborContainer.mapNode.y or \
+                #         mapNode.y == neighborContainer.mapNode.y and mapNode.x < neighborContainer.mapNode.x:
+                #     startMapNodeA = mapNode
+                #     startMapNodeB = neighborContainer.mapNode
+                # else:
+                #     startMapNodeA = neighborContainer.mapNode
+                #     startMapNodeB = mapNode
+                #
+                # isXAxis = startMapNodeA.position.y == startMapNodeB.position.y
             else:
                 startMapNodeA, startMapNodeB, isXAxis = self.getBetweenMapNodes(vector)
 
@@ -320,7 +324,7 @@ class Map(object):
                 else:
                     customMapNode.addNeighbor(startMapNodeA, UP,
                                               manhattanDistance(customMapNode.position, startMapNodeA.position))
-                    customMapNode.addNeighbor(customMapNode, DOWN,
+                    customMapNode.addNeighbor(startMapNodeB, DOWN,
                                               manhattanDistance(customMapNode.position, startMapNodeB.position))
             else:
                 customMapNode = self.getClosestMapNode(vector, snapToGrid=False)
@@ -329,12 +333,12 @@ class Map(object):
             return mapNode, False
 
     def calculateShortestPath(self, startVector: Vector2, endVector: Vector2,
-                              isGhost: bool = False, ghostDirection: int = STOP) -> (list[Vector2], int) | (None, None):
+                              ghost: Ghost = None) -> (list[Vector2], int) | (None, None):
+        isGhost = ghost is not None
 
-        if isGhost and ghostDirection == STOP:
-            raise Exception("Ghost direction cannot be STOP (the default value)")
-
-        startMapNode, startIsCustom = self.__getOrCreateCustomMapNodeOnVector__(startVector, isGhost, ghostDirection)
+        startMapNode, startIsCustom = self.__getOrCreateCustomMapNodeOnVector__(startVector, ghost)
+        # if isGhost and len(startMapNode.neighborContainers) == 1:
+        #     print("adeojiiwoajdojiwad")
 
         # fix bug when target is at the corners of the map, when the ghosts are in SCATTER mode
         if isGhost and (endVector.x == 0 and endVector.y == 0 or
@@ -358,7 +362,9 @@ class Map(object):
         # Dictionary to store the shortest path leading to a node
         previousNodes = {startMapNode: None}
         # Dictionary to store the direction from which a node was reached
-        fromDirections = {startMapNode: ghostDirection}
+        fromDirections = {}
+        if isGhost:
+            fromDirections[startMapNode] = ghost.direction
 
         while priorityQueue:
             currentDistance, currentNode = heapq.heappop(priorityQueue)
@@ -370,6 +376,7 @@ class Map(object):
             # get opposite direction if isGhost, as ghosts cannot turn around 180 degrees
             if isGhost:
                 oppositeDirection = getOppositeDirection(fromDirections[currentNode])
+
             # Explore neighbors
             for neighborContainer in currentNode.neighborContainers:
                 # skip if isGhost and neighbor is in opposite direction (ghosts can't 180)
@@ -418,11 +425,10 @@ class Map(object):
         if ghost.overshotTarget():
             ghostPosition = ghost.target.position
 
-        return self.calculateShortestPath(ghostPosition, endVector)
+        return self.calculateShortestPath(ghostPosition, endVector, ghost)
 
-    def calculateDistance(self, startVector: Vector2, endVector: Vector2,
-                          isGhost: bool = False, ghostDirection: int = STOP) -> int:
-        return self.calculateShortestPath(startVector, endVector, isGhost, ghostDirection)[1]
+    def calculateDistance(self, startVector: Vector2, endVector: Vector2, ghost: Ghost = None) -> int:
+        return self.calculateShortestPath(startVector, endVector, ghost)[1]
 
     def createMapPosition(self, vector: Vector2) -> MapPosition:
         return MapPosition(self, vector)

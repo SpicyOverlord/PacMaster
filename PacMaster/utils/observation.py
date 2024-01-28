@@ -87,7 +87,7 @@ class Observation(object):
         closestGhost = None
         closestGhostDistance = 9999999
         for ghost in self.getGhosts():
-            distance = self.map.calculateDistance(ghost.position, vector, True, ghost.direction)
+            distance = self.map.calculateDistance(ghost.position, vector, ghost)
             if distance < closestGhostDistance:
                 closestGhost = ghost
                 closestGhostDistance = distance
@@ -138,18 +138,13 @@ class Observation(object):
         numberOfReallyCloseGhosts = 0
 
         for ghost in self.getGhosts():
-            # TODO remove this later
-            if ghost.name != BLINKY:
-                continue
-
-            # ignore ghost if it is in freight mode
+            # ignore ghost if it is not dangerous
             if ghost.mode.current in (FREIGHT, SPAWN):
                 continue
 
-            path, distance = self.map.calculateShortestPath(startVector=ghost.position, endVector=vector,
-                                                            isGhost=True, ghostDirection=ghost.direction)
+            path, distance = self.map.calculateShortestPath(startVector=ghost.position, endVector=vector, ghost=ghost)
 
-            # ignore ghost if it can't reach position (this only happens if it is in the start area)
+            # ignore ghost if it can't reach position (this normally only happens if the ghost is in the start area)
             if len(path) == 0:
                 continue
             # ignore ghost if it is too far away
