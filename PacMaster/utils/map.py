@@ -80,20 +80,31 @@ class DangerZone(object):
         self.edgeMapNodes = self.__collectEdgeMapNodes()
         self.mapNodes = self.__straightenMapNodes__()
 
-        self.isDangerous = self.__isDangerous__(map)
+        self.isDangerous, self.dangerousEdgeIndex = self.__isDangerous__(map)
 
-        # calculate danger levels of edgeMapNodes and find edgeMapNode with the lowest danger level
-        lowestDangerLevel = 99999
-        self.escapeEdgeMapNode = None
-        self.edgeMapNodeDangerLevels = []
+        # if dangerous, find the safer edgeMapNode
+        # self.escapeEdgeMapNode = None
+        # if self.isDangerous:
+        #     for i in range(len(self.edgeMapNodes)):
+        #         if i == self.dangerousEdgeIndex:
+        #             continue
+        #
+        #         self.escapeEdgeMapNode = self.edgeMapNodes[i]
+        #         break
+
+        self.ghostInDangerZone = self.__isGhostInDangerZone__(map)
+
+    def vectorIsEdgeMapNode(self, vector: Vector2) -> bool:
         for edgeMapNode in self.edgeMapNodes:
-            dangerLevel = map.obs.calculateDangerLevel(edgeMapNode.position)
-            self.edgeMapNodeDangerLevels.append(dangerLevel)
-            if dangerLevel < lowestDangerLevel:
-                lowestDangerLevel = dangerLevel
-                self.escapeEdgeMapNode = edgeMapNode
+            if edgeMapNode.position == vector:
+                return True
+        return False
 
-        self.isGhostInDangerZone = self.__isGhostInDangerZone__(map)
+    def vectorIsMidMapNode(self, vector: Vector2) -> bool:
+        for midMapNode in self.midMapNodes:
+            if midMapNode.position == vector:
+                return True
+        return False
 
     def __str__(self):
         return (
@@ -160,23 +171,33 @@ class DangerZone(object):
             edgeMapNode = self.edgeMapNodes[i]
             pacmanDistance = map.calculateDistance(self.position, edgeMapNode.position)
 
-            minGhostDistance = min([map.calculateDistance(ghost.position, edgeMapNode.position)
-                                    for ghost in map.ghosts])
+            minGhostDistance = 99999
+            for ghost in map.ghosts:
+                if ghost.mode.current == FREIGHT:
+                    continue
+
+                ghostDistance = map.calculateGhostDistance(ghost, edgeMapNode.position)
+
+                if ghostDistance == 0:
+                    continue
+
+                minGhostDistance = min(minGhostDistance, ghostDistance)
 
             if pacmanDistance > minGhostDistance:
-                return True
-        return False
+                return True, i
+        return False, -1
 
     def __isGhostInDangerZone__(self, map: Map) -> bool:
         previousMapNode = None
         for mapNode in self.mapNodes:
             if previousMapNode is not None:
                 ghostInDangerZone = map.obs.getGhostBetweenMapNodes(previousMapNode, mapNode)
-                if ghostInDangerZone is not None:
+                if ghostInDangerZone is not None and ghostInDangerZone.mode.current != FREIGHT:
                     return True
 
             previousMapNode = mapNode
         return False
+
 
 
 class MapPosition(object):
@@ -252,15 +273,6 @@ class Map(object):
 
         return min(self.mapNodes, key=lambda node: distanceSquared(node.position, vector), default=None)
 
-    # def getOnNode(self, vector: Vector2) -> MapNode | None:
-    #     closestMapNode = self.getClosestMapNode(vector)
-    #     closestMapNodeDistance = manhattanDistance(vector, closestMapNode.position)
-    #
-    #     if closestMapNodeDistance <= 4:
-    #         return closestMapNode
-    #
-    #     return None
-
     def getBetweenMapNodes(self, vector: Vector2) -> tuple[MapNode, MapNode, bool] | tuple[None, None, bool]:
         for mapNode in self.mapNodes:
             if mapNode.position.x == vector.x or mapNode.position.y == vector.y:
@@ -284,6 +296,17 @@ class Map(object):
 
         return False
 
+    def getEndOfDangerZoneInDirection(self, vector: Vector2, startDirection: int) -> MapNode:
+        endNeighborContainer = self.getMapNode(vector).getNeighborInDirection(startDirection)
+        while len(endNeighborContainer.mapNode.neighborContainers) == 2:
+            endMapNode = endNeighborContainer.mapNode
+
+            oppositeDirection = endNeighborContainer.direction * -1
+            if endMapNode.neighborContainers[0].direction == oppositeDirection:
+                endNeighborContainer = endMapNode.neighborContainers[1]
+            else:
+                endNeighborContainer = endMapNode.neighborContainers[0]
+        return endNeighborContainer.mapNode
     def __getOrCreateCustomMapNodeOnVector__(self, vector: Vector2,
                                              ghost: Ghost = None) -> (MapNode, bool):
         isGhost = ghost is not None
@@ -303,15 +326,6 @@ class Map(object):
                                           manhattanDistance(customMapNode.position, neighborContainer.mapNode.position))
 
                 return customMapNode, True
-                # if mapNode.x == neighborContainer.mapNode.x and mapNode.y < neighborContainer.mapNode.y or \
-                #         mapNode.y == neighborContainer.mapNode.y and mapNode.x < neighborContainer.mapNode.x:
-                #     startMapNodeA = mapNode
-                #     startMapNodeB = neighborContainer.mapNode
-                # else:
-                #     startMapNodeA = neighborContainer.mapNode
-                #     startMapNodeB = mapNode
-                #
-                # isXAxis = startMapNodeA.position.y == startMapNodeB.position.y
             else:
                 startMapNodeA, startMapNodeB, isXAxis = self.getBetweenMapNodes(vector)
 
@@ -332,13 +346,12 @@ class Map(object):
         else:
             return mapNode, False
 
+
     def calculateShortestPath(self, startVector: Vector2, endVector: Vector2,
                               ghost: Ghost = None) -> (list[Vector2], int) | (None, None):
         isGhost = ghost is not None
 
         startMapNode, startIsCustom = self.__getOrCreateCustomMapNodeOnVector__(startVector, ghost)
-        # if isGhost and len(startMapNode.neighborContainers) == 1:
-        #     print("adeojiiwoajdojiwad")
 
         # fix bug when target is at the corners of the map, when the ghosts are in SCATTER mode
         if isGhost and (endVector.x == 0 and endVector.y == 0 or
@@ -393,11 +406,11 @@ class Map(object):
 
             # is currentMapNode is next to endMapNode, add EndMapNode to PriorityQueue
             # only if end is custom, as then it is not a neighbor to any of the standard nodes
-            if endIsCustom and endMapNode.hasNeighbor(currentNode):
+            if endIsCustom and currentNode.hasNeighbor(endMapNode):
                 distance = currentDistance + endMapNodeDistance
                 if endMapNode not in distances or distance < distances[endMapNode]:
-                    distances[endMapNode] = distance
                     previousNodes[endMapNode] = currentNode
+                    distances[endMapNode] = distance
                     fromDirections[endMapNode] = getOppositeDirection(endMapNode.getNeighbor(currentNode).direction)
 
                     heapq.heappush(priorityQueue, (distance, endMapNode))
@@ -411,6 +424,7 @@ class Map(object):
         # Reconstruct the shortest path
         path = []
         currentNode = endMapNode
+
         while currentNode:
             path.insert(0, currentNode.position)
             currentNode = previousNodes[currentNode]
@@ -420,15 +434,22 @@ class Map(object):
         else:
             raise Exception("No path found between " + str(startVector) + " and " + str(endVector))
 
-    def calculateGhostDistance(self, ghost: Ghost, endVector: Vector2) -> (list[Vector2], int) | (None, None):
+    def calculateGhostPath(self, ghost: Ghost, endVector: Vector2) -> (list[Vector2], int) | (None, None):
         ghostPosition = ghost.position
         if ghost.overshotTarget():
             ghostPosition = ghost.target.position
 
         return self.calculateShortestPath(ghostPosition, endVector, ghost)
 
-    def calculateDistance(self, startVector: Vector2, endVector: Vector2, ghost: Ghost = None) -> int:
-        return self.calculateShortestPath(startVector, endVector, ghost)[1]
+    def calculateGhostDistance(self, ghost: Ghost, endVector: Vector2) -> (list[Vector2], int) | (None, None):
+        ghostPosition = ghost.position
+        if ghost.overshotTarget():
+            ghostPosition = ghost.target.position
+
+        return self.calculateShortestPath(ghostPosition, endVector, ghost)[1]
+
+    def calculateDistance(self, startVector: Vector2, endVector: Vector2) -> int:
+        return self.calculateShortestPath(startVector, endVector)[1]
 
     def createMapPosition(self, vector: Vector2) -> MapPosition:
         return MapPosition(self, vector)

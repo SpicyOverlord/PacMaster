@@ -14,6 +14,7 @@ class DebugHelper(object):
     _instance = None
 
     shouldPause = False
+    _enabled = True
 
     _screen = None
     _shapesToDraw = {"line": [], "dashedLine": [], "dashedCircle": [], "dot": []}
@@ -38,6 +39,14 @@ class DebugHelper(object):
     @staticmethod
     def pauseGame():
         DebugHelper.shouldPause = True
+
+    @staticmethod
+    def disable():
+        DebugHelper._enabled = False
+
+    @staticmethod
+    def enable():
+        DebugHelper._enabled = True
 
     @staticmethod
     def drawLine(startVector: Vector2, endVector: Vector2, color: tuple[int, int, int], width: int = 5):
@@ -122,20 +131,20 @@ class DebugHelper(object):
     @staticmethod
     def drawMap(obs: Observation):
         for mapNode in obs.map.mapNodes:
-            DebugHelper.drawDot(mapNode.position, DebugHelper.BLUE, 5)
+            DebugHelper.drawDot(mapNode.position, DebugHelper.BLUE, 3)
             for neighbor in mapNode.neighborContainers:
-                DebugHelper.drawLine(mapNode.position, neighbor.mapNode.position, DebugHelper.WHITE, 2)
+                DebugHelper.drawLine(mapNode.position, neighbor.mapNode.position, DebugHelper.WHITE, 1)
 
     @staticmethod
     def drawDangerLevel(obs: Observation, vector: Vector2):
-        dangerLevel = obs.calculateDangerLevel(vector)
-        if dangerLevel < 1:
-            dangerLevel = 1
+        dangerLevel = obs.calculateDangerLevel(vector) * 5
+        if dangerLevel < 2:
             DebugHelper.drawDot(vector, DebugHelper.WHITE, dangerLevel)
-        elif dangerLevel > 10:
-            dangerLevel = 10
-            DebugHelper.drawDot(vector, DebugHelper.RED, dangerLevel)
+        elif dangerLevel > 30:
+            DebugHelper.drawDot(vector, DebugHelper.RED, 10)
         else:
+            if dangerLevel > 10:
+                dangerLevel = 10
             DebugHelper.drawDot(vector, DebugHelper.YELLOW, dangerLevel)
 
     @staticmethod
@@ -168,7 +177,7 @@ class DebugHelper(object):
             end_angle = start_angle + angle_step / 2  # Adjust this for dash thickness
 
             # Calculate bounding rectangle for the arc
-            bounding_rect = (center.x - radius, center.y - radius, radius * 2, radius * 2)
+            bounding_rect = (center[0] - radius, center[1] - radius, radius * 2, radius * 2)
 
             # Draw arc (part of the dashed circle)
             pygame.draw.arc(DebugHelper._screen, color, bounding_rect, start_angle, end_angle, width)
@@ -179,6 +188,9 @@ class DebugHelper(object):
 
     @staticmethod
     def drawShapes():
+        if not DebugHelper._enabled:
+            return
+
         for drawObjectType in DebugHelper._shapesToDraw.keys():
             for drawObject in DebugHelper._shapesToDraw[drawObjectType]:
                 # skip portal path

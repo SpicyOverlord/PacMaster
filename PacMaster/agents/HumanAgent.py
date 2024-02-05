@@ -17,18 +17,20 @@ class HumanAgent(IAgent):
         self.takeStats(obs)
 
         # TEST
-        DebugHelper.drawMap(obs)
-        DebugHelper.drawDangerLevels(obs)
+        # DebugHelper.drawMap(obs)
+        # DebugHelper.drawDangerLevels(obs)
 
+        # DebugHelper.drawDangerLevel(obs, Vector2(180, 340))
+        # dangerLevel = obs.calculateDangerLevel(Vector2(180, 340))
+        # print(dangerLevel)
 
-        # mapPos = obs.map.createMapPosition(obs.getPacmanPosition())
         # if mapPos.isInDangerZone:
         #     DebugHelper.drawDangerZone(mapPos.dangerZone)
         # DebugHelper.drawDot(mapPos.mapNode1.position, DebugHelper.YELLOW, 5)
         # if mapPos.isBetweenMapNodes:
         #     DebugHelper.drawDot(mapPos.mapNode2.position, DebugHelper.YELLOW, 5)
 
-            # DebugHelper.pauseGame()
+        # DebugHelper.pauseGame()
 
         # TEST
 

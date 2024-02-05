@@ -161,7 +161,7 @@ class GameController(object):
                 self.ghosts.clyde.startNode.allowAccess(LEFT, self.ghosts.clyde)
             self.pellets.pelletList.remove(pellet)
             if pellet.name == POWERPELLET:
-                if freightEnabled:
+                if self.freightEnabled:
                     self.ghosts.startFreight()
             if self.pellets.isEmpty():
                 self.flashBG = True
