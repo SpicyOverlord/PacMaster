@@ -151,14 +151,14 @@ class Observation(object):
         tooCloseThreshold = TILEWIDTH * 10  # Threshold distance for a ghost to be considered 'close'
         tooFarAwayThreshold = TILESIZE * 17  # Threshold distance for a ghost to be considered 'too far away'
 
-        wayTooCloseValue = 1000  # Value for a ghost being too far away
+        wayTooCloseValue = 500  # Value for a ghost being too far away
         tooCloseValue = 200  # Value for a ghost being too close
 
         dangerZoneMultiplier = 5  # Multiplier for danger level if vector is in danger zone
-        dangerZoneMiddleMapNodeMultiplier = 1.1  # Multiplier for danger level if vector is in the middle of the danger zone
+        dangerZoneMiddleMapNodeMultiplier = 1.05  # Multiplier for danger level if vector is in the middle of the danger zone
         ghostInDangerZoneMultiplier = 10  # Multiplier for danger level if ghost is in danger zone
         closestGhostMultiplier = 50  # Multiplier for danger level based on the closest ghost
-        pacmanIsCloserMultiplier = 0.8  # Multiplier for danger level if pacman is closer to the vector than the closest ghost
+        pacmanIsCloserMultiplier = 0.95  # Multiplier for danger level if pacman is closer to the vector than the closest ghost
 
         minDistance = 9999999
         totalDistance = 0.0
@@ -205,8 +205,8 @@ class Observation(object):
         if mapPos.isInDangerZone:
             dangerLevel *= dangerZoneMultiplier
 
-            # if mapPos.dangerZone.vectorIsMidMapNode(vector):
-            #     dangerLevel *= dangerZoneMiddleMapNodeMultiplier
+            if mapPos.dangerZone.vectorIsMidMapNode(vector):
+                dangerLevel *= dangerZoneMiddleMapNodeMultiplier
 
             if mapPos.dangerZone.ghostInDangerZone:
                 dangerLevel *= ghostInDangerZoneMultiplier

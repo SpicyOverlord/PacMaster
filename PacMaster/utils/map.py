@@ -199,7 +199,6 @@ class DangerZone(object):
         return False
 
 
-
 class MapPosition(object):
     def __init__(self, map: Map, vector: Vector2):
         self.position = vector
@@ -296,8 +295,12 @@ class Map(object):
 
         return False
 
-    def getEndOfDangerZoneInDirection(self, vector: Vector2, startDirection: int) -> MapNode:
-        endNeighborContainer = self.getMapNode(vector).getNeighborInDirection(startDirection)
+    def getEndOfDangerZoneInDirection(self, mapNode: MapNode, startDirection: int) -> MapNode | None:
+        endNeighborContainer = mapNode.getNeighborInDirection(startDirection)
+
+        if endNeighborContainer is None:
+            return mapNode
+
         while len(endNeighborContainer.mapNode.neighborContainers) == 2:
             endMapNode = endNeighborContainer.mapNode
 
@@ -307,7 +310,8 @@ class Map(object):
             else:
                 endNeighborContainer = endMapNode.neighborContainers[0]
         return endNeighborContainer.mapNode
-    def __getOrCreateCustomMapNodeOnVector__(self, vector: Vector2,
+
+    def getOrCreateCustomMapNodeOnVector(self, vector: Vector2,
                                              ghost: Ghost = None) -> (MapNode, bool):
         isGhost = ghost is not None
 
@@ -346,12 +350,11 @@ class Map(object):
         else:
             return mapNode, False
 
-
     def calculateShortestPath(self, startVector: Vector2, endVector: Vector2,
                               ghost: Ghost = None) -> (list[Vector2], int) | (None, None):
         isGhost = ghost is not None
 
-        startMapNode, startIsCustom = self.__getOrCreateCustomMapNodeOnVector__(startVector, ghost)
+        startMapNode, startIsCustom = self.getOrCreateCustomMapNodeOnVector(startVector, ghost)
 
         # fix bug when target is at the corners of the map, when the ghosts are in SCATTER mode
         if isGhost and (endVector.x == 0 and endVector.y == 0 or
@@ -361,7 +364,7 @@ class Map(object):
             endMapNode = self.getClosestMapNode(endVector, snapToGrid=False)
             endIsCustom = False
         else:
-            endMapNode, endIsCustom = self.__getOrCreateCustomMapNodeOnVector__(endVector)
+            endMapNode, endIsCustom = self.getOrCreateCustomMapNodeOnVector(endVector)
 
         startMapNodeDistance = manhattanDistance(startMapNode.position, startVector)
         endMapNodeDistance = manhattanDistance(endMapNode.position, endVector)
