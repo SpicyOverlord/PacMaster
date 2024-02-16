@@ -155,7 +155,7 @@ class Observation(object):
         tooCloseValue = 200  # Value for a ghost being too close
 
         dangerZoneMultiplier = 5  # Multiplier for danger level if vector is in danger zone
-        dangerZoneMiddleMapNodeMultiplier = 1.05  # Multiplier for danger level if vector is in the middle of the danger zone
+        dangerZoneMiddleMapNodeMultiplier = 1.1  # Multiplier for danger level if vector is in the middle of the danger zone
         ghostInDangerZoneMultiplier = 10  # Multiplier for danger level if ghost is in danger zone
         closestGhostMultiplier = 50  # Multiplier for danger level based on the closest ghost
         pacmanIsCloserMultiplier = 0.95  # Multiplier for danger level if pacman is closer to the vector than the closest ghost
