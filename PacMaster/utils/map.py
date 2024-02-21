@@ -3,7 +3,7 @@ import heapq
 from typing import List
 
 from PacMaster.utils.utils import manhattanDistance, distanceSquared, isPortalPath, getOppositeDirection, roundVector, \
-    directionToString
+    directionToString, distanceToNearestEdge
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Ghost
 from Pacman_Complete.nodes import NodeGroup, Node
@@ -20,20 +20,12 @@ class MapNode(object):
 
         self.neighborContainers: List[NeighborContainer] = list()
 
-    def distance_to_nearest_edge(self):
-        distance_from_left = self.x
-        distance_from_right = 416 - self.x
-        distance_from_top = self.y
-        distance_from_bottom = 512 - self.y
-
-        return min(distance_from_left, distance_from_right, distance_from_top, distance_from_bottom)
-
     def __str__(self):
         return f"MapNode{self.position}"
 
     def __lt__(self, other):
         # Prioritize based on distance to the nearest edge, as nodes closer to any edge are more dangerous
-        return self.distance_to_nearest_edge() > other.distance_to_nearest_edge()
+        return distanceToNearestEdge(self.position) > distanceToNearestEdge(other.position)
 
     def __eq__(self, other):
         if not isinstance(other, MapNode):
@@ -295,6 +287,36 @@ class Map(object):
 
         return False
 
+    def getPathToEndOfDangerZoneInDirection(self, mapNode: MapNode, startDirection: int) -> (MapNode, list, int) | (
+    None, None, None):
+        endNeighborContainer = mapNode.getNeighborInDirection(startDirection)
+
+        if endNeighborContainer is None:
+            return None, [], 0
+
+        path = [mapNode.position]
+        distance = manhattanDistance(mapNode.position, endNeighborContainer.mapNode.position)
+
+        while True:
+            path.append(endNeighborContainer.mapNode.position)
+
+            if len(endNeighborContainer.mapNode.neighborContainers) != 2:
+                break
+
+            endMapNode = endNeighborContainer.mapNode
+
+            oppositeDirection = endNeighborContainer.direction * -1
+            if endMapNode.neighborContainers[0].direction == oppositeDirection:
+                endNeighborContainer = endMapNode.neighborContainers[1]
+            else:
+                endNeighborContainer = endMapNode.neighborContainers[0]
+
+            distance += manhattanDistance(endMapNode.position, endNeighborContainer.mapNode.position)
+
+        path.append(endNeighborContainer.mapNode.position)
+
+        return endNeighborContainer.mapNode, path, distance
+
     def getEndOfDangerZoneInDirection(self, mapNode: MapNode, startDirection: int) -> MapNode | None:
         endNeighborContainer = mapNode.getNeighborInDirection(startDirection)
 
@@ -309,10 +331,11 @@ class Map(object):
                 endNeighborContainer = endMapNode.neighborContainers[1]
             else:
                 endNeighborContainer = endMapNode.neighborContainers[0]
+
         return endNeighborContainer.mapNode
 
     def getOrCreateCustomMapNodeOnVector(self, vector: Vector2,
-                                             ghost: Ghost = None) -> (MapNode, bool):
+                                         ghost: Ghost = None) -> (MapNode, bool):
         isGhost = ghost is not None
 
         vector = roundVector(vector)
@@ -351,7 +374,7 @@ class Map(object):
             return mapNode, False
 
     def calculateShortestPath(self, startVector: Vector2, endVector: Vector2,
-                              ghost: Ghost = None) -> (list[Vector2], int) | (None, None):
+                              ghost: Ghost = None, startDirection: int = None) -> (list[Vector2], int) | (None, None):
         isGhost = ghost is not None
 
         startMapNode, startIsCustom = self.getOrCreateCustomMapNodeOnVector(startVector, ghost)

@@ -47,3 +47,12 @@ def isPortalPath(startVector: Vector2, endVector: Vector2) -> bool:
     # real distance is TILESIZE * 26, but we want to be safe
     portalDistance = TILESIZE * 24
     return abs(startVector.x - endVector.x) > portalDistance and startVector.y == endVector.y
+
+
+def distanceToNearestEdge(vector: Vector2) -> int:
+    distance_from_left = vector.x - 20
+    distance_from_right = 520 - vector.x
+    distance_from_top = vector.y - 80
+    distance_from_bottom = 640 - vector.y
+
+    return min(distance_from_left, distance_from_right, distance_from_top, distance_from_bottom)

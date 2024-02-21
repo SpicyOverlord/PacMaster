@@ -4,6 +4,7 @@ from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
 from PacMaster.agents.Iagent import IAgent
 from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.observation import Observation
+from PacMaster.utils.utils import distanceToNearestEdge
 from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
 
@@ -15,6 +16,8 @@ class HumanAgent(IAgent):
     def calculateNextMove(self):
         obs = Observation(self.gameController)
         self.takeStats(obs)
+
+        pacmanPosition = obs.getPacmanPosition()
 
         # TEST
         # DebugHelper.drawMap(obs)

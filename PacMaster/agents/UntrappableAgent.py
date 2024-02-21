@@ -1,23 +1,32 @@
 import pygame
+from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
 
 from PacMaster.agents.Iagent import IAgent
 from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.map import MapNode
 from PacMaster.utils.observation import Observation
-from PacMaster.utils.utils import manhattanDistance
+from PacMaster.utils.utils import *
 from Pacman_Complete.constants import *
-from Pacman_Complete.ghosts import Ghost
 from Pacman_Complete.vector import Vector2
 
 
 class UntrappableAgent(IAgent):
     def __init__(self, gameController):
         super().__init__(gameController)
-        self.last = []
 
     def calculateNextMove(self):
         obs = Observation(self.gameController)
         self.takeStats(obs)
+
+        # key_pressed = pygame.key.get_pressed()
+        # if key_pressed[K_UP]:
+        #     return UP
+        # if key_pressed[K_DOWN]:
+        #     return DOWN
+        # if key_pressed[K_LEFT]:
+        #     return LEFT
+        # if key_pressed[K_RIGHT]:
+        #     return RIGHT
 
         # DebugHelper.drawMap(obs)
         # DebugHelper.drawDangerLevels(obs)
@@ -40,6 +49,8 @@ class UntrappableAgent(IAgent):
         # if mapPos.isInDangerZone:
         #     DebugHelper.drawDangerZone(mapPos.dangerZone)
 
+        return self.__getLeastDangerousDirectionFromCustomNode__(obs)
+
         if mapPos.isInDangerZone and (mapPos.dangerZone.isDangerous or mapPos.dangerZone.ghostInDangerZone):
             # find the escape path
             edgeMapNode1DangerLevel = obs.calculateDangerLevel(mapPos.dangerZone.edgeMapNodes[0].position)
@@ -61,7 +72,7 @@ class UntrappableAgent(IAgent):
             else:
                 escapeTarget = mapPos.dangerZone.edgeMapNodes[1].position
 
-            # DebugHelper.drawDot(escapeTarget, DebugHelper.PURPLE, 12)
+            DebugHelper.drawDashedCircle(escapeTarget, 12, DebugHelper.PURPLE, 5)
 
             escapePath, _ = obs.map.calculateShortestPath(pacmanPosition, escapeTarget)
 
@@ -75,12 +86,8 @@ class UntrappableAgent(IAgent):
             else:
                 ghostPath = []
 
-            self.last = ghostPath
-
             # DebugHelper.pauseGame()
             return self.__getDirection__(obs, escapePath[1])
-
-        self.last = []
 
         return self.__getLeastDangerousDirectionFromCustomNode__(obs)
 
@@ -108,57 +115,94 @@ class UntrappableAgent(IAgent):
             else:
                 return UP
 
-    def __getLeastDangerousDirection__(self, obs: Observation, mapNode1: MapNode, mapNode2: MapNode,
-                                       isXAxis: bool) -> int:
-        pacmanPosition = obs.getPacmanPosition()
+    # def __getLeastDangerousDirection__(self, obs: Observation, mapNode1: MapNode, mapNode2: MapNode,
+    #                                    isXAxis: bool) -> int:
+    #     pacmanPosition = obs.getPacmanPosition()
+    #
+    #     startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(pacmanPosition)
+    #     # DebugHelper.drawDashedCircle(startMapNode.position, 10, DebugHelper.YELLOW, 5)
+    #
+    #     endMapNode1, path1, distance1 = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode,
+    #                                                                                 LEFT if isXAxis else UP)
+    #     endMapNode2, path2, distance2 = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode,
+    #                                                                                 RIGHT if isXAxis else DOWN)
+    #
+    #     endMapNode1DangerLevel = obs.calculateDangerLevel(endMapNode1.position)
+    #     endMapNode2DangerLevel = obs.calculateDangerLevel(endMapNode2.position)
+    #
+    #     dir1Better = endMapNode1DangerLevel < endMapNode2DangerLevel
+    #     ghostInPath1 = obs.isGhostInPath(path1)
+    #     ghostInPath2 = obs.isGhostInPath(path2)
+    #
+    #     if dir1Better and not ghostInPath1:
+    #         return self.__getDirection__(obs, mapNode1.position)
+    #     elif not ghostInPath2:
+    #         return self.__getDirection__(obs, mapNode2.position)
+    #     else:
+    #         return STOP
 
-        startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(pacmanPosition)
-        # DebugHelper.drawDashedCircle(startMapNode.position, 10, DebugHelper.YELLOW, 5)
+    # def __getLeastDangerousDirectionFromNode__(self, obs: Observation, onMapNode: MapNode) -> int:
+    #     minDangerLevel = 99999
+    #     minDangerDirection = STOP
+    #     for neighborContainer in onMapNode.neighborContainers:
+    #         endMapNode = obs.map.getEndOfDangerZoneInDirection(onMapNode, neighborContainer.direction)
+    #
+    #         if endMapNode is None:
+    #             continue
+    #
+    #         path, distance = obs.map.calculateShortestPath(neighborContainer.mapNode.position, endMapNode.position)
+    #
+    #         distance += manhattanDistance(onMapNode.position, neighborContainer.mapNode.position)
+    #
+    #         if obs.isGhostInPath(path):
+    #             DebugHelper.drawPath(path, DebugHelper.RED, 5)
+    #             DebugHelper.pauseGame()
+    #             continue
+    #
+    #         DebugHelper.drawPath(path, DebugHelper.GREEN, 5)
+    #
+    #         # DebugHelper.drawDashedCircle(endMapNode.position, 10, DebugHelper.PURPLE, 5)
+    #         # DebugHelper.drawDangerLevel(obs, endMapNode.position)
+    #
+    #         dangerLevel = obs.calculateDangerLevel(endMapNode.position)
+    #         if dangerLevel < minDangerLevel:
+    #             minDangerLevel = dangerLevel
+    #             minDangerDirection = neighborContainer.direction
+    #     return minDangerDirection
 
-        endMapNode1 = obs.map.getEndOfDangerZoneInDirection(startMapNode, LEFT if isXAxis else UP)
-        endMapNode2 = obs.map.getEndOfDangerZoneInDirection(startMapNode, RIGHT if isXAxis else DOWN)
-
-        path1, distance1 = obs.map.calculateShortestPath(pacmanPosition, endMapNode1.position)
-        path2, distance2 = obs.map.calculateShortestPath(pacmanPosition, endMapNode2.position)
-
-        endMapNode1DangerLevel = obs.calculateDangerLevel(endMapNode1.position)
-        endMapNode2DangerLevel = obs.calculateDangerLevel(endMapNode2.position)
-
-        dir1Better = endMapNode1DangerLevel < endMapNode2DangerLevel
-        ghostInPath1 = obs.isGhostInPath(path1)
-        ghostInPath2 = obs.isGhostInPath(path2)
-
-        if dir1Better and not ghostInPath1:
-            return self.__getDirection__(obs, mapNode1.position)
-        elif not ghostInPath2:
-            return self.__getDirection__(obs, mapNode2.position)
-        else:
-            return STOP
-
-    def __getLeastDangerousDirectionFromNode__(self, obs: Observation, onMapNode: MapNode) -> int:
-        minDangerLevel = 99999
-        minDangerDirection = STOP
-        for neighborContainer in onMapNode.neighborContainers:
-            endMapNode = obs.map.getEndOfDangerZoneInDirection(onMapNode, neighborContainer.direction)
-
-            if endMapNode is None:
-                continue
-
-            path, distance = obs.map.calculateShortestPath(neighborContainer.mapNode.position, endMapNode.position)
-
-            distance += manhattanDistance(onMapNode.position, neighborContainer.mapNode.position)
-
-            if obs.isGhostInPath(path):
-                continue
-
-            # DebugHelper.drawDashedCircle(endMapNode.position, 10, DebugHelper.PURPLE, 5)
-            # DebugHelper.drawDangerLevel(obs, endMapNode.position)
-
-            dangerLevel = obs.calculateDangerLevel(endMapNode.position)
-            if dangerLevel < minDangerLevel:
-                minDangerLevel = dangerLevel
-                minDangerDirection = neighborContainer.direction
-        return minDangerDirection
+    # def __getLeastDangerousDirectionFromCustomNode__(self, obs: Observation) -> int:
+    #     startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
+    #
+    #     minDangerLevel = 99999
+    #     minDangerDirection = STOP
+    #     for neighborContainer in startMapNode.neighborContainers:
+    #         endMapNode = obs.map.getEndOfDangerZoneInDirection(startMapNode, neighborContainer.direction)
+    #
+    #         if endMapNode is None:
+    #             continue
+    #
+    #         path, distance = obs.map.calculateShortestPath(neighborContainer.mapNode.position, endMapNode.position)
+    #
+    #         distance += manhattanDistance(startMapNode.position, neighborContainer.mapNode.position)
+    #
+    #         if obs.isGhostInPath(path) or obs.getGhostBetweenMapNodes(startMapNode,
+    #                                                                   neighborContainer.mapNode) is not None:
+    #             DebugHelper.drawLine(startMapNode.position, neighborContainer.mapNode.position, DebugHelper.PURPLE, 5)
+    #             DebugHelper.drawPath(path, DebugHelper.RED, 5)
+    #             # DebugHelper.pauseGame()
+    #             continue
+    #
+    #         DebugHelper.drawLine(startMapNode.position, neighborContainer.mapNode.position, DebugHelper.YELLOW, 5)
+    #         DebugHelper.drawPath(path, DebugHelper.GREEN, 5)
+    #
+    #         # DebugHelper.drawDashedCircle(endMapNode.position, 10, DebugHelper.PURPLE, 5)
+    #         # DebugHelper.drawDangerLevel(obs, endMapNode.position)
+    #
+    #         dangerLevel = obs.calculateDangerLevel(endMapNode.position)
+    #         if dangerLevel < minDangerLevel:
+    #             minDangerLevel = dangerLevel
+    #             minDangerDirection = neighborContainer.direction
+    #     return minDangerDirection
 
     def __getLeastDangerousDirectionFromCustomNode__(self, obs: Observation) -> int:
         startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
@@ -166,17 +210,19 @@ class UntrappableAgent(IAgent):
         minDangerLevel = 99999
         minDangerDirection = STOP
         for neighborContainer in startMapNode.neighborContainers:
-            endMapNode = obs.map.getEndOfDangerZoneInDirection(startMapNode, neighborContainer.direction)
+            endMapNode, path, distance = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode,
+                                                                                     neighborContainer.direction)
 
             if endMapNode is None:
+                print("skipping")
                 continue
-
-            path, distance = obs.map.calculateShortestPath(neighborContainer.mapNode.position, endMapNode.position)
-
-            distance += manhattanDistance(startMapNode.position, neighborContainer.mapNode.position)
 
             if obs.isGhostInPath(path):
+                DebugHelper.drawPath(path, DebugHelper.RED, 5)
+                # DebugHelper.pauseGame()
                 continue
+
+            DebugHelper.drawPath(path, DebugHelper.GREEN, 5)
 
             # DebugHelper.drawDashedCircle(endMapNode.position, 10, DebugHelper.PURPLE, 5)
             # DebugHelper.drawDangerLevel(obs, endMapNode.position)
@@ -186,15 +232,3 @@ class UntrappableAgent(IAgent):
                 minDangerLevel = dangerLevel
                 minDangerDirection = neighborContainer.direction
         return minDangerDirection
-
-    def __fleeFromGhost__(self, obs: Observation, ghost: Ghost, isXAxis: bool) -> int:
-        if isXAxis:
-            if obs.getPacmanPosition().x < ghost.position.x:
-                return LEFT
-            else:
-                return RIGHT
-        else:
-            if obs.getPacmanPosition().y < ghost.position.y:
-                return UP
-            else:
-                return DOWN
