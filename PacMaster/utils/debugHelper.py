@@ -111,8 +111,8 @@ class DebugHelper(object):
             lineColor = ORANGE
             width = 4
 
-        path, _ = obs.map.calculateShortestPath(startVector=ghost.position, endVector=ghost.goal,
-                                                isGhost=True, ghostDirection=ghost.direction)
+        path, _ = obs.map.calculateShortestPath(startVector=ghost.position, endVector=ghost.goal, ghost=ghost)
+
         if len(path) != 0:
             DebugHelper.drawDashedPath(path, lineColor, width)
 

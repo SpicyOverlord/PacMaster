@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import math
 from collections import Counter
 
 from PacMaster.utils.map import Map, MapNode, MapPosition
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Blinky, Ghost, Pinky, Inky, Clyde
 from Pacman_Complete.vector import Vector2
-from PacMaster.utils.utils import manhattanDistance, roundVector, distanceToNearestEdge, isPortalPath
+from PacMaster.utils.utils import manhattanDistance, roundVector, distanceToNearestEdge, isPortalPath, distanceSquared
 
 
 class Observation(object):
@@ -36,11 +37,11 @@ class Observation(object):
     def getPowerPelletPositions(self) -> list[Vector2]:
         return [powerPellet.position for powerPellet in self.pelletGroup.powerpellets]
 
-    def getClosestPelletPosition(self) -> Vector2:
+    def getNearestPelletPosition(self) -> Vector2:
         return min(self.getPelletPositions(), key=lambda pellet: manhattanDistance(pellet, self.getPacmanPosition()),
                    default=None)
 
-    def getClosestPowerPelletPosition(self) -> Vector2:
+    def getNearestPowerPelletPosition(self) -> Vector2:
         return min(self.getPowerPelletPositions(),
                    key=lambda pellet: manhattanDistance(pellet, self.getPacmanPosition()),
                    default=None)
@@ -55,7 +56,7 @@ class Observation(object):
             return None
 
         for ghost in self.getGhosts():
-            if ghost.mode.current == FREIGHT:
+            if ghost.mode.current in (FREIGHT, SPAWN):
                 continue
 
             if ghost.position.x == vector1.x and ghost.position.x == vector2.x and \
@@ -214,6 +215,8 @@ class Observation(object):
 
         # Normalize based on total distance to avoid high values in less dangerous situations
         normalizedDanger = dangerLevel / (totalDistance + 1)
+
+
         # if normalizedDanger < 2:
         #     print("YES")
         return round(normalizedDanger, 5)

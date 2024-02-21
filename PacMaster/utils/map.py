@@ -374,7 +374,7 @@ class Map(object):
             return mapNode, False
 
     def calculateShortestPath(self, startVector: Vector2, endVector: Vector2,
-                              ghost: Ghost = None, startDirection: int = None) -> (list[Vector2], int) | (None, None):
+                              ghost: Ghost = None) -> (list[Vector2], int) | (None, None):
         isGhost = ghost is not None
 
         startMapNode, startIsCustom = self.getOrCreateCustomMapNodeOnVector(startVector, ghost)

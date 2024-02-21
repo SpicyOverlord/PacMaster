@@ -1,3 +1,5 @@
+import random
+
 import pygame
 from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
 
@@ -18,15 +20,15 @@ class UntrappableAgent(IAgent):
         obs = Observation(self.gameController)
         self.takeStats(obs)
 
-        # key_pressed = pygame.key.get_pressed()
-        # if key_pressed[K_UP]:
-        #     return UP
-        # if key_pressed[K_DOWN]:
-        #     return DOWN
-        # if key_pressed[K_LEFT]:
-        #     return LEFT
-        # if key_pressed[K_RIGHT]:
-        #     return RIGHT
+        key_pressed = pygame.key.get_pressed()
+        if key_pressed[K_UP]:
+            return UP
+        if key_pressed[K_DOWN]:
+            return DOWN
+        if key_pressed[K_LEFT]:
+            return LEFT
+        if key_pressed[K_RIGHT]:
+            return RIGHT
 
         # DebugHelper.drawMap(obs)
         # DebugHelper.drawDangerLevels(obs)
@@ -49,45 +51,76 @@ class UntrappableAgent(IAgent):
         # if mapPos.isInDangerZone:
         #     DebugHelper.drawDangerZone(mapPos.dangerZone)
 
-        return self.__getLeastDangerousDirectionFromCustomNode__(obs)
+        # if mapPos.isInDangerZone and (mapPos.dangerZone.isDangerous     or mapPos.dangerZone.ghostInDangerZone):
+        #     # find the escape path
+        #     edgeMapNode1DangerLevel = obs.calculateDangerLevel(mapPos.dangerZone.edgeMapNodes[0].position)
+        #     edgeMapNode2DangerLevel = obs.calculateDangerLevel(mapPos.dangerZone.edgeMapNodes[1].position)
+        #
+        #     if mapPos.dangerZone.ghostInDangerZone:
+        #         edgeMapNodePath1, _ = obs.map.calculateShortestPath(pacmanPosition,
+        #                                                             mapPos.dangerZone.edgeMapNodes[0].position)
+        #         if obs.isGhostInPath(edgeMapNodePath1):
+        #             edgeMapNode1DangerLevel = 99999
+        #
+        #         edgeMapNodePath2, _ = obs.map.calculateShortestPath(pacmanPosition,
+        #                                                             mapPos.dangerZone.edgeMapNodes[1].position)
+        #         if obs.isGhostInPath(edgeMapNodePath2):
+        #             edgeMapNode2DangerLevel = 99999
+        #
+        #     if edgeMapNode1DangerLevel < edgeMapNode2DangerLevel:
+        #         escapeTarget = mapPos.dangerZone.edgeMapNodes[0].position
+        #     else:
+        #         escapeTarget = mapPos.dangerZone.edgeMapNodes[1].position
+        #
+        #     DebugHelper.drawDashedCircle(escapeTarget, 12, DebugHelper.PURPLE, 5)
+        #
+        #     escapePath, _ = obs.map.calculateShortestPath(pacmanPosition, escapeTarget)
+        #
+        #     # if obs.isGhostInPath(escapePath):
+        #     #     escapePath = []
+        #
+        #     # TODO: this should be closest ghost that is not in freight mode
+        #     closestGhost = obs.getClosestGhost(escapeTarget)
+        #     if closestGhost.mode.current != FREIGHT:
+        #         ghostPath, _ = obs.map.calculateShortestPath(closestGhost.position, escapeTarget, closestGhost)
+        #     else:
+        #         ghostPath = []
+        #
+        #     # DebugHelper.pauseGame()
+        #     return self.__getDirection__(obs, escapePath[1])
 
-        if mapPos.isInDangerZone and (mapPos.dangerZone.isDangerous or mapPos.dangerZone.ghostInDangerZone):
-            # find the escape path
-            edgeMapNode1DangerLevel = obs.calculateDangerLevel(mapPos.dangerZone.edgeMapNodes[0].position)
-            edgeMapNode2DangerLevel = obs.calculateDangerLevel(mapPos.dangerZone.edgeMapNodes[1].position)
 
-            if mapPos.dangerZone.ghostInDangerZone:
-                edgeMapNodePath1, _ = obs.map.calculateShortestPath(pacmanPosition,
-                                                                    mapPos.dangerZone.edgeMapNodes[0].position)
-                if obs.isGhostInPath(edgeMapNodePath1):
-                    edgeMapNode1DangerLevel = 99999
 
-                edgeMapNodePath2, _ = obs.map.calculateShortestPath(pacmanPosition,
-                                                                    mapPos.dangerZone.edgeMapNodes[1].position)
-                if obs.isGhostInPath(edgeMapNodePath2):
-                    edgeMapNode2DangerLevel = 99999
 
-            if edgeMapNode1DangerLevel < edgeMapNode2DangerLevel:
-                escapeTarget = mapPos.dangerZone.edgeMapNodes[0].position
-            else:
-                escapeTarget = mapPos.dangerZone.edgeMapNodes[1].position
+        #
+        # dangerLevel = obs.calculateDangerLevel(pacmanPosition)
+        #
+        # scarediness = 0.5
+        #
+        # if dangerLevel > scarediness:
+        #     DebugHelper.drawDot(pacmanPosition, DebugHelper.RED, 15)
+        #     print(dangerLevel)
+        #
+        # if dangerLevel < scarediness:
+        #     DebugHelper.drawDot(pacmanPosition, DebugHelper.LIGHTBLUE, 10)
+        #
+        #     nearestPellet = obs.getNearestPelletPosition()
+        #     pathToPellet, distance = obs.map.calculateShortestPath(pacmanPosition, nearestPellet)
+        #
+        #     if len(pathToPellet) != 0:
+        #         return self.__getDirection__(obs, pathToPellet[1])
+        #     else:
+        #         if not mapPos.isBetweenMapNodes:
+        #             print("RANDOM DIRECTION")
+        #             # select random neighbor container and return direction
+        #             neighborContainer = random.choice(mapPos.mapNode1.neighborContainers)
+        #             return neighborContainer.direction
+        #         return STOP
+        #
 
-            DebugHelper.drawDashedCircle(escapeTarget, 12, DebugHelper.PURPLE, 5)
 
-            escapePath, _ = obs.map.calculateShortestPath(pacmanPosition, escapeTarget)
 
-            # if obs.isGhostInPath(escapePath):
-            #     escapePath = []
 
-            # TODO: this should be closest ghost that is not in freight mode
-            closestGhost = obs.getClosestGhost(escapeTarget)
-            if closestGhost.mode.current != FREIGHT:
-                ghostPath, _ = obs.map.calculateShortestPath(closestGhost.position, escapeTarget, closestGhost)
-            else:
-                ghostPath = []
-
-            # DebugHelper.pauseGame()
-            return self.__getDirection__(obs, escapePath[1])
 
         return self.__getLeastDangerousDirectionFromCustomNode__(obs)
 
