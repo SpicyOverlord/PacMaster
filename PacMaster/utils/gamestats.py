@@ -15,14 +15,19 @@ class GameStats(object):
 
     @staticmethod
     def calculateCombinedRating(gameStats: list['GameStats']):
-        weights = {'score': 1, 'pellets': 0.8}
+        weights = {'score': 0.5, 'pellets': 1.2}
 
         baseScores = [game.score for game in gameStats]
         efficiency = [game.efficiency for game in gameStats]
         totalPelletsEaten = [game.totalPelletsEaten for game in gameStats]
 
-        # Calculate efficiency
+        # Calculate average efficiency
         averageEfficiency = sum(efficiency) / len(efficiency)
+
+        # calculate average and max level reached
+        averageLevelsCompleted = sum([game.levelsCompleted for game in gameStats]) / len(gameStats)
+        weighedAverageLevel = (averageLevelsCompleted * 0.5) + 1
+        maxLevelReached = max([game.levelsCompleted for game in gameStats])
 
         # Calculate total pellets eaten
         maxPelletsPerLevel = 240
@@ -37,6 +42,8 @@ class GameStats(object):
         # Combined Score Calculation
         # basically makes averageEfficiency only change 50% of the combined score
         combinedScore = 0.5 * (averageEfficiency + 1) * (weightedAverageBaseScore + weightedAveragePelletScore)
+        # # multiply to make the score higher if the agent reaches higher levels
+        combinedScore *= weighedAverageLevel
 
         # Statistical Analysis
         medianScore = sorted(baseScores)[len(baseScores) // 2]
@@ -49,6 +56,8 @@ class GameStats(object):
                 "averageEfficiency": round(averageEfficiency, 3),
                 "weightedAverageBaseScore": round(weightedAverageBaseScore, 3),
                 "weightedAveragePelletScore": round(weightedAveragePelletScore, 3),
+                "averageLevelsCompleted": round(averageLevelsCompleted, 3),
+                "maxLevelReached": maxLevelReached,
 
                 "medianScore": medianScore,
                 "averageScore": round(averageScore, 3),

@@ -246,10 +246,6 @@ class UntrappableAgent(IAgent):
             endMapNode, path, distance = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode,
                                                                                      neighborContainer.direction)
 
-            if endMapNode is None:
-                print("skipping")
-                continue
-
             if obs.isGhostInPath(path):
                 DebugHelper.drawPath(path, DebugHelper.RED, 5)
                 # DebugHelper.pauseGame()
