@@ -30,15 +30,15 @@ class CollectorAgent(IAgent):
         if key_pressed[K_RIGHT]:
             return RIGHT
 
-        DebugHelper.drawMap(obs)
-        DebugHelper.drawPelletLevels(obs)
+        # DebugHelper.drawMap(obs)
+        # DebugHelper.drawPelletLevels(obs)
 
         pacmanPosition = obs.getPacmanPosition()
         mapPos = obs.map.createMapPosition(pacmanPosition)
         if mapPos.isBetweenMapNodes:
             return STOP
-
         return self.__getMaxPelletDirectionFromCustomNode__(obs)
+
     def __getDirection__(self, obs: Observation, target: Vector2) -> int:
         pacmanPosition = obs.getPacmanPosition()
         if pacmanPosition.y == target.y:
