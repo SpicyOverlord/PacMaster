@@ -30,7 +30,7 @@ class CollectorAgent(IAgent):
         if key_pressed[K_RIGHT]:
             return RIGHT
 
-        # DebugHelper.drawMap(obs)
+        DebugHelper.drawMap(obs)
         DebugHelper.drawPelletLevels(obs)
 
         pacmanPosition = obs.getPacmanPosition()
@@ -61,14 +61,18 @@ class CollectorAgent(IAgent):
             endMapNode, path, distance = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode,
                                                                                      neighborContainer.direction)
 
-            pathPelletLevel = 0
-            for pathPoint in path:
-                pathPelletLevel += obs.calculatePelletLevel(pathPoint)
+            pelletsInPath = obs.getPelletCountInPath(path)
 
-            pathPelletLevel += obs.calculatePelletLevel(endMapNode.position) * 2
-
+            pathPelletLevel = obs.calculatePelletLevel(endMapNode.position) * (pelletsInPath + 1)
             if pathPelletLevel > maxPelletLevel:
                 maxPelletLevel = pathPelletLevel
                 maxPelletDirection = neighborContainer.direction
+
+        if maxPelletLevel <= 1:
+            nearestPelletPosition = obs.getNearestPelletPosition()
+            nearestPelletMapNode = obs.map.getClosestMapNode(nearestPelletPosition, snapToGrid=False)
+            pelletPath, _ = obs.map.calculateShortestPath(startMapNode.position, nearestPelletMapNode.position)
+
+            maxPelletDirection = self.__getDirection__(obs, pelletPath[1])
 
         return maxPelletDirection

@@ -47,6 +47,23 @@ class Observation(object):
                    key=lambda pellet: manhattanDistance(pellet, self.getPacmanPosition()),
                    default=None)
 
+    def getPelletCountInPath(self, path: list[Vector2]) -> int:
+        return sum(self.getPelletsBetweenVectors(path[i], path[i + 1]) for i in range(len(path) - 1))
+
+    def getPelletsBetweenVectors(self, vector1: Vector2, vector2: Vector2) -> int:
+        if isPortalPath(vector1, vector2):
+            return 0
+
+        pelletCount = 0
+        for pelletPosition in self.getPelletPositions():
+            if pelletPosition.x == vector1.x and pelletPosition.x == vector2.x and \
+                    min(vector1.y, vector2.y) <= pelletPosition.y <= max(vector1.y, vector2.y):
+                pelletCount += 1
+            elif pelletPosition.y == vector1.y and pelletPosition.y == vector2.y and \
+                    min(vector1.x, vector2.x) <= pelletPosition.x <= max(vector1.x, vector2.x):
+                pelletCount += 1
+
+        return pelletCount
     # ------------------ Ghost Functions ------------------
 
     def getGhostBetweenMapNodes(self, mapNode1: MapNode, mapNode2: MapNode) -> Ghost | None:
@@ -141,23 +158,23 @@ class Observation(object):
     # ------------------ Custom Functions ------------------
     def calculatePelletLevel(self, vector: Vector2):
         minDistance = 99999
-        totalDistance = 0.0
+        totalDistance = 1.0
 
         for pellet in self.pelletGroup.pelletList:
             dist = manhattanDistance(pellet.position, vector)
-            if dist < TILESIZE * 7:
-                totalDistance += self.map.calculateDistance(pellet.position, vector)
-            if dist < minDistance:
-                minDistance = dist
+            if dist < TILESIZE * 3:
+                totalDistance += dist
+                if dist < minDistance:
+                    minDistance = dist
         for powerPellet in self.pelletGroup.powerpellets:
             dist = manhattanDistance(powerPellet.position, vector)
-            if dist < TILESIZE * 7:
-                totalDistance += self.map.calculateDistance(powerPellet.position, vector)
-            if dist < minDistance:
-                minDistance = dist
+            if dist < TILESIZE * 3:
+                totalDistance += dist
+                if dist < minDistance:
+                    minDistance = dist
 
-        if totalDistance == 0:
-            return minDistance * 0.1
+        # if totalDistance == 0:
+        #     return minDistance * 0.1
         return totalDistance / (minDistance + 1)
 
     def calculateDangerLevel(self, vector: Vector2):

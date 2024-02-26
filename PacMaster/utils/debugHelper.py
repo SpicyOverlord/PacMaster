@@ -154,7 +154,7 @@ class DebugHelper(object):
 
     @staticmethod
     def drawPelletLevel(obs: Observation, vector: Vector2):
-        pelletLevel = obs.calculatePelletLevel(vector)*0.1
+        pelletLevel = obs.calculatePelletLevel(vector)
         if pelletLevel > 10:
             DebugHelper.drawDot(vector, DebugHelper.GREEN, 10)
             return
