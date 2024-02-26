@@ -225,7 +225,7 @@ class GameController(object):
     def nextLevel(self):
         self.showEntities()
         self.level += 1
-        self.pause.paused = True
+        self.pause.paused = self.isHumanPlayer
         self.startGame(agent=self.agent)
         self.textgroup.updateLevel(self.level)
 

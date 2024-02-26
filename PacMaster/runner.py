@@ -1,11 +1,12 @@
 from PacMaster.agents.CollectorAgent import CollectorAgent
+from PacMaster.agents.FirstRealAgent import FirstRealAgent
 from PacMaster.agents.ScaredAgent import ScaredAgent
 from PacMaster.agents.UntrappableAgent import UntrappableAgent
 from PacMaster.utils.runnerFunctions import *
 
 # runGameWithHuman()
-print(calculatePerformanceOverXGames(CollectorAgent, gameCount=20, gameSpeed=2, startLevel=0,
-                                     ghostsEnabled=False, freightEnabled=False, logging=True))
+print(calculatePerformanceOverXGames(FirstRealAgent, gameCount=50, gameSpeed=10, startLevel=0,
+                                     ghostsEnabled=True, freightEnabled=True, logging=True))
 
 
 
