@@ -87,7 +87,6 @@ class FirstRealAgent(IAgent):
         startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
 
         minDangerLevel = 99999
-        maxDangerLevel = 0
         minDangerDirection = STOP
         for neighborContainer in startMapNode.neighborContainers:
             endMapNode, path, distance = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode,
@@ -100,20 +99,7 @@ class FirstRealAgent(IAgent):
 
             DebugHelper.drawPath(path, DebugHelper.GREEN, 5)
 
-            # DebugHelper.drawDashedCircle(endMapNode.position, 10, DebugHelper.PURPLE, 5)
-            # DebugHelper.drawDangerLevel(obs, endMapNode.position)
-
             dangerLevel = obs.calculateDangerLevel(endMapNode.position)
-            # if abs(dangerLevel-minDangerLevel) < 0.5:
-            #     pelletLevel = obs.calculatePelletLevel(endMapNode.position)
-            #     if pelletLevel > maxPelletLevel:
-            #         maxPelletLevel = pelletLevel
-            #         minDangerLevel = dangerLevel
-            #         minDangerDirection = neighborContainer.direction
-            #         print("DONE")
-            #         continue
-            if dangerLevel > maxDangerLevel:
-                maxDangerLevel = dangerLevel
             if dangerLevel < minDangerLevel:
                 minDangerLevel = dangerLevel
                 minDangerDirection = neighborContainer.direction
