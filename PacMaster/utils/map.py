@@ -7,6 +7,7 @@ from PacMaster.utils.utils import manhattanDistance, distanceSquared, isPortalPa
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Ghost
 from Pacman_Complete.nodes import NodeGroup, Node
+from Pacman_Complete.pellets import PelletGroup
 from Pacman_Complete.vector import Vector2
 
 
@@ -288,7 +289,7 @@ class Map(object):
         return False
 
     def getPathToEndOfDangerZoneInDirection(self, mapNode: MapNode, startDirection: int) -> (MapNode, list, int) | (
-    None, None, None):
+            None, None, None):
         endNeighborContainer = mapNode.getNeighborInDirection(startDirection)
 
         if endNeighborContainer is None:

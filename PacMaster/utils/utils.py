@@ -18,6 +18,10 @@ def distanceSquared(a: Vector2, b: Vector2) -> int:
     return (a.x - b.x) ** 2 + (a.y - b.y) ** 2
 
 
+def distance(a: Vector2, b: Vector2) -> int:
+    return (distanceSquared(a, b)) ** 0.5
+
+
 def getOppositeDirection(direction: int) -> int:
     return direction * -1
     # if direction == UP:

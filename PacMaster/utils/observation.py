@@ -7,7 +7,8 @@ from PacMaster.utils.map import Map, MapNode, MapPosition
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Blinky, Ghost, Pinky, Inky, Clyde
 from Pacman_Complete.vector import Vector2
-from PacMaster.utils.utils import manhattanDistance, roundVector, distanceToNearestEdge, isPortalPath, distanceSquared
+from PacMaster.utils.utils import manhattanDistance, roundVector, distanceToNearestEdge, isPortalPath, distanceSquared, \
+    distance
 
 
 class Observation(object):
@@ -138,6 +139,27 @@ class Observation(object):
         return self.ghostGroup.clyde
 
     # ------------------ Custom Functions ------------------
+    def calculatePelletLevel(self, vector: Vector2):
+        minDistance = 99999
+        totalDistance = 0.0
+
+        for pellet in self.pelletGroup.pelletList:
+            dist = manhattanDistance(pellet.position, vector)
+            if dist < TILESIZE * 7:
+                totalDistance += self.map.calculateDistance(pellet.position, vector)
+            if dist < minDistance:
+                minDistance = dist
+        for powerPellet in self.pelletGroup.powerpellets:
+            dist = manhattanDistance(powerPellet.position, vector)
+            if dist < TILESIZE * 7:
+                totalDistance += self.map.calculateDistance(powerPellet.position, vector)
+            if dist < minDistance:
+                minDistance = dist
+
+        if totalDistance == 0:
+            return minDistance * 0.1
+        return totalDistance / (minDistance + 1)
+
     def calculateDangerLevel(self, vector: Vector2):
         wayTooCloseThreshold = TILEWIDTH * 6  # Threshold distance for a ghost to be considered 'close'
         tooCloseThreshold = TILEWIDTH * 12  # Threshold distance for a ghost to be considered 'close'
@@ -150,7 +172,7 @@ class Observation(object):
         dangerZoneMiddleMapNodeMultiplier = 1.2  # Multiplier for danger level if vector is in the middle of the danger zone
         ghostInDangerZoneMultiplier = 10  # Multiplier for danger level if ghost is in danger zone
         closestGhostMultiplier = 50  # Multiplier for danger level based on the closest ghost
-        pacmanIsCloserMultiplier = 0.95  # Multiplier for danger level if pacman is closer to the vector than the closest ghost
+        ghostIsCloserMultiplier = 1.5  # Multiplier for danger level if pacman is closer to the vector than the closest ghost
         edgeMultiplier = 2  # Multiplier for danger level if vector is on the edge of the map
 
         minDistance = 9999999
@@ -205,9 +227,9 @@ class Observation(object):
             if mapPos.dangerZone.ghostInDangerZone:
                 dangerLevel *= ghostInDangerZoneMultiplier
 
-        # pacman is closer multiplier
-        if self.map.calculateDistance(self.getPacmanPosition(), vector) < minDistance:
-            dangerLevel *= pacmanIsCloserMultiplier
+        # a ghost is closer than pacman multiplier
+        if self.map.calculateDistance(self.getPacmanPosition(), vector) > minDistance:
+            dangerLevel *= ghostIsCloserMultiplier
 
         # close to edge multiplier
         if distanceToNearestEdge(vector) < 40:
@@ -215,7 +237,6 @@ class Observation(object):
 
         # Normalize based on total distance to avoid high values in less dangerous situations
         normalizedDanger = dangerLevel / (totalDistance + 1)
-
 
         # if normalizedDanger < 2:
         #     print("YES")

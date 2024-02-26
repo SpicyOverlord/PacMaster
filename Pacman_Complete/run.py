@@ -98,7 +98,8 @@ class GameController(object):
             if self.fruit is not None:
                 self.fruit.update(dt)
             self.checkPelletEvents()
-            self.checkGhostEvents()
+            if self.ghostsEnabled:
+                self.checkGhostEvents()
             self.checkFruitEvents()
 
         if self.pacman.alive:

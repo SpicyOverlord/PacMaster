@@ -1,8 +1,6 @@
 from abc import abstractmethod, ABC
 
-from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.observation import Observation
-from Pacman_Complete.constants import *
 
 
 class IAgent(ABC):

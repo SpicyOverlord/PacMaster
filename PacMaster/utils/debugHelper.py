@@ -153,6 +153,20 @@ class DebugHelper(object):
             DebugHelper.drawDangerLevel(obs, mapNode.position)
 
     @staticmethod
+    def drawPelletLevel(obs: Observation, vector: Vector2):
+        pelletLevel = obs.calculatePelletLevel(vector)*0.1
+        if pelletLevel > 10:
+            DebugHelper.drawDot(vector, DebugHelper.GREEN, 10)
+            return
+
+        DebugHelper.drawDot(vector, DebugHelper.WHITE, pelletLevel)
+
+    @staticmethod
+    def drawPelletLevels(obs: Observation):
+        for mapNode in obs.map.mapNodes:
+            DebugHelper.drawPelletLevel(obs, mapNode.position)
+
+    @staticmethod
     def __drawDashedLine__(startVector: Vector2, endVector: Vector2,
                            color: tuple[int, int, int], width=1, dash_length=5):
         x1, y1 = startVector
