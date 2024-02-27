@@ -70,7 +70,7 @@ class CollectorAgent(IAgent):
 
         if maxPelletLevel <= 1:
             nearestPelletPosition = obs.getNearestPelletPosition()
-            nearestPelletMapNode = obs.map.getClosestMapNode(nearestPelletPosition, snapToGrid=False)
+            nearestPelletMapNode = obs.map.getNearestMapNode(nearestPelletPosition, snapToGrid=False)
             pelletPath, _ = obs.map.calculateShortestPath(startMapNode.position, nearestPelletMapNode.position)
 
             maxPelletDirection = self.__getDirection__(obs, pelletPath[1])

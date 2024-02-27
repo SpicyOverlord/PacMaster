@@ -21,7 +21,7 @@ class ScaredAgent(IAgent):
 
         # if we are on a node, we can calculate the best direction to go
         if not mapPos.isBetweenMapNodes:
-            return self.__getLeastDangerousDirectionFromNode__(obs, obs.map.getClosestMapNode(pacmanPosition))
+            return self.__getLeastDangerousDirectionFromNode__(obs, obs.map.getNearestMapNode(pacmanPosition))
 
         # else calculate which of the two directions is the least dangerous
         ghostBetweenMapNodes = obs.getGhostBetweenMapNodes(mapPos.mapNode1, mapPos.mapNode2)

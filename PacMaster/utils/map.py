@@ -253,7 +253,7 @@ class Map(object):
     def getMapNode(self, vector: Vector2) -> MapNode:
         return self.mapNodeDict.get((vector.x, vector.y), None)
 
-    def getClosestMapNode(self, vector: Vector2, snapToGrid: bool = True) -> MapNode:
+    def getNearestMapNode(self, vector: Vector2, snapToGrid: bool = True) -> MapNode:
         mapNode = self.getMapNode(vector)
         if mapNode is not None:
             return mapNode
@@ -369,7 +369,7 @@ class Map(object):
                     customMapNode.addNeighbor(startMapNodeB, DOWN,
                                               manhattanDistance(customMapNode.position, startMapNodeB.position))
             else:
-                customMapNode = self.getClosestMapNode(vector, snapToGrid=False)
+                customMapNode = self.getNearestMapNode(vector, snapToGrid=False)
             return customMapNode, True
         else:
             return mapNode, False
@@ -385,7 +385,7 @@ class Map(object):
                         endVector.x == 560 and endVector.y == 0 or
                         endVector.x == 560 and endVector.y == 720 or
                         endVector.x == 0 and endVector.y == 720):
-            endMapNode = self.getClosestMapNode(endVector, snapToGrid=False)
+            endMapNode = self.getNearestMapNode(endVector, snapToGrid=False)
             endIsCustom = False
         else:
             endMapNode, endIsCustom = self.getOrCreateCustomMapNodeOnVector(endVector)

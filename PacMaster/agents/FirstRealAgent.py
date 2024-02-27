@@ -30,12 +30,13 @@ class FirstRealAgent(IAgent):
         if key_pressed[K_RIGHT]:
             return RIGHT
 
-        # DebugHelper.drawMap(obs)
+        DebugHelper.drawMap(obs)
         # DebugHelper.drawPelletLevels(obs)
 
         pacmanPosition = obs.getPacmanPosition()
+        nearestMapNode = obs.map.getNearestMapNode(pacmanPosition)
 
-        dangerLevel = obs.calculateDangerLevel(pacmanPosition)
+        dangerLevel = obs.calculateDangerLevel(nearestMapNode.position)
         if dangerLevel > 0.1:
             return self.__getLeastDangerousDirectionFromCustomNode__(obs)
 
@@ -75,7 +76,7 @@ class FirstRealAgent(IAgent):
 
         if maxPelletLevel <= 1:
             nearestPelletPosition = obs.getNearestPelletPosition()
-            nearestPelletMapNode = obs.map.getClosestMapNode(nearestPelletPosition, snapToGrid=False)
+            nearestPelletMapNode = obs.map.getNearestMapNode(nearestPelletPosition, snapToGrid=False)
             pelletPath, _ = obs.map.calculateShortestPath(startMapNode.position, nearestPelletMapNode.position)
 
             if len(pelletPath) >= 2:
