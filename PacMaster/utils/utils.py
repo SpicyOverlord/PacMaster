@@ -53,6 +53,9 @@ def isPortalPath(startVector: Vector2, endVector: Vector2) -> bool:
     return abs(startVector.x - endVector.x) > portalDistance and startVector.y == endVector.y
 
 
+def isInCenterArea(vector: Vector2):
+    return 200 <= vector.x < 350 and 281 <= vector.y < 390
+
 def distanceToNearestEdge(vector: Vector2) -> int:
     distance_from_left = vector.x - 20
     distance_from_right = 520 - vector.x
@@ -60,3 +63,4 @@ def distanceToNearestEdge(vector: Vector2) -> int:
     distance_from_bottom = 640 - vector.y
 
     return min(distance_from_left, distance_from_right, distance_from_top, distance_from_bottom)
+

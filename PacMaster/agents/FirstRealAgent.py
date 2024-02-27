@@ -30,14 +30,14 @@ class FirstRealAgent(IAgent):
         if key_pressed[K_RIGHT]:
             return RIGHT
 
-        DebugHelper.drawMap(obs)
-        # DebugHelper.drawPelletLevels(obs)
+        # DebugHelper.drawMap(obs)
+        # DebugHelper.drawDangerLevels(obs)
 
         pacmanPosition = obs.getPacmanPosition()
         nearestMapNode = obs.map.getNearestMapNode(pacmanPosition)
 
         dangerLevel = obs.calculateDangerLevel(nearestMapNode.position)
-        if dangerLevel > 0.1:
+        if obs.getGhostCommonMode() == CHASE or dangerLevel > 0.1:
             return self.__getLeastDangerousDirectionFromCustomNode__(obs)
 
         mapPos = obs.map.createMapPosition(pacmanPosition)
@@ -66,7 +66,6 @@ class FirstRealAgent(IAgent):
         for neighborContainer in startMapNode.neighborContainers:
             endMapNode, path, distance = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode,
                                                                                      neighborContainer.direction)
-
             pelletsInPath = obs.getPelletCountInPath(path)
 
             pathPelletLevel = obs.calculatePelletLevel(endMapNode.position) * (pelletsInPath + 1)

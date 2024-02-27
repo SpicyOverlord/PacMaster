@@ -17,10 +17,10 @@ class HumanAgent(IAgent):
         obs = Observation(self.gameController)
         self.takeStats(obs)
 
-        pacmanPosition = obs.getPacmanPosition()
+        # pacmanPosition = obs.getPacmanPosition()
 
         # TEST
-        # DebugHelper.drawMap(obs)
+        DebugHelper.drawMap(obs)
         # DebugHelper.drawDangerLevels(obs)
 
         # DebugHelper.drawDangerLevel(obs, Vector2(180, 340))

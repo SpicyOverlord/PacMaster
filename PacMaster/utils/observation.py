@@ -8,7 +8,7 @@ from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Blinky, Ghost, Pinky, Inky, Clyde
 from Pacman_Complete.vector import Vector2
 from PacMaster.utils.utils import manhattanDistance, roundVector, distanceToNearestEdge, isPortalPath, distanceSquared, \
-    distance
+    distance, isInCenterArea
 
 
 class Observation(object):
@@ -121,6 +121,9 @@ class Observation(object):
         closestGhost = None
         closestGhostDistance = 9999999
         for ghost in self.getGhosts():
+            if isInCenterArea(ghost.position):
+                continue
+
             ghostDistance = self.map.calculateGhostDistance(ghost, vector)
             if ghostDistance < closestGhostDistance:
                 closestGhost = ghost
@@ -182,7 +185,7 @@ class Observation(object):
         tooCloseThreshold = TILEWIDTH * 12  # Threshold distance for a ghost to be considered 'close'
         tooFarAwayThreshold = TILESIZE * 18  # Threshold distance for a ghost to be considered 'too far away'
 
-        wayTooCloseValue = 300  # Value for a ghost being too far away
+        wayTooCloseValue = 400  # Value for a ghost being too far away
         tooCloseValue = 200  # Value for a ghost being too close
 
         dangerZoneMultiplier = 5  # Multiplier for danger level if vector is in danger zone
@@ -199,10 +202,10 @@ class Observation(object):
 
         for ghost in self.getGhosts():
             # ignore ghost if it is not dangerous
-            if ghost.mode.current in (FREIGHT, SPAWN):
+            if ghost.mode.current in (FREIGHT, SPAWN) or isInCenterArea(ghost.position):
                 continue
 
-            path, distance = self.map.calculateGhostPath(ghost=ghost, endVector=vector)
+            path, dist = self.map.calculateGhostPath(ghost=ghost, endVector=vector)
 
             # print(ghost.name, distance, len(path) == 0,str(ghost.position),str(vector), [str(pathNode) for pathNode in path])
             # print("vector:", str(vector))
@@ -212,15 +215,15 @@ class Observation(object):
                 continue
 
             # ignore ghost if it is too far away
-            if distance > tooFarAwayThreshold:
+            if dist > tooFarAwayThreshold:
                 continue
 
-            totalDistance += distance
-            minDistance = min(minDistance, distance)
+            totalDistance += dist
+            minDistance = min(minDistance, dist)
 
-            if distance < wayTooCloseThreshold:
+            if dist < wayTooCloseThreshold:
                 numberOfReallyCloseGhosts += 1
-            elif distance < tooCloseThreshold:
+            elif dist < tooCloseThreshold:
                 numberOfCloseGhosts += 1
 
         # Adjust danger level based on the closest ghost

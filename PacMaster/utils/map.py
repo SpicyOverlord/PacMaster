@@ -3,7 +3,7 @@ import heapq
 from typing import List
 
 from PacMaster.utils.utils import manhattanDistance, distanceSquared, isPortalPath, getOppositeDirection, roundVector, \
-    directionToString, distanceToNearestEdge
+    directionToString, distanceToNearestEdge, isInCenterArea
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Ghost
 from Pacman_Complete.nodes import NodeGroup, Node
@@ -222,7 +222,14 @@ class MapPosition(object):
 class Map(object):
     def __init__(self, obs, nodeGroup: NodeGroup, ghosts: list[Ghost]):
         self.obs = obs
-        self.mapNodes = [MapNode(node) for node in nodeGroup.nodesLUT.values()]
+
+        # self.mapNodes = [MapNode(node) for node in nodeGroup.nodesLUT.values()]
+        self.mapNodes = []
+        for node in nodeGroup.nodesLUT.values():
+            if isInCenterArea(node.position):
+                continue
+            self.mapNodes.append(MapNode(node))
+
         self.mapNodeDict = {(node.x, node.y): node for node in self.mapNodes}
         self.ghosts = ghosts
 
@@ -232,6 +239,10 @@ class Map(object):
         for currentMapNode in self.mapNodes:
             for neighborDirection, neighborNode in currentMapNode.node.neighbors.items():
                 if neighborNode is None:
+                    continue
+
+                # skip if neighbor is in the center (ghost start area)
+                if isInCenterArea(neighborNode.position):
                     continue
 
                 neighborMapNode = self.getMapNode(neighborNode.position)
@@ -350,8 +361,16 @@ class Map(object):
 
             if customMapNodeForGhostIsNeeded:
                 neighborContainer = mapNode.getNeighborInDirection(ghost.direction)
-                customMapNode.addNeighbor(neighborContainer.mapNode, ghost.direction,
-                                          manhattanDistance(customMapNode.position, neighborContainer.mapNode.position))
+
+                if neighborContainer is not None:
+                    # print(vector, ghost.position, ghost.direction, neighborContainer)
+                    # for neighborContainer in mapNode.neighborContainers:
+                    #     print("Neighbor:", neighborContainer.direction, neighborContainer.mapNode.position)
+                    # raise Exception("No neighbor found in direction: " + directionToString(ghost.direction))
+
+                    customMapNode.addNeighbor(neighborContainer.mapNode, ghost.direction,
+                                              manhattanDistance(customMapNode.position,
+                                                                neighborContainer.mapNode.position))
 
                 return customMapNode, True
             else:
@@ -377,6 +396,9 @@ class Map(object):
     def calculateShortestPath(self, startVector: Vector2, endVector: Vector2,
                               ghost: Ghost = None) -> (list[Vector2], int) | (None, None):
         isGhost = ghost is not None
+
+        if isGhost and isInCenterArea(startVector):
+            return [], 0
 
         startMapNode, startIsCustom = self.getOrCreateCustomMapNodeOnVector(startVector, ghost)
 
