@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-import math
 from collections import Counter
 
 from PacMaster.utils.map import Map, MapNode, MapPosition
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Blinky, Ghost, Pinky, Inky, Clyde
 from Pacman_Complete.vector import Vector2
-from PacMaster.utils.utils import manhattanDistance, roundVector, distanceToNearestEdge, isPortalPath, distanceSquared, \
-    distance, isInCenterArea
+from PacMaster.utils.utils import manhattanDistance, roundVector, distanceToNearestEdge, isPortalPath, isInCenterArea
 
 
 class Observation(object):

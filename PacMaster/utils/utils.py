@@ -6,20 +6,12 @@ def roundVector(vector: Vector2) -> Vector2:
     return Vector2(round(vector.x), round(vector.y))
 
 
-def clampVectorToNonNegative(vector: Vector2):
-    return Vector2(max(0, vector.x), max(0, vector.y))
-
-
 def manhattanDistance(a: Vector2, b: Vector2) -> int:
     return abs(a.x - b.x) + abs(a.y - b.y)
 
 
 def distanceSquared(a: Vector2, b: Vector2) -> int:
     return (a.x - b.x) ** 2 + (a.y - b.y) ** 2
-
-
-def distance(a: Vector2, b: Vector2) -> int:
-    return (distanceSquared(a, b)) ** 0.5
 
 
 def getOppositeDirection(direction: int) -> int:
@@ -56,6 +48,7 @@ def isPortalPath(startVector: Vector2, endVector: Vector2) -> bool:
 def isInCenterArea(vector: Vector2):
     return 200 <= vector.x < 350 and 281 <= vector.y < 390
 
+
 def distanceToNearestEdge(vector: Vector2) -> int:
     distance_from_left = vector.x - 20
     distance_from_right = 520 - vector.x
@@ -63,4 +56,3 @@ def distanceToNearestEdge(vector: Vector2) -> int:
     distance_from_bottom = 640 - vector.y
 
     return min(distance_from_left, distance_from_right, distance_from_top, distance_from_bottom)
-
