@@ -34,9 +34,13 @@ class FirstRealAgent(IAgent):
         # DebugHelper.drawDangerLevels(obs)
 
         pacmanPosition = obs.getPacmanPosition()
-        nearestMapNode = obs.map.getNearestMapNode(pacmanPosition)
 
-        dangerLevel = obs.calculateDangerLevel(nearestMapNode.position)
+        mapPos = obs.map.createMapPosition(pacmanPosition)
+        dangerLevel = obs.calculateDangerLevel(mapPos.mapNode1.position)
+        if mapPos.isBetweenMapNodes:
+            dangerLevel = max(dangerLevel, obs.calculateDangerLevel(mapPos.mapNode2.position))
+
+        # pacmanDangerLevel = obs.calculateDangerLevel(pacmanPosition)
         if obs.getGhostCommonMode() == CHASE or dangerLevel > 0.1:
             return self.__getLeastDangerousDirectionFromCustomNode__(obs)
 
