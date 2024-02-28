@@ -40,5 +40,9 @@ class WeightContainer:
     def items(self):
         return self.__weightDict__.items()
 
+    def keys(self):
+        return self.__weightDict__.keys()
+
     def __str__(self):
         return str(self.__weightDict__)
+

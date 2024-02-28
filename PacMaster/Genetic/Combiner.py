@@ -14,41 +14,53 @@ class Combiner:
         return mutation
 
     @staticmethod
-    def randomCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
+    def randomSelectCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
         # check if the weights have the same keys
-        for key, value in weightsA.items():
-            if not weightsB.hasWeight(key):
-                raise ValueError("Weight with name " + key + " does not exist")
-        for key, value in weightsB.items():
-            if not weightsA.hasWeight(key):
-                raise ValueError("Weight with name " + key + " does not exist")
+        if set(weightsA.keys()) != set(weightsB.keys()):
+            raise ValueError("Weights must have the same keys for random combination")
 
         # Randomly choose the value from one of the two weights
-        childWeights = WeightContainer()
+        offspring = WeightContainer()
         for key, value in weightsA.items():
             if random.random() < 0.5:
-                childWeights.addWeight(key, value)
+                offspring.addWeight(key, value)
             else:
-                childWeights.addWeight(key, weightsB.getWeight(key))
+                offspring.addWeight(key, weightsB.getWeight(key))
 
-        return childWeights
+        return offspring
 
     @staticmethod
     def randomBetweenCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
-        # check if the weights have the same keys
-        for key, value in weightsA.items():
-            if not weightsB.hasWeight(key):
-                raise ValueError("Weight with name " + key + " does not exist")
-        for key, value in weightsB.items():
-            if not weightsA.hasWeight(key):
-                raise ValueError("Weight with name " + key + " does not exist")
+        Combiner.checkSameKeySet(weightsA, weightsB)
 
         # Randomly choose the value from one of the two weights
-        childWeights = WeightContainer()
+        offspring = WeightContainer()
         for key, value in weightsA.items():
-            childWeights.addWeight(key, random.uniform(weightsA.getWeight(key), weightsB.getWeight(key)))
+            offspring.addWeight(key, random.uniform(weightsA.getWeight(key), weightsB.getWeight(key)))
 
-        return childWeights
+        return offspring
+
+    @staticmethod
+    def averageCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
+        Combiner.checkSameKeySet(weightsA, weightsB)
+
+        offspring = WeightContainer()
+        for key, value in weightsA.items():
+            averageWeight = (value + weightsB.getWeight(key)) / 2
+            offspring.addWeight(key, averageWeight)
+
+    # TODO: Make a function where alpha is decided by the fitness of the parents?
+    @staticmethod
+    def blendCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
+        Combiner.checkSameKeySet(weightsA, weightsB)
+
+        offspring = WeightContainer()
+        for key, value in weightsA.items():
+            alpha = random.uniform(0.2, 0.8)
+            blendedWeight = (1 - alpha) * value + alpha * weightsB.getWeight(key)
+            offspring.addWeight(key, blendedWeight)
+
+        return offspring
 
     @staticmethod
     def tournamentSelectParent(weightsList: list[WeightContainer], poolSize: int) -> WeightContainer:
@@ -60,5 +72,24 @@ class Combiner:
         return max(tournament, key=lambda x: x.getFitness())
 
     @staticmethod
+    def rouletteWheelSelectParent(weightsList: list[WeightContainer]) -> WeightContainer:
+        totalFitness = sum(weightContainer.getFitness() for weightContainer in weightsList)
+        rouletteSpin = random.uniform(0, totalFitness)
+        cumulativeFitness = 0
+
+        for weightContainer in weightsList:
+            cumulativeFitness += weightContainer.getFitness()
+            if cumulativeFitness >= rouletteSpin:
+                return weightContainer
+
+    @staticmethod
     def sortWeights(weightsList: list[WeightContainer]) -> list[WeightContainer]:
         return sorted(weightsList, key=lambda x: x.getFitness(), reverse=True)
+
+    # TODO: remove this when we know everything works!
+    @staticmethod
+    def checkSameKeySet(weightsA: WeightContainer, weightsB: WeightContainer) -> bool:
+        if set(weightsA.keys()) != set(weightsB.keys()):
+            raise ValueError("Weights does not have the same keys")
+
+        return True
