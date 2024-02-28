@@ -6,18 +6,16 @@ from PacMaster.Genetic.WeightContainer import WeightContainer
 class Combiner:
     @staticmethod
     def mutate(weights: WeightContainer, mutationRate: float):
-        mutation = weights.copy()
+        mutation = WeightContainer()
 
-        for key, value in mutation.items():
-            mutation.setWeight(key, mutation.getWeight(key) * random.uniform(-1, 1) * mutationRate)
+        for key, value in weights.items():
+            mutation.addWeight(key, value * random.uniform(-1, 1) * mutationRate)
 
         return mutation
 
     @staticmethod
     def randomSelectCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
-        # check if the weights have the same keys
-        if set(weightsA.keys()) != set(weightsB.keys()):
-            raise ValueError("Weights must have the same keys for random combination")
+        Combiner.checkSameKeySet(weightsA, weightsB)
 
         # Randomly choose the value from one of the two weights
         offspring = WeightContainer()

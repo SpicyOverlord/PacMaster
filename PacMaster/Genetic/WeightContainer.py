@@ -28,9 +28,6 @@ class WeightContainer:
 
         self.__weightDict__[name] = weight
 
-    def setWeight(self, name: str, weight: float):
-        self.__weightDict__[name] = weight
-
     def getWeight(self, name: str) -> float:
         return self.__weightDict__[name]
 
