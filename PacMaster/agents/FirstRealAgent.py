@@ -30,7 +30,7 @@ class FirstRealAgent(IAgent):
         if key_pressed[K_RIGHT]:
             return RIGHT
 
-        # DebugHelper.drawMap(obs)
+        DebugHelper.drawMap(obs)
         # DebugHelper.drawDangerLevels(obs)
 
         pacmanPosition = obs.getPacmanPosition()
