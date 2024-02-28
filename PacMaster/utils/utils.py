@@ -40,7 +40,7 @@ def directionToString(direction: int):
 
 
 def isPortalPath(startVector: Vector2, endVector: Vector2) -> bool:
-    # real distance is TILESIZE * 26, but we want to be safe
+    # real distance is TILESIZE * 26, but we use 24 to be safe
     portalDistance = TILESIZE * 24
     return abs(startVector.x - endVector.x) > portalDistance and startVector.y == endVector.y
 
