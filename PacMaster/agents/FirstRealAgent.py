@@ -25,39 +25,77 @@ class FirstRealAgent(IAgent):
 
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
-        return WeightContainer({
-            'fleeThreshold': 0.1,
+        return WeightContainer({'fleeThreshold': 0.166, 'pelletLevelDistance': -0.91, 'wayTooCloseThreshold': 40.464,
+                                'tooCloseThreshold': 206.539, 'tooFarAwayThreshold': 102.199,
+                                'wayTooCloseValue': 329.268, 'tooCloseValue': 82.789, 'dangerZoneMultiplier': 1.606,
+                                'dangerZoneMiddleMapNodeMultiplier': 1.826, 'ghostInDangerZoneMultiplier': 3.604,
+                                'closestGhostMultiplier': 50.886, 'ghostIsCloserMultiplier': 2.889,
+                                'edgeMultiplier': 0.641})
 
-            'pelletLevelDistance': 3 * TILESIZE,
+        # return WeightContainer({
+        #     'fleeThreshold': 0.2,
+        #     'pelletLevelDistance': -5,
+        #     'wayTooCloseThreshold': 275,
+        #     'tooCloseThreshold': 400,
+        #     'tooFarAwayThreshold': 900,
+        #     'wayTooCloseValue': 150,
+        #     'tooCloseValue': 150,
+        #     'dangerZoneMultiplier': 1.3,
+        #     'dangerZoneMiddleMapNodeMultiplier': 2,
+        #     'ghostInDangerZoneMultiplier': 2,
+        #     'closestGhostMultiplier': 2,
+        #     'ghostIsCloserMultiplier': 1.5,
+        #     'edgeMultiplier': 1})
 
-            'wayTooCloseThreshold': TILEWIDTH * 6,
-            'tooCloseThreshold': TILEWIDTH * 12,
-            'tooFarAwayThreshold': TILESIZE * 18,
-            'wayTooCloseValue': 400,
-            'tooCloseValue': 200,
-            'dangerZoneMultiplier': 5,
-            'dangerZoneMiddleMapNodeMultiplier': 1.2,
-            'ghostInDangerZoneMultiplier': 10,
-            'closestGhostMultiplier': 50,
-            'ghostIsCloserMultiplier': 1.5,
-            'edgeMultiplier': 2
-        })
+        # return WeightContainer({
+        #     'fleeThreshold': 0.094,
+        #     'pelletLevelDistance': 61.683,
+        #     'wayTooCloseThreshold': 89.229,
+        #     'tooCloseThreshold': 205.579,
+        #     'tooFarAwayThreshold': 403.254,
+        #     'wayTooCloseValue': 492.364,
+        #     'tooCloseValue': 260.789,
+        #     'dangerZoneMultiplier': 6.325,
+        #     'dangerZoneMiddleMapNodeMultiplier': 0.983,
+        #     'ghostInDangerZoneMultiplier': 12.141,
+        #     'closestGhostMultiplier': 45.16,
+        #     'ghostIsCloserMultiplier': 1.685,
+        #     'edgeMultiplier': 1.987}
+        # )
+
+        # return WeightContainer({
+        #     'fleeThreshold': 0.1,
+        #
+        #     'pelletLevelDistance': 3 * TILESIZE,
+        #
+        #     'wayTooCloseThreshold': TILEWIDTH * 6,
+        #     'tooCloseThreshold': TILEWIDTH * 12,
+        #     'tooFarAwayThreshold': TILESIZE * 18,
+        #     'wayTooCloseValue': 400,
+        #     'tooCloseValue': 200,
+        #     'dangerZoneMultiplier': 5,
+        #     'dangerZoneMiddleMapNodeMultiplier': 1.2,
+        #     'ghostInDangerZoneMultiplier': 10,
+        #     'closestGhostMultiplier': 50,
+        #     'ghostIsCloserMultiplier': 1.5,
+        #     'edgeMultiplier': 2
+        # })
 
     def calculateNextMove(self):
         obs = Observation(self.gameController, self.weightContainer)
         self.takeStats(obs)
 
-        # key_pressed = pygame.key.get_pressed()
-        # if key_pressed[K_UP]:
-        #     return UP
-        # if key_pressed[K_DOWN]:
-        #     return DOWN
-        # if key_pressed[K_LEFT]:
-        #     return LEFT
-        # if key_pressed[K_RIGHT]:
-        #     return RIGHT
+        key_pressed = pygame.key.get_pressed()
+        if key_pressed[K_UP]:
+            return UP
+        if key_pressed[K_DOWN]:
+            return DOWN
+        if key_pressed[K_LEFT]:
+            return LEFT
+        if key_pressed[K_RIGHT]:
+            return RIGHT
 
-        # DebugHelper.drawMap(obs)
+        DebugHelper.drawMap(obs)
         # DebugHelper.drawDangerLevels(obs)
 
         pacmanPosition = obs.getPacmanPosition()
@@ -68,7 +106,7 @@ class FirstRealAgent(IAgent):
             dangerLevel = max(dangerLevel, obs.calculateDangerLevel(mapPos.mapNode2.position))
 
         # pacmanDangerLevel = obs.calculateDangerLevel(pacmanPosition)
-        if obs.getGhostCommonMode() == CHASE or dangerLevel > self.weightContainer.getWeight('fleeThreshold'):
+        if dangerLevel > self.weightContainer.getWeight('fleeThreshold'):
             return self.__getLeastDangerousDirectionFromCustomNode__(obs)
 
         mapPos = obs.map.createMapPosition(pacmanPosition)

@@ -5,5 +5,5 @@ from PacMaster.agents.UntrappableAgent import UntrappableAgent
 from PacMaster.utils.runnerFunctions import *
 
 # runGameWithHuman()
-stats = calculatePerformanceOverXGames(HumanAgent, gameCount=20, gameSpeed=2, startLevel=0,
+stats = calculatePerformanceOverXGames(FirstRealAgent, gameCount=30, gameSpeed=15, startLevel=0, startLives=1,
                                        ghostsEnabled=True, freightEnabled=True, logging=True)

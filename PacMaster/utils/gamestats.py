@@ -27,7 +27,7 @@ class GameStats(object):
         # calculate average and max level reached
         averageLevelsCompleted = sum([game.levelsCompleted for game in gameStats]) / len(gameStats)
         weighedAverageLevel = (averageLevelsCompleted * 0.5) + 1
-        maxLevelReached = max([game.levelsCompleted for game in gameStats])
+        maxLevelCompleted = max([game.levelsCompleted for game in gameStats])
 
         # Calculate total pellets eaten
         maxPelletsPerLevel = 240
@@ -57,7 +57,7 @@ class GameStats(object):
                 "weightedAverageBaseScore": round(weightedAverageBaseScore, 3),
                 "weightedAveragePelletScore": round(weightedAveragePelletScore, 3),
                 "averageLevelsCompleted": round(averageLevelsCompleted, 3),
-                "maxLevelReached": maxLevelReached,
+                "maxLevelCompleted": maxLevelCompleted,
 
                 "medianScore": medianScore,
                 "averageScore": round(averageScore, 3),

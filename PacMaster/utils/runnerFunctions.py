@@ -35,7 +35,7 @@ def runGameWithAgent(agentType: type[IAgent], weightContainer: WeightContainer =
 
 
 def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: WeightContainer = None,
-                                   gameCount: int = 20, gameSpeed=5, startLevel: int = 0,
+                                   gameCount: int = 20, gameSpeed=5, startLevel: int = 0, startLives=1,
                                    ghostsEnabled: bool = True, freightEnabled: bool = True,
                                    logging=False):
     gameStats = []
@@ -44,7 +44,7 @@ def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: We
             print(f"Running game {i + 1}...")
 
         gameStats.append(runGameWithAgent(agentClass, weightContainer=weightContainer, gameSpeed=gameSpeed,
-                                          startLives=1, startLevel=startLevel,
+                                          startLives=startLives, startLevel=startLevel,
                                           ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled))
 
         if logging:

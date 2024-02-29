@@ -8,9 +8,13 @@ class WeightModifier:
     def mutate(weights: WeightContainer, mutationRate: float):
         mutation = WeightContainer()
 
-        mutateDistance = random.uniform(0, 1)
         for key, value in weights.items():
-            mutatedValue = value + value * random.uniform(-mutateDistance, mutateDistance) * mutationRate
+            if random.random() < mutationRate:
+                mutateDistance = random.uniform(0, 1)
+                mutatedValue = value + value * random.uniform(-mutateDistance, mutateDistance) * mutationRate
+            else:
+                mutatedValue = value
+
             mutation.addWeight(key, round(mutatedValue, 3))
 
         return mutation
@@ -56,8 +60,20 @@ class WeightModifier:
 
         offspring = WeightContainer()
         for key, value in weightsA.items():
-            alpha = random.uniform(0.2, 0.8)
-            blendedWeight = (1 - alpha) * value + alpha * weightsB.getWeight(key)
+            ratio = random.uniform(0.2, 0.8)
+            blendedWeight = (1 - ratio) * value + ratio * weightsB.getWeight(key)
+            offspring.addWeight(key, round(blendedWeight, 3))
+
+        return offspring
+
+    @staticmethod
+    def blendByFitnessCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
+        WeightModifier.checkSameKeySet(weightsA, weightsB)
+
+        offspring = WeightContainer()
+        for key, value in weightsA.items():
+            ratio = weightsA.getFitness() / (weightsA.getFitness() + weightsB.getFitness())
+            blendedWeight = (1 - ratio) * value + ratio * weightsB.getWeight(key)
             offspring.addWeight(key, round(blendedWeight, 3))
 
         return offspring
