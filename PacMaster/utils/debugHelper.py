@@ -50,27 +50,42 @@ class DebugHelper(object):
 
     @staticmethod
     def drawLine(startVector: Vector2, endVector: Vector2, color: tuple[int, int, int], width: int = 5):
+        if not DebugHelper._enabled:
+            return
+
         DebugHelper.__addDrawObject__("line",
                                       [startVector.asInt(), endVector.asInt(), color, width])
 
     @staticmethod
     def drawDashedLine(startVector: Vector2, endVector: Vector2, color: tuple[int, int, int], width: int = 5,
                        dashLength: int = 10):
+        if not DebugHelper._enabled:
+            return
+
         DebugHelper.__addDrawObject__("dashedLine",
                                       [startVector.asInt(), endVector.asInt(), color, width, dashLength])
 
     @staticmethod
     def drawDashedCircle(center: Vector2, radius: float, color: tuple[int, int, int], width=1, dash_length=10):
+        if not DebugHelper._enabled:
+            return
+
         DebugHelper.__addDrawObject__("dashedCircle",
                                       [center.asInt(), radius, color, width, dash_length])
 
     @staticmethod
     def drawDot(position: Vector2, color: tuple[int, int, int], radius: float = 3.0):
+        if not DebugHelper._enabled:
+            return
+
         DebugHelper.__addDrawObject__("dot",
                                       [position.asInt(), color, radius])
 
     @staticmethod
     def drawPath(path: list[Vector2], color: tuple[int, int, int], width: int = 5):
+        if not DebugHelper._enabled:
+            return
+
         DebugHelper.drawDot(path[0], DebugHelper.RED, 3)
         DebugHelper.drawDot(path[-1], DebugHelper.RED, 3)
         for i in range(len(path) - 1):
@@ -78,6 +93,9 @@ class DebugHelper(object):
 
     @staticmethod
     def drawDashedPath(path: list[Vector2], color: tuple[int, int, int], width: int = 5, dashLength: int = 10):
+        if not DebugHelper._enabled:
+            return
+
         DebugHelper.drawDot(path[0], DebugHelper.RED, 3)
         DebugHelper.drawDot(path[-1], DebugHelper.RED, 3)
         for i in range(len(path) - 1):
@@ -86,11 +104,17 @@ class DebugHelper(object):
 
     @staticmethod
     def drawGhostPaths(obs: Observation):
+        if not DebugHelper._enabled:
+            return
+
         for ghost in obs.getGhosts():
             DebugHelper.drawGhostPath(obs, ghost.name)
 
     @staticmethod
     def drawGhostPath(obs: Observation, ghostInt: int = BLINKY):
+        if not DebugHelper._enabled:
+            return
+
         ghost = obs.getGhost(ghostInt)
 
         if ghost.mode.current == FREIGHT:
@@ -118,6 +142,9 @@ class DebugHelper(object):
 
     @staticmethod
     def drawDangerZone(dangerZone: DangerZone):
+        if not DebugHelper._enabled:
+            return
+
         previousMapNode = None
         for mapNode in dangerZone.mapNodes:
             if previousMapNode is not None:
@@ -130,6 +157,9 @@ class DebugHelper(object):
 
     @staticmethod
     def drawMap(obs: Observation):
+        if not DebugHelper._enabled:
+            return
+
         for mapNode in obs.map.mapNodes:
             DebugHelper.drawDot(mapNode.position, DebugHelper.BLUE, 3)
             for neighbor in mapNode.neighborContainers:
@@ -137,6 +167,9 @@ class DebugHelper(object):
 
     @staticmethod
     def drawDangerLevel(obs: Observation, vector: Vector2):
+        if not DebugHelper._enabled:
+            return
+
         dangerLevel = obs.calculateDangerLevel(vector) * 5
         if dangerLevel < 2:
             DebugHelper.drawDot(vector, DebugHelper.WHITE, dangerLevel)
@@ -149,11 +182,17 @@ class DebugHelper(object):
 
     @staticmethod
     def drawDangerLevels(obs: Observation):
+        if not DebugHelper._enabled:
+            return
+
         for mapNode in obs.map.mapNodes:
             DebugHelper.drawDangerLevel(obs, mapNode.position)
 
     @staticmethod
     def drawPelletLevel(obs: Observation, vector: Vector2):
+        if not DebugHelper._enabled:
+            return
+
         pelletLevel = obs.calculatePelletLevel(vector)
         if pelletLevel > 10:
             DebugHelper.drawDot(vector, DebugHelper.GREEN, 10)
@@ -163,6 +202,9 @@ class DebugHelper(object):
 
     @staticmethod
     def drawPelletLevels(obs: Observation):
+        if not DebugHelper._enabled:
+            return
+
         for mapNode in obs.map.mapNodes:
             DebugHelper.drawPelletLevel(obs, mapNode.position)
 

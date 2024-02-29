@@ -38,70 +38,9 @@ class FirstRealAgent(IAgent):
             'ghostInDangerZoneMultiplier': 3.604,
             'closestGhostMultiplier': 50.886,
             'ghostIsCloserMultiplier': 2.889,
-            'edgeMultiplier': 0.641}
+            'edgeMultiplier': 1}
         )
-        # return WeightContainer({'fleeThreshold': 0.366,
-        #                         'pelletLevelDistance': -0.91,
-        #                         'wayTooCloseThreshold': 40.464,
-        #                         'tooCloseThreshold': 206.539,
-        #                         'tooFarAwayThreshold': 1020.199,
-        #                         'wayTooCloseValue': 329.268,
-        #                         'tooCloseValue': 82.789,
-        #                         'dangerZoneMultiplier': 1.606,
-        #                         'dangerZoneMiddleMapNodeMultiplier': 1.826,
-        #                         'ghostInDangerZoneMultiplier': 3.604,
-        #                         'closestGhostMultiplier': 50.886,
-        #                         'ghostIsCloserMultiplier': 2.889,
-        #                         'edgeMultiplier': 1.641})
 
-        # return WeightContainer({
-        #     'fleeThreshold': 0.2,
-        #     'pelletLevelDistance': -5,
-        #     'wayTooCloseThreshold': 275,
-        #     'tooCloseThreshold': 400,
-        #     'tooFarAwayThreshold': 900,
-        #     'wayTooCloseValue': 150,
-        #     'tooCloseValue': 150,
-        #     'dangerZoneMultiplier': 1.3,
-        #     'dangerZoneMiddleMapNodeMultiplier': 2,
-        #     'ghostInDangerZoneMultiplier': 2,
-        #     'closestGhostMultiplier': 2,
-        #     'ghostIsCloserMultiplier': 1.5,
-        #     'edgeMultiplier': 1})
-
-        # return WeightContainer({
-        #     'fleeThreshold': 0.094,
-        #     'pelletLevelDistance': 61.683,
-        #     'wayTooCloseThreshold': 89.229,
-        #     'tooCloseThreshold': 205.579,
-        #     'tooFarAwayThreshold': 403.254,
-        #     'wayTooCloseValue': 492.364,
-        #     'tooCloseValue': 260.789,
-        #     'dangerZoneMultiplier': 6.325,
-        #     'dangerZoneMiddleMapNodeMultiplier': 0.983,
-        #     'ghostInDangerZoneMultiplier': 12.141,
-        #     'closestGhostMultiplier': 45.16,
-        #     'ghostIsCloserMultiplier': 1.685,
-        #     'edgeMultiplier': 1.987}
-        # )
-
-        # return WeightContainer({
-        #     'fleeThreshold': 0.1,
-        #
-        #     'pelletLevelDistance': 3 * TILESIZE,
-        #
-        #     'wayTooCloseThreshold': TILEWIDTH * 6,
-        #     'tooCloseThreshold': TILEWIDTH * 12,
-        #     'tooFarAwayThreshold': TILESIZE * 18,
-        #     'wayTooCloseValue': 400,
-        #     'tooCloseValue': 200,
-        #     'dangerZoneMultiplier': 5,
-        #     'dangerZoneMiddleMapNodeMultiplier': 1.2,
-        #     'ghostInDangerZoneMultiplier': 10,
-        #     'closestGhostMultiplier': 50,
-        #     'ghostIsCloserMultiplier': 1.5,
-        #     'edgeMultiplier': 2
-        # })
 
     def calculateNextMove(self):
         obs = Observation(self.gameController, self.weightContainer)
@@ -117,8 +56,8 @@ class FirstRealAgent(IAgent):
         if key_pressed[K_RIGHT]:
             return RIGHT
 
-        # DebugHelper.drawMap(obs)
-        # DebugHelper.drawDangerLevels(obs)
+        DebugHelper.drawMap(obs)
+        DebugHelper.drawDangerLevels(obs)
 
         pacmanPosition = obs.getPacmanPosition()
 

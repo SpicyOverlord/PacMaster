@@ -212,8 +212,8 @@ class Observation(object):
             if dist > self.weights.getWeight('tooFarAwayThreshold'):
                 continue
 
-            totalDistance += dist
             minDistance = min(minDistance, dist)
+            totalDistance += dist
 
             # Threshold distance for a ghost to be considered 'close'
             if dist < self.weights.getWeight('wayTooCloseThreshold'):
