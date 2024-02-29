@@ -25,12 +25,34 @@ class FirstRealAgent(IAgent):
 
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
-        return WeightContainer({'fleeThreshold': 0.166, 'pelletLevelDistance': -0.91, 'wayTooCloseThreshold': 40.464,
-                                'tooCloseThreshold': 206.539, 'tooFarAwayThreshold': 102.199,
-                                'wayTooCloseValue': 329.268, 'tooCloseValue': 82.789, 'dangerZoneMultiplier': 1.606,
-                                'dangerZoneMiddleMapNodeMultiplier': 1.826, 'ghostInDangerZoneMultiplier': 3.604,
-                                'closestGhostMultiplier': 50.886, 'ghostIsCloserMultiplier': 2.889,
-                                'edgeMultiplier': 0.641})
+        return WeightContainer({
+            'fleeThreshold': 0.166,
+            'pelletLevelDistance': -0.91,
+            'wayTooCloseThreshold': 40.464,
+            'tooCloseThreshold': 206.539,
+            'tooFarAwayThreshold': 102.199,
+            'wayTooCloseValue': 329.268,
+            'tooCloseValue': 82.789,
+            'dangerZoneMultiplier': 1.606,
+            'dangerZoneMiddleMapNodeMultiplier': 1.826,
+            'ghostInDangerZoneMultiplier': 3.604,
+            'closestGhostMultiplier': 50.886,
+            'ghostIsCloserMultiplier': 2.889,
+            'edgeMultiplier': 0.641}
+        )
+        # return WeightContainer({'fleeThreshold': 0.366,
+        #                         'pelletLevelDistance': -0.91,
+        #                         'wayTooCloseThreshold': 40.464,
+        #                         'tooCloseThreshold': 206.539,
+        #                         'tooFarAwayThreshold': 1020.199,
+        #                         'wayTooCloseValue': 329.268,
+        #                         'tooCloseValue': 82.789,
+        #                         'dangerZoneMultiplier': 1.606,
+        #                         'dangerZoneMiddleMapNodeMultiplier': 1.826,
+        #                         'ghostInDangerZoneMultiplier': 3.604,
+        #                         'closestGhostMultiplier': 50.886,
+        #                         'ghostIsCloserMultiplier': 2.889,
+        #                         'edgeMultiplier': 1.641})
 
         # return WeightContainer({
         #     'fleeThreshold': 0.2,
@@ -95,7 +117,7 @@ class FirstRealAgent(IAgent):
         if key_pressed[K_RIGHT]:
             return RIGHT
 
-        DebugHelper.drawMap(obs)
+        # DebugHelper.drawMap(obs)
         # DebugHelper.drawDangerLevels(obs)
 
         pacmanPosition = obs.getPacmanPosition()

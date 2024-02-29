@@ -117,5 +117,5 @@ class TournamentRunner:
             print(f"Generation {i + 1}: {bestOfEachGenerations[i].getFitness()} {bestOfEachGenerations[i]}")
 
 
-TournamentRunner.startNewSimulation(FirstRealAgent, 30, 50, 1.5,
-                                    20, 15)
+TournamentRunner.startNewSimulation(FirstRealAgent, 10, 10, 0.5,
+                                    50, 15)
