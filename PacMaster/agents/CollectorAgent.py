@@ -3,6 +3,7 @@ import random
 import pygame
 from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
 
+from PacMaster.Genetic.WeightContainer import WeightContainer
 from PacMaster.agents.Iagent import IAgent
 from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.map import MapNode
@@ -13,7 +14,7 @@ from Pacman_Complete.vector import Vector2
 
 
 class CollectorAgent(IAgent):
-    def __init__(self, gameController):
+    def __init__(self, gameController, weightContainer: WeightContainer = None):
         super().__init__(gameController)
 
     def calculateNextMove(self):

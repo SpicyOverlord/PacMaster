@@ -3,6 +3,8 @@ import random
 import pygame
 from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
 
+from PacMaster.Genetic.WeightModifier import WeightModifier
+from PacMaster.Genetic.WeightContainer import WeightContainer
 from PacMaster.agents.Iagent import IAgent
 from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.map import MapNode
@@ -13,24 +15,49 @@ from Pacman_Complete.vector import Vector2
 
 
 class FirstRealAgent(IAgent):
-    def __init__(self, gameController):
+    def __init__(self, gameController, weightContainer: WeightContainer = None):
         super().__init__(gameController)
 
+        if weightContainer is None:
+            self.weightContainer = FirstRealAgent.getDefaultWeightContainer()
+        else:
+            self.weightContainer = weightContainer
+
+    @staticmethod
+    def getDefaultWeightContainer() -> WeightContainer:
+        return WeightContainer({
+            'fleeThreshold': 0.1,
+
+            'pelletLevelDistance': 3 * TILESIZE,
+
+            'wayTooCloseThreshold': TILEWIDTH * 6,
+            'tooCloseThreshold': TILEWIDTH * 12,
+            'tooFarAwayThreshold': TILESIZE * 18,
+            'wayTooCloseValue': 400,
+            'tooCloseValue': 200,
+            'dangerZoneMultiplier': 5,
+            'dangerZoneMiddleMapNodeMultiplier': 1.2,
+            'ghostInDangerZoneMultiplier': 10,
+            'closestGhostMultiplier': 50,
+            'ghostIsCloserMultiplier': 1.5,
+            'edgeMultiplier': 2
+        })
+
     def calculateNextMove(self):
-        obs = Observation(self.gameController)
+        obs = Observation(self.gameController, self.weightContainer)
         self.takeStats(obs)
 
-        key_pressed = pygame.key.get_pressed()
-        if key_pressed[K_UP]:
-            return UP
-        if key_pressed[K_DOWN]:
-            return DOWN
-        if key_pressed[K_LEFT]:
-            return LEFT
-        if key_pressed[K_RIGHT]:
-            return RIGHT
+        # key_pressed = pygame.key.get_pressed()
+        # if key_pressed[K_UP]:
+        #     return UP
+        # if key_pressed[K_DOWN]:
+        #     return DOWN
+        # if key_pressed[K_LEFT]:
+        #     return LEFT
+        # if key_pressed[K_RIGHT]:
+        #     return RIGHT
 
-        DebugHelper.drawMap(obs)
+        # DebugHelper.drawMap(obs)
         # DebugHelper.drawDangerLevels(obs)
 
         pacmanPosition = obs.getPacmanPosition()
@@ -41,7 +68,7 @@ class FirstRealAgent(IAgent):
             dangerLevel = max(dangerLevel, obs.calculateDangerLevel(mapPos.mapNode2.position))
 
         # pacmanDangerLevel = obs.calculateDangerLevel(pacmanPosition)
-        if obs.getGhostCommonMode() == CHASE or dangerLevel > 0.1:
+        if obs.getGhostCommonMode() == CHASE or dangerLevel > self.weightContainer.getWeight('fleeThreshold'):
             return self.__getLeastDangerousDirectionFromCustomNode__(obs)
 
         mapPos = obs.map.createMapPosition(pacmanPosition)

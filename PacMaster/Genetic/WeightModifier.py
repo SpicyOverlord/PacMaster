@@ -3,19 +3,21 @@ import random
 from PacMaster.Genetic.WeightContainer import WeightContainer
 
 
-class Combiner:
+class WeightModifier:
     @staticmethod
     def mutate(weights: WeightContainer, mutationRate: float):
         mutation = WeightContainer()
 
+        mutateDistance = random.uniform(0, 1)
         for key, value in weights.items():
-            mutation.addWeight(key, value * random.uniform(-1, 1) * mutationRate)
+            mutatedValue = value + value * random.uniform(-mutateDistance, mutateDistance) * mutationRate
+            mutation.addWeight(key, round(mutatedValue, 3))
 
         return mutation
 
     @staticmethod
     def randomSelectCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
-        Combiner.checkSameKeySet(weightsA, weightsB)
+        WeightModifier.checkSameKeySet(weightsA, weightsB)
 
         # Randomly choose the value from one of the two weights
         offspring = WeightContainer()
@@ -29,34 +31,34 @@ class Combiner:
 
     @staticmethod
     def randomBetweenCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
-        Combiner.checkSameKeySet(weightsA, weightsB)
+        WeightModifier.checkSameKeySet(weightsA, weightsB)
 
         # Randomly choose the value from one of the two weights
         offspring = WeightContainer()
         for key, value in weightsA.items():
-            offspring.addWeight(key, random.uniform(weightsA.getWeight(key), weightsB.getWeight(key)))
+            offspring.addWeight(key, round(random.uniform(weightsA.getWeight(key), weightsB.getWeight(key)), 3))
 
         return offspring
 
     @staticmethod
     def averageCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
-        Combiner.checkSameKeySet(weightsA, weightsB)
+        WeightModifier.checkSameKeySet(weightsA, weightsB)
 
         offspring = WeightContainer()
         for key, value in weightsA.items():
-            averageWeight = (value + weightsB.getWeight(key)) / 2
+            averageWeight = round((value + weightsB.getWeight(key)) / 2, 3)
             offspring.addWeight(key, averageWeight)
 
     # TODO: Make a function where alpha is decided by the fitness of the parents?
     @staticmethod
     def blendCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
-        Combiner.checkSameKeySet(weightsA, weightsB)
+        WeightModifier.checkSameKeySet(weightsA, weightsB)
 
         offspring = WeightContainer()
         for key, value in weightsA.items():
             alpha = random.uniform(0.2, 0.8)
             blendedWeight = (1 - alpha) * value + alpha * weightsB.getWeight(key)
-            offspring.addWeight(key, blendedWeight)
+            offspring.addWeight(key, round(blendedWeight, 3))
 
         return offspring
 
@@ -81,7 +83,7 @@ class Combiner:
                 return weightContainer
 
     @staticmethod
-    def sortWeights(weightsList: list[WeightContainer]) -> list[WeightContainer]:
+    def sortByFitness(weightsList: list[WeightContainer]) -> list[WeightContainer]:
         return sorted(weightsList, key=lambda x: x.getFitness(), reverse=True)
 
     # TODO: remove this when we know everything works!

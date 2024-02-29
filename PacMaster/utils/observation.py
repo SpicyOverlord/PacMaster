@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import Counter
 
+from PacMaster.Genetic.WeightContainer import WeightContainer
 from PacMaster.utils.map import Map, MapNode, MapPosition
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Blinky, Ghost, Pinky, Inky, Clyde
@@ -10,11 +11,13 @@ from PacMaster.utils.utils import manhattanDistance, roundVector, distanceToNear
 
 
 class Observation(object):
-    def __init__(self, gameController):
+    def __init__(self, gameController, weightContainer: WeightContainer = None):
         self.ghostGroup = gameController.ghosts
         self.pelletGroup = gameController.pellets
         self.pacman = gameController.pacman
         self.map = Map(self, gameController.nodes, self.getGhosts())
+
+        self.weights = weightContainer
 
     # ------------------ Pacman Functions ------------------
     def getPacmanPosition(self) -> Vector2:
@@ -62,6 +65,7 @@ class Observation(object):
                 pelletCount += 1
 
         return pelletCount
+
     # ------------------ Ghost Functions ------------------
 
     def getGhostBetweenMapNodes(self, mapNode1: MapNode, mapNode2: MapNode) -> Ghost | None:
@@ -163,13 +167,13 @@ class Observation(object):
 
         for pellet in self.pelletGroup.pelletList:
             dist = manhattanDistance(pellet.position, vector)
-            if dist < TILESIZE * 3:
+            if dist < self.weights.getWeight('pelletLevelDistance'):
                 totalDistance += dist
                 if dist < minDistance:
                     minDistance = dist
         for powerPellet in self.pelletGroup.powerpellets:
             dist = manhattanDistance(powerPellet.position, vector)
-            if dist < TILESIZE * 3:
+            if dist < self.weights.getWeight('pelletLevelDistance'):
                 totalDistance += dist
                 if dist < minDistance:
                     minDistance = dist
@@ -179,20 +183,6 @@ class Observation(object):
         return totalDistance / (minDistance + 1)
 
     def calculateDangerLevel(self, vector: Vector2):
-        wayTooCloseThreshold = TILEWIDTH * 6  # Threshold distance for a ghost to be considered 'close'
-        tooCloseThreshold = TILEWIDTH * 12  # Threshold distance for a ghost to be considered 'close'
-        tooFarAwayThreshold = TILESIZE * 18  # Threshold distance for a ghost to be considered 'too far away'
-
-        wayTooCloseValue = 400  # Value for a ghost being too far away
-        tooCloseValue = 200  # Value for a ghost being too close
-
-        dangerZoneMultiplier = 5  # Multiplier for danger level if vector is in danger zone
-        dangerZoneMiddleMapNodeMultiplier = 1.2  # Multiplier for danger level if vector is in the middle of the danger zone
-        ghostInDangerZoneMultiplier = 10  # Multiplier for danger level if ghost is in danger zone
-        closestGhostMultiplier = 50  # Multiplier for danger level based on the closest ghost
-        ghostIsCloserMultiplier = 1.5  # Multiplier for danger level if pacman is closer to the vector than the closest ghost
-        edgeMultiplier = 2  # Multiplier for danger level if vector is on the edge of the map
-
         minDistance = 9999999
         totalDistance = 0.0
         numberOfCloseGhosts = 0
@@ -212,24 +202,26 @@ class Observation(object):
             if len(path) == 0:
                 continue
 
-            # ignore ghost if it is too far away
-            if dist > tooFarAwayThreshold:
+            # Threshold distance for a ghost to be considered 'too far away'
+            # it will be ignored
+            if dist > self.weights.getWeight('tooFarAwayThreshold'):
                 continue
 
             totalDistance += dist
             minDistance = min(minDistance, dist)
 
-            if dist < wayTooCloseThreshold:
+            # Threshold distance for a ghost to be considered 'close'
+            if dist < self.weights.getWeight('wayTooCloseThreshold'):
                 numberOfReallyCloseGhosts += 1
-            elif dist < tooCloseThreshold:
+            # Threshold distance for a ghost to be considered 'close'
+            elif dist < self.weights.getWeight('tooCloseThreshold'):
                 numberOfCloseGhosts += 1
 
         # Adjust danger level based on the closest ghost
-        closestGhostValue = (1 / (
-                minDistance + 1)) * 1000 * closestGhostMultiplier  # Adding 1 to avoid division by zero
+        closestGhostValue = (1 / (minDistance + 1)) * 1000 * self.weights.getWeight('closestGhostMultiplier')
         # Further adjust based on the number of close ghosts
-        closeGhostValue = numberOfCloseGhosts * tooCloseValue  # Weight for each close ghost
-        closeGhostValue += numberOfReallyCloseGhosts * wayTooCloseValue  # Weight for each really close ghost
+        closeGhostValue = numberOfCloseGhosts * self.weights.getWeight('tooCloseValue')
+        closeGhostValue += numberOfReallyCloseGhosts * self.weights.getWeight('wayTooCloseValue')
         # Calculate danger level
         dangerLevel = closestGhostValue + closeGhostValue
 
@@ -237,21 +229,21 @@ class Observation(object):
         # TODO: comment this and see if it actually makes the agents better
         mapPos = MapPosition(self.map, vector)
         if mapPos.isInDangerZone:
-            dangerLevel *= dangerZoneMultiplier
+            dangerLevel *= self.weights.getWeight('dangerZoneMultiplier')
 
             if mapPos.dangerZone.vectorIsMidMapNode(vector):
-                dangerLevel *= dangerZoneMiddleMapNodeMultiplier
+                dangerLevel *= self.weights.getWeight('dangerZoneMiddleMapNodeMultiplier')
 
             if mapPos.dangerZone.ghostInDangerZone:
-                dangerLevel *= ghostInDangerZoneMultiplier
+                dangerLevel *= self.weights.getWeight('ghostInDangerZoneMultiplier')
 
         # a ghost is closer than pacman multiplier
         if self.map.calculateDistance(self.getPacmanPosition(), vector) > minDistance:
-            dangerLevel *= ghostIsCloserMultiplier
+            dangerLevel *= self.weights.getWeight('ghostIsCloserMultiplier')
 
         # close to edge multiplier
         if distanceToNearestEdge(vector) < 40:
-            dangerLevel *= edgeMultiplier
+            dangerLevel *= self.weights.getWeight('edgeMultiplier')
 
         # Normalize based on total distance to avoid high values in less dangerous situations
         normalizedDanger = dangerLevel / (totalDistance + 1)
