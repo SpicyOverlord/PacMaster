@@ -1,9 +1,11 @@
 import random
 import time
 
+from PacMaster.Genetic.WeightContainer import WeightContainer
 from PacMaster.Genetic.WeightModifier import WeightModifier
 from PacMaster.agents.FirstRealAgent import FirstRealAgent
 from PacMaster.agents.Iagent import IAgent
+from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.runnerFunctions import calculatePerformanceOverXGames
 
 
@@ -20,11 +22,9 @@ class TournamentRunner:
 
         bestOfEachGenerations = []
 
-        poolSize = int(populationSize * 0.2)
-        if poolSize < 2:
-            poolSize = 2
+        poolSize = max(int(populationSize * 0.2), 2)
 
-        currentMutateRate = mutationRate
+        currentMutationRate = mutationRate
 
         defaultWeightContainer = agentClass.getDefaultWeightContainer()
 
@@ -38,7 +38,7 @@ class TournamentRunner:
         for generation in range(generationCount):
 
             print(f"\n--- Generation {generation + 1} of {generationCount} ---")
-            print(f"Mutation rate: {currentMutateRate}")
+            print(f"Mutation rate: {currentMutationRate}")
 
             for i in range(populationSize):
                 # skip if the agent is from the previous generation that already has been tested
@@ -76,46 +76,59 @@ class TournamentRunner:
             for j in range(5):
                 print(population[j].getFitness(), population[j])
 
-            # save some of population
-            top20population = population[:int(populationSize * 0.2)]
-            top50population = population[:int(populationSize * 0.5)]
-
-            # create new population
-            # 20% of the new population will be the top 20% of the previous generation
-            newPopulation = []
-            for pop in top20population:
-                newPopulation.append(pop.copy())
-            # 40% of the new population will be offspring of the top 50% of the previous generation
-            for _ in range(int(populationSize * 0.2)):
-                parentA = WeightModifier.tournamentSelectParent(top50population, poolSize)
-                parentB = WeightModifier.tournamentSelectParent(top50population, poolSize)
-                offspring = WeightModifier.blendByFitnessCombine(parentA, parentB)
-
-                newPopulation.append(offspring)
-                newPopulation.append(WeightModifier.mutate(offspring, currentMutateRate))
-            # 20% of the new population will be offspring of the top 20% of the previous generation
-            for _ in range(int(populationSize * 0.1)):
-                parentA = random.choice(top20population)
-                parentB = random.choice(top20population)
-                offspring = WeightModifier.blendCombine(parentA, parentB)
-
-                newPopulation.append(offspring)
-                newPopulation.append(WeightModifier.mutate(offspring, currentMutateRate))
-            # 10% of the new population will be mutations of the top 10% of the previous generation
-            for _ in range(int(populationSize * 0.1)):
-                newPopulation.append(WeightModifier.mutate(random.choice(top20population), currentMutateRate))
-            # 10% of the new population will be mutations the default weight container
-            for _ in range(int(populationSize * 0.1)):
-                newPopulation.append(WeightModifier.mutate(agentClass.getDefaultWeightContainer(), 1.1))
+            newPopulation = TournamentRunner.generateNewPopulation(agentClass=agentClass,
+                                                                   population=population,
+                                                                   populationSize=populationSize,
+                                                                   currentMutationRate=currentMutationRate,
+                                                                   poolSize=poolSize)
 
             population = newPopulation
-            currentMutateRate -= mutationRate / generationCount
+            # decrease mutation rate
+            currentMutationRate -= mutationRate / generationCount
 
         # print best of early generations with generation number
         print("\nBest of early generations:")
         for i in range(len(bestOfEachGenerations)):
             print(f"Generation {i + 1}: {bestOfEachGenerations[i].getFitness()} {bestOfEachGenerations[i]}")
 
+    @staticmethod
+    def generateNewPopulation(agentClass: type[IAgent], population: list[WeightContainer],
+                              populationSize: int, currentMutationRate: float, poolSize: int) -> list[WeightContainer]:
+        # save some of population
+        top20population = population[:int(populationSize * 0.2)]
+        top50population = population[:int(populationSize * 0.5)]
 
+        # create new population
+        # 20% of the new population will be the top 20% of the previous generation
+        newPopulation = []
+        for pop in top20population:
+            newPopulation.append(pop.copy())
+        # 40% of the new population will be offspring of the top 50% of the previous generation
+        for _ in range(int(populationSize * 0.2)):
+            parentA = WeightModifier.tournamentSelectParent(top50population, poolSize)
+            parentB = WeightModifier.tournamentSelectParent(top50population, poolSize)
+            offspring = WeightModifier.blendByFitnessCombine(parentA, parentB)
+
+            newPopulation.append(offspring)
+            newPopulation.append(WeightModifier.mutate(offspring, currentMutationRate))
+        # 20% of the new population will be offspring of the top 20% of the previous generation
+        for _ in range(int(populationSize * 0.1)):
+            parentA = random.choice(top20population)
+            parentB = random.choice(top20population)
+            offspring = WeightModifier.blendCombine(parentA, parentB)
+
+            newPopulation.append(offspring)
+            newPopulation.append(WeightModifier.mutate(offspring, currentMutationRate))
+        # 10% of the new population will be mutations of the top 10% of the previous generation
+        for _ in range(int(populationSize * 0.1)):
+            newPopulation.append(WeightModifier.mutate(random.choice(top20population), currentMutationRate))
+        # 10% of the new population will be mutations the default weight container
+        for _ in range(int(populationSize * 0.1)):
+            newPopulation.append(WeightModifier.mutate(agentClass.getDefaultWeightContainer(), 1.1))
+
+        return newPopulation
+
+
+DebugHelper.disable()
 TournamentRunner.startNewSimulation(FirstRealAgent, 10, 10, 0.5,
                                     50, 15)
