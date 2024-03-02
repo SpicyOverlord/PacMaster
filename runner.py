@@ -13,7 +13,7 @@ scores = []
 times = []
 for i in range(1000):
     start_time = time.time()
-    stats = calculatePerformanceOverXGames(FirstRealAgent, gameCount=10, gameSpeed=1, startLevel=0, startLives=1,
+    stats = calculatePerformanceOverXGames(FirstRealAgent, gameCount=30, gameSpeed=1, startLevel=0, startLives=1,
                                            ghostsEnabled=True, freightEnabled=True, logging=False, lockDeltaTime=True)
     end_time = time.time()
     elapsed_time = end_time - start_time
