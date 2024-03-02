@@ -21,6 +21,7 @@ for i in range(1000):
     scores.append(stats['combinedScore'])
     # print(stats)
     estimatedSecondsLeft = sum(times) / len(times)
-    print(f"{i} Average score: {sum(scores) / len(scores)}  -  "
+    print(f"{i} Average score: {round(sum(scores) / len(scores),2)}  -  "
           f"Average time: {secondsToTime(estimatedSecondsLeft)}  -  "
           f"Estimated time left: {secondsToTime(estimatedSecondsLeft * (1000 - i))}")
+    
