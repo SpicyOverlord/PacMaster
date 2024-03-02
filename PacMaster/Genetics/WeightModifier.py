@@ -1,6 +1,6 @@
 import random
 
-from PacMaster.Genetic.WeightContainer import WeightContainer
+from PacMaster.Genetics.WeightContainer import WeightContainer
 
 
 class WeightModifier:
@@ -12,6 +12,21 @@ class WeightModifier:
             if random.random() < mutationRate:
                 mutateDistance = random.uniform(0, 1)
                 mutatedValue = value + value * random.uniform(-mutateDistance, mutateDistance) * mutationRate
+            else:
+                mutatedValue = value
+
+            mutation.addWeight(key, round(mutatedValue, 3))
+
+        return mutation
+
+    @staticmethod
+    def startMutate(weights: WeightContainer):
+        mutation = WeightContainer()
+
+        for key, value in weights.items():
+            if random.random() < 0.3:
+                mutateDistance = random.uniform(0, 1)
+                mutatedValue = value + value * random.uniform(-mutateDistance, mutateDistance) * 2
             else:
                 mutatedValue = value
 
@@ -60,7 +75,8 @@ class WeightModifier:
 
         offspring = WeightContainer()
         for key, value in weightsA.items():
-            ratio = random.uniform(0.2, 0.8)
+            # ratio = random.uniform(0.2, 0.8)
+            ratio = random.random()
             blendedWeight = (1 - ratio) * value + ratio * weightsB.getWeight(key)
             offspring.addWeight(key, round(blendedWeight, 3))
 

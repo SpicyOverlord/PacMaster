@@ -1,4 +1,4 @@
-from PacMaster.Genetic.WeightContainer import WeightContainer
+from PacMaster.Genetics.WeightContainer import WeightContainer
 from PacMaster.agents.HumanAgent import HumanAgent
 from PacMaster.agents.Iagent import IAgent
 from PacMaster.utils.gamestats import GameStats

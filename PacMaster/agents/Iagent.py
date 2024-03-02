@@ -1,6 +1,6 @@
 from abc import abstractmethod, ABC
 
-from PacMaster.Genetic.WeightContainer import WeightContainer
+from PacMaster.Genetics.WeightContainer import WeightContainer
 from PacMaster.utils.observation import Observation
 
 

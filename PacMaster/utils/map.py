@@ -235,6 +235,22 @@ class Map(object):
 
         self.__setNodeNeighbors__()
 
+        # remove unwanted mapNode at (270,280) from graph
+        for currentMapNode in self.mapNodes:
+            if currentMapNode.position == Vector2(270, 280):
+                self.mapNodes.remove(currentMapNode)
+                break
+
+            for neighborContainer in currentMapNode.neighborContainers:
+                if neighborContainer.mapNode.position == Vector2(270, 280):
+                    nextNeighborContainer = neighborContainer.mapNode.getNeighborInDirection(neighborContainer.direction)
+                    if nextNeighborContainer is not None:
+                        totalDistance = neighborContainer.distance + nextNeighborContainer.distance
+
+                        neighborContainer.distance = totalDistance
+                        neighborContainer.mapNode = nextNeighborContainer.mapNode
+
+
     def __setNodeNeighbors__(self):
         for currentMapNode in self.mapNodes:
             for neighborDirection, neighborNode in currentMapNode.node.neighbors.items():

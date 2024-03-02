@@ -7,5 +7,7 @@ from PacMaster.utils.runnerFunctions import *
 
 # runGameWithHuman()
 DebugHelper.disable()
-stats = calculatePerformanceOverXGames(FirstRealAgent, gameCount=50, gameSpeed=15, startLevel=0, startLives=1,
-                                       ghostsEnabled=True, freightEnabled=True, logging=True)
+for i in range(1000):
+    stats = calculatePerformanceOverXGames(FirstRealAgent, gameCount=50, gameSpeed=15, startLevel=0, startLives=1,
+                                           ghostsEnabled=True, freightEnabled=True, logging=False)
+    print(stats)

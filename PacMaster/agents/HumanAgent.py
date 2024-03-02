@@ -1,7 +1,7 @@
 import pygame
 from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
 
-from PacMaster.Genetic.WeightContainer import WeightContainer
+from PacMaster.Genetics.WeightContainer import WeightContainer
 from PacMaster.agents.Iagent import IAgent
 from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.observation import Observation

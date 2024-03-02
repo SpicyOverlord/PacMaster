@@ -1,6 +1,6 @@
 import pygame
 
-from PacMaster.Genetic.WeightContainer import WeightContainer
+from PacMaster.Genetics.WeightContainer import WeightContainer
 from PacMaster.agents.Iagent import IAgent
 from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.map import MapNode

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import Counter
 
-from PacMaster.Genetic.WeightContainer import WeightContainer
+from PacMaster.Genetics.WeightContainer import WeightContainer
 from PacMaster.utils.map import Map, MapNode, MapPosition
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Blinky, Ghost, Pinky, Inky, Clyde
@@ -207,12 +207,13 @@ class Observation(object):
             if len(path) == 0:
                 continue
 
+            minDistance = min(minDistance, dist)
+
             # Threshold distance for a ghost to be considered 'too far away'
             # it will be ignored
             if dist > self.weights.getWeight('tooFarAwayThreshold'):
                 continue
 
-            minDistance = min(minDistance, dist)
             totalDistance += dist
 
             # Threshold distance for a ghost to be considered 'close'

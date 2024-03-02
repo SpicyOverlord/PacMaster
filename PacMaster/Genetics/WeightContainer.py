@@ -44,4 +44,6 @@ class WeightContainer:
         return self.__weightDict__.keys()
 
     def __str__(self):
+        if self.__fitness__ != -1:
+            return f"{self.__fitness__} {str(self.__weightDict__)}"
         return str(self.__weightDict__)

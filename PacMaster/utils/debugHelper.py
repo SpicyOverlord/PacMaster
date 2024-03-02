@@ -171,7 +171,9 @@ class DebugHelper(object):
             return
 
         dangerLevel = obs.calculateDangerLevel(vector) * 5
-        if dangerLevel < 2:
+        if 0.05 <= dangerLevel <= 1:
+            DebugHelper.drawDot(vector, DebugHelper.WHITE, 5)
+        elif dangerLevel < 2:
             DebugHelper.drawDot(vector, DebugHelper.WHITE, dangerLevel)
         elif dangerLevel > 30:
             DebugHelper.drawDot(vector, DebugHelper.RED, 10)
