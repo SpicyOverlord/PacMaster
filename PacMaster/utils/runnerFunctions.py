@@ -20,12 +20,13 @@ def runGameWithHuman(gameSpeed=1, startLives=3) -> int:
 
 def runGameWithAgent(agentType: type[IAgent], weightContainer: WeightContainer = None,
                      gameSpeed=3, startLives=3, startLevel: int = 0,
-                     ghostsEnabled: bool = True, freightEnabled: bool = True) -> GameStats:
+                     ghostsEnabled: bool = True, freightEnabled: bool = True, lockFrameRate=False) -> GameStats:
     if gameSpeed < 0.1 or 15 < gameSpeed:
         raise ValueError(f"gameSpeed ({gameSpeed}) must be between 0.1 and 10 (inclusive). Otherwise the game breaks.")
 
     game = GameController(gameSpeed=gameSpeed, startLives=startLives, isHumanPlayer=False,
-                          startLevel=startLevel, ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled)
+                          startLevel=startLevel, ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled,
+                          lockFrameRate=lockFrameRate)
     agent = agentType(gameController=game, weightContainer=weightContainer)
     game.startGame(agent=agent)
     while True:
@@ -37,7 +38,7 @@ def runGameWithAgent(agentType: type[IAgent], weightContainer: WeightContainer =
 def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: WeightContainer = None,
                                    gameCount: int = 20, gameSpeed=5, startLevel: int = 0, startLives=1,
                                    ghostsEnabled: bool = True, freightEnabled: bool = True,
-                                   logging=False):
+                                   logging=False, lockFrameRate=False):
     gameStats = []
     for i in range(gameCount):
         if logging:
@@ -45,7 +46,8 @@ def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: We
 
         gameStats.append(runGameWithAgent(agentClass, weightContainer=weightContainer, gameSpeed=gameSpeed,
                                           startLives=startLives, startLevel=startLevel,
-                                          ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled))
+                                          ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled,
+                                          lockFrameRate=lockFrameRate))
 
         if logging:
             print(f"Game {i + 1} result: {gameStats[i]}")
