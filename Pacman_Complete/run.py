@@ -17,7 +17,7 @@ from PacMaster.agents.Iagent import IAgent
 
 class GameController(object):
     def __init__(self, gameSpeed: int, startLives: int, isHumanPlayer: bool = False,
-                 startLevel: int = 0, ghostsEnabled: bool = True, freightEnabled: bool = True, lockFrameRate=False):
+                 startLevel: int = 0, ghostsEnabled: bool = True, freightEnabled: bool = True, lockDeltaTime=False):
         pygame.init()
 
         self.gameSpeed = gameSpeed
@@ -25,7 +25,7 @@ class GameController(object):
         self.gameOver = False
         self.ghostsEnabled = ghostsEnabled
         self.freightEnabled = freightEnabled
-        self.lockFrameRate = lockFrameRate
+        self.lockDeltaTime = lockDeltaTime
 
         self.screen = pygame.display.set_mode(SCREENSIZE, 0, 32)
         DebugHelper.setScreen(self.screen)
@@ -88,7 +88,7 @@ class GameController(object):
         self.mazedata.obj.denyGhostsAccess(self.ghosts, self.nodes)
 
     def update(self):
-        if self.lockFrameRate:
+        if self.lockDeltaTime:
             dt = 0.04
         else:
             dt = self.clock.tick(30 * self.gameSpeed) / (1000.0 / self.gameSpeed)
