@@ -58,7 +58,7 @@ class TournamentRunner:
                 end_time = time.time()  # Record the end time after testing is finished
                 finishedGameCount += gameCount
                 print(f"Performance: {stats}")
-                population[i].setFitness(stats['combinedScore'])
+                population[i].addFitness(stats['combinedScore'])
 
                 # estimate seconds left until simulation is finished
                 timeTaken = end_time - start_time

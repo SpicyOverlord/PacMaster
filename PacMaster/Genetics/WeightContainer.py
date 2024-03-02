@@ -6,7 +6,7 @@ class WeightContainer:
         self.__weightDict__ = weightDict if weightDict is not None else {}
         self.__fitness__ = []
 
-    def setFitness(self, fitness: float):
+    def addFitness(self, fitness: float):
         self.__fitness__.append(fitness)
 
     def getFitness(self) -> float:
