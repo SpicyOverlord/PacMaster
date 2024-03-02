@@ -62,4 +62,4 @@ def secondsToTime(seconds) -> str:
     hours = int(seconds // 3600)
     minutes = int((seconds % 3600) // 60)
     seconds = int(seconds % 60)
-    return f"[{hours}h {minutes}m {seconds}s]"
+    return f"[{hours:03}h {minutes:02}m {seconds:02}s]"
