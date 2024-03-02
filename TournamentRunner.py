@@ -29,9 +29,13 @@ class TournamentRunner:
 
         defaultWeightContainer = agentClass.getDefaultWeightContainer()
 
+        # generate random population from the default weight container from the agent
         population = [defaultWeightContainer]
-        for i in range(populationSize - 1):
+        for i in range(int(populationSize*0.7 - 1)):
             newWeightContainer = WeightModifier.startMutate(defaultWeightContainer)
+            population.append(newWeightContainer)
+        while len(population) < populationSize:
+            newWeightContainer = WeightModifier.mutate(defaultWeightContainer, 0.5)
             population.append(newWeightContainer)
 
         agentTestingTimes = []
@@ -105,22 +109,22 @@ class TournamentRunner:
         newPopulation = []
         for pop in top20population:
             newPopulation.append(pop.copy())
-        # 40% of the new population will be offspring of the previous generation
+        # 40% of the new population will be child of the previous generation
         for _ in range(int(populationSize * 0.2)):
             parentA = WeightModifier.tournamentSelectParent(population, poolSize)
             parentB = WeightModifier.tournamentSelectParent(population, poolSize)
-            offspring = WeightModifier.blendByFitnessCombine(parentA, parentB)
+            child = WeightModifier.blendByFitnessCombine(parentA, parentB)
 
-            newPopulation.append(offspring)
-            newPopulation.append(WeightModifier.mutate(offspring, currentMutationRate))
-        # 20% of the new population will be offspring of the top 20% of the previous generation
+            newPopulation.append(child)
+            newPopulation.append(WeightModifier.mutate(child, currentMutationRate))
+        # 20% of the new population will be child of the top 20% of the previous generation
         for _ in range(int(populationSize * 0.1)):
             parentA = random.choice(top20population)
             parentB = random.choice(top20population)
-            offspring = WeightModifier.blendCombine(parentA, parentB)
+            child = WeightModifier.blendCombine(parentA, parentB)
 
-            newPopulation.append(offspring)
-            newPopulation.append(WeightModifier.mutate(offspring, currentMutationRate * 0.5))
+            newPopulation.append(child)
+            newPopulation.append(WeightModifier.mutate(child, currentMutationRate * 0.5))
         # 20% of the new population will be mutations of the top 20% of the previous generation
         for _ in range(int(populationSize * 0.2)):
             newPopulation.append(WeightModifier.mutate(random.choice(top20population), currentMutationRate))

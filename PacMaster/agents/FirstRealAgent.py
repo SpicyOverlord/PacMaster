@@ -25,13 +25,14 @@ class FirstRealAgent(IAgent):
 
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
-        return WeightContainer({'fleeThreshold': 0.192, 'pelletLevelDistance': 1.126, 'wayTooCloseThreshold': 77.053,
-                                'tooCloseThreshold': 207.475, 'tooFarAwayThreshold': 1167.487,
-                                'wayTooCloseValue': 700.586, 'tooCloseValue': 29.333, 'dangerZoneMultiplier': 1.579,
-                                'dangerZoneMiddleMapNodeMultiplier': 0.279, 'ghostInDangerZoneMultiplier': 2.024,
-                                'closestGhostMultiplier': 0.52, 'ghostIsCloserMultiplier': 1.373,
-                                'edgeMultiplier': 2.123}
-                               )
+        # return WeightContainer({'fleeThreshold': 0.192, 'pelletLevelDistance': 1.126, 'wayTooCloseThreshold': 77.053,
+        #                         'tooCloseThreshold': 207.475, 'tooFarAwayThreshold': 1167.487,
+        #                         'wayTooCloseValue': 700.586, 'tooCloseValue': 29.333, 'dangerZoneMultiplier': 1.579,
+        #                         'dangerZoneMiddleMapNodeMultiplier': 0.279, 'ghostInDangerZoneMultiplier': 2.024,
+        #                         'closestGhostMultiplier': 0.52, 'ghostIsCloserMultiplier': 1.373,
+        #                         'edgeMultiplier': 2.123}
+        #                        )
+
         # return WeightContainer({
         #     'fleeThreshold': 0.179,
         #     'pelletLevelDistance': 1,
@@ -48,24 +49,21 @@ class FirstRealAgent(IAgent):
         #     'edgeMultiplier': 1.549
         # })
 
-
-        # return WeightContainer({
-        #     'fleeThreshold': 0.2,
-        #     'pelletLevelDistance': 40,
-        #     'wayTooCloseThreshold': 100,
-        #     'tooCloseThreshold': 300,
-        #     'tooFarAwayThreshold': 800,
-        #     'wayTooCloseValue': 300,
-        #     'tooCloseValue': 100,
-        #     'dangerZoneMultiplier': 1,
-        #     'dangerZoneMiddleMapNodeMultiplier': 1,
-        #     'ghostInDangerZoneMultiplier': 1,
-        #     'closestGhostMultiplier': 1,
-        #     'ghostIsCloserMultiplier': 1,
-        #     'edgeMultiplier': 1}
-        # )
-
-
+        return WeightContainer({
+            'fleeThreshold': 0.2,
+            'pelletLevelDistance': 60,
+            'wayTooCloseThreshold': 100,
+            'tooCloseThreshold': 300,
+            'tooFarAwayThreshold': 800,
+            'wayTooCloseValue': 300,
+            'tooCloseValue': 100,
+            'dangerZoneMultiplier': 1,
+            'dangerZoneMiddleMapNodeMultiplier': 1,
+            'ghostInDangerZoneMultiplier': 1,
+            'closestGhostMultiplier': 1,
+            'ghostIsCloserMultiplier': 1,
+            'edgeMultiplier': 1}
+        )
 
         # return WeightContainer({
         #     'fleeThreshold': 0.166,
