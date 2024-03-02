@@ -15,7 +15,7 @@ class GameStats(object):
 
     @staticmethod
     def calculateCombinedRating(gameStats: list['GameStats']):
-        weights = {'score': 0, 'pellets': 1, 'efficiencyPercentile': 0.3}
+        weights = {'score': 0, 'pellets': 1, 'efficiencyPercentile': 0}
 
         baseScores = [game.score for game in gameStats]
         efficiency = [game.efficiency for game in gameStats]
