@@ -1,9 +1,3 @@
-import sys
-import os
-
-# Add the `Pacman_Complete` folder to the sys.path
-sys.path.append(os.path.abspath('Pacman_Complete'))
-
 from PacMaster.agents.CollectorAgent import CollectorAgent
 from PacMaster.agents.FirstRealAgent import FirstRealAgent
 from PacMaster.agents.ScaredAgent import ScaredAgent
