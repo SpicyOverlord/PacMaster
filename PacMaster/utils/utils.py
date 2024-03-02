@@ -56,3 +56,10 @@ def distanceToNearestEdge(vector: Vector2) -> int:
     distance_from_bottom = 640 - vector.y
 
     return min(distance_from_left, distance_from_right, distance_from_top, distance_from_bottom)
+
+
+def secondsToTime(seconds) -> str:
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    seconds = int(seconds % 60)
+    return f"[{hours:03}h {minutes:02}m {seconds:02}s]"

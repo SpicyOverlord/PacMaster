@@ -7,12 +7,13 @@ from PacMaster.agents.FirstRealAgent import FirstRealAgent
 from PacMaster.agents.Iagent import IAgent
 from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.runnerFunctions import calculatePerformanceOverXGames
+from PacMaster.utils.utils import secondsToTime
 
 
 class TournamentRunner:
     @staticmethod
     def startNewSimulation(agentClass: type[IAgent], populationSize: int, generationCount: int, mutationRate: float,
-                           gameCount: int, gameSpeed: int):
+                           gameCount: int, lockDeltaTime: bool):
         totalGameCount = populationSize * generationCount * gameCount
         finishedGameCount = 0
         print("--- Starting new simulation ---")
@@ -28,9 +29,13 @@ class TournamentRunner:
 
         defaultWeightContainer = agentClass.getDefaultWeightContainer()
 
+        # generate random population from the default weight container from the agent
         population = [defaultWeightContainer]
-        for i in range(populationSize - 1):
+        for i in range(int(populationSize*0.7 - 1)):
             newWeightContainer = WeightModifier.startMutate(defaultWeightContainer)
+            population.append(newWeightContainer)
+        while len(population) < populationSize:
+            newWeightContainer = WeightModifier.mutate(defaultWeightContainer, 0.5)
             population.append(newWeightContainer)
 
         agentTestingTimes = []
@@ -46,15 +51,14 @@ class TournamentRunner:
                 #     continue
 
                 print(f"\nRunning agent {i + 1} of {populationSize}...   "
-                      f"({round(finishedGameCount / (totalGameCount / 100), 1)}%) "
-                      f"[Estimated time left: {int(estimatedSecondsLeft / 3600)}h "
-                      f"{int(estimatedSecondsLeft / 60 % 60)}m "
-                      f"{int(estimatedSecondsLeft % 60)}s]")
+                      f"({round(finishedGameCount / (totalGameCount / 100), 1)}%)   "
+                      f"Estimated time left: {secondsToTime(estimatedSecondsLeft)}")
                 print(population[i])
                 start_time = time.time()  # Record the start time before testing begins
 
                 stats = calculatePerformanceOverXGames(agentClass, population[i],
-                                                       gameCount=gameCount, gameSpeed=gameSpeed, freightEnabled=True)
+                                                       gameCount=gameCount, lockDeltaTime=lockDeltaTime, gameSpeed=15,
+                                                       freightEnabled=True)
                 end_time = time.time()  # Record the end time after testing is finished
                 finishedGameCount += gameCount
                 print(f"Performance: {stats}")
@@ -105,22 +109,22 @@ class TournamentRunner:
         newPopulation = []
         for pop in top20population:
             newPopulation.append(pop.copy())
-        # 40% of the new population will be offspring of the previous generation
+        # 40% of the new population will be child of the previous generation
         for _ in range(int(populationSize * 0.2)):
             parentA = WeightModifier.tournamentSelectParent(population, poolSize)
             parentB = WeightModifier.tournamentSelectParent(population, poolSize)
-            offspring = WeightModifier.blendByFitnessCombine(parentA, parentB)
+            child = WeightModifier.blendByFitnessCombine(parentA, parentB)
 
-            newPopulation.append(offspring)
-            newPopulation.append(WeightModifier.mutate(offspring, currentMutationRate))
-        # 20% of the new population will be offspring of the top 20% of the previous generation
+            newPopulation.append(child)
+            newPopulation.append(WeightModifier.mutate(child, currentMutationRate))
+        # 20% of the new population will be child of the top 20% of the previous generation
         for _ in range(int(populationSize * 0.1)):
             parentA = random.choice(top20population)
             parentB = random.choice(top20population)
-            offspring = WeightModifier.blendCombine(parentA, parentB)
+            child = WeightModifier.blendCombine(parentA, parentB)
 
-            newPopulation.append(offspring)
-            newPopulation.append(WeightModifier.mutate(offspring, currentMutationRate * 0.5))
+            newPopulation.append(child)
+            newPopulation.append(WeightModifier.mutate(child, currentMutationRate * 0.5))
         # 20% of the new population will be mutations of the top 20% of the previous generation
         for _ in range(int(populationSize * 0.2)):
             newPopulation.append(WeightModifier.mutate(random.choice(top20population), currentMutationRate))
@@ -129,5 +133,5 @@ class TournamentRunner:
 
 
 DebugHelper.disable()
-TournamentRunner.startNewSimulation(FirstRealAgent, 40, 20, 1.5,
-                                    50, 15)
+TournamentRunner.startNewSimulation(FirstRealAgent, 50, 20, 1.5,
+                                    50, True)
