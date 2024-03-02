@@ -72,12 +72,13 @@ class TournamentRunner:
             bestOfEachGenerations.append(population[0])
 
             # print top 5 of previous generation
-            # print(f"\nTop 5 of generation {generation + 1}:")
-            # for j in range(5):
-            #     print(population[j])
+            print(f"\nTop 5 of generation {generation + 1}:")
+            for j in range(5):
+                print(population[j])
 
-            for pop in population:
-                print(pop)
+            # print all of previous generation
+            # for pop in population:
+            #     print(pop)
 
             newPopulation = TournamentRunner.generateNewPopulation(
                 population=population,
