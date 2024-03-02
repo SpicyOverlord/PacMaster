@@ -4,20 +4,16 @@ import random
 class WeightContainer:
     def __init__(self, weightDict: dict[str, float] = None):
         self.__weightDict__ = weightDict if weightDict is not None else {}
-        self.__fitness__ = -1
+        self.__fitness__ = []
 
     def setFitness(self, fitness: float):
-        if self.__fitness__ != -1:
-            raise ValueError("Fitness already set")
-        self.__fitness__ = fitness
+        self.__fitness__.append(fitness)
 
     def getFitness(self) -> float:
-        if self.__fitness__ == -1:
-            raise ValueError("Fitness not set")
-        return self.__fitness__
+        return sum(self.__fitness__) / len(self.__fitness__)
 
     def hasFitness(self) -> bool:
-        return self.__fitness__ != -1
+        return len(self.__fitness__) != 0
 
     def copy(self) -> 'WeightContainer':
         newWeights = WeightContainer()
@@ -44,6 +40,6 @@ class WeightContainer:
         return self.__weightDict__.keys()
 
     def __str__(self):
-        if self.__fitness__ != -1:
-            return f"{self.__fitness__} {str(self.__weightDict__)}"
-        return str(self.__weightDict__)
+        if len(self.__fitness__) != 0:
+            return f"Fitness:{self.__fitness__} Survived:{len(self.__fitness__)} Weights:{str(self.__weightDict__)}"
+        return f"Weights:{str(self.__weightDict__)}"
