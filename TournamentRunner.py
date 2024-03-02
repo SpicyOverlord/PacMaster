@@ -13,7 +13,7 @@ from PacMaster.utils.utils import secondsToTime
 class TournamentRunner:
     @staticmethod
     def startNewSimulation(agentClass: type[IAgent], populationSize: int, generationCount: int, mutationRate: float,
-                           gameCount: int, gameSpeed: int):
+                           gameCount: int, lockDeltaTime: bool):
         totalGameCount = populationSize * generationCount * gameCount
         finishedGameCount = 0
         print("--- Starting new simulation ---")
@@ -53,7 +53,8 @@ class TournamentRunner:
                 start_time = time.time()  # Record the start time before testing begins
 
                 stats = calculatePerformanceOverXGames(agentClass, population[i],
-                                                       gameCount=gameCount, gameSpeed=gameSpeed, freightEnabled=True)
+                                                       gameCount=gameCount, lockDeltaTime=lockDeltaTime, gameSpeed=15,
+                                                       freightEnabled=True)
                 end_time = time.time()  # Record the end time after testing is finished
                 finishedGameCount += gameCount
                 print(f"Performance: {stats}")
@@ -129,4 +130,4 @@ class TournamentRunner:
 
 DebugHelper.disable()
 TournamentRunner.startNewSimulation(FirstRealAgent, 50, 20, 1.5,
-                                    50, 15)
+                                    50, True)
