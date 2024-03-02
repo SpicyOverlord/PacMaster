@@ -46,10 +46,6 @@ class TournamentRunner:
             print(f"Mutation rate: {currentMutationRate}")
 
             for i in range(populationSize):
-                # skip if the agent is from the previous generation that already has been tested
-                # if population[i].hasFitness():
-                #     continue
-
                 print(f"\nRunning agent {i + 1} of {populationSize}...   "
                       f"({round(finishedGameCount / (totalGameCount / 100), 1)}%)   "
                       f"Estimated time left: {secondsToTime(estimatedSecondsLeft)}")
@@ -106,9 +102,7 @@ class TournamentRunner:
         top20population = population[:int(populationSize * 0.2)]
 
         # 20% of the new population will be the top 20% of the previous generation
-        newPopulation = []
-        for pop in top20population:
-            newPopulation.append(pop.copy())
+        newPopulation = [top20population]
         # 40% of the new population will be child of the previous generation
         for _ in range(int(populationSize * 0.2)):
             parentA = WeightModifier.tournamentSelectParent(population, poolSize)
