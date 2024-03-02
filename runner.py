@@ -6,5 +6,10 @@ from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.runnerFunctions import *
 
 DebugHelper.disable()
-calculatePerformanceOverXGames(HumanAgent, gameCount=50, gameSpeed=1, startLevel=0, startLives=1,
-                               ghostsEnabled=True, freightEnabled=True, logging=True, lockFrameRate=True)
+scores = []
+for i in range(1000):
+    stats = calculatePerformanceOverXGames(FirstRealAgent, gameCount=50, gameSpeed=1, startLevel=0, startLives=1,
+                                           ghostsEnabled=True, freightEnabled=True, logging=False, lockFrameRate=True)
+    scores.append(stats['combinedScore'])
+    print(stats)
+    print(f"Average score: {sum(scores) / len(scores)}")
