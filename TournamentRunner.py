@@ -7,6 +7,7 @@ from PacMaster.agents.FirstRealAgent import FirstRealAgent
 from PacMaster.agents.Iagent import IAgent
 from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.runnerFunctions import calculatePerformanceOverXGames
+from PacMaster.utils.utils import secondsToTime
 
 
 class TournamentRunner:
@@ -46,10 +47,8 @@ class TournamentRunner:
                 #     continue
 
                 print(f"\nRunning agent {i + 1} of {populationSize}...   "
-                      f"({round(finishedGameCount / (totalGameCount / 100), 1)}%) "
-                      f"[Estimated time left: {int(estimatedSecondsLeft / 3600)}h "
-                      f"{int(estimatedSecondsLeft / 60 % 60)}m "
-                      f"{int(estimatedSecondsLeft % 60)}s]")
+                      f"({round(finishedGameCount / (totalGameCount / 100), 1)}%)   "
+                      f"Estimated time left: {secondsToTime(estimatedSecondsLeft)}")
                 print(population[i])
                 start_time = time.time()  # Record the start time before testing begins
 

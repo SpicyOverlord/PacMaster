@@ -6,12 +6,14 @@ from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.runnerFunctions import *
 import time
 
+from PacMaster.utils.utils import secondsToTime
+
 DebugHelper.disable()
 scores = []
 times = []
 for i in range(1000):
     start_time = time.time()
-    stats = calculatePerformanceOverXGames(HumanAgent, gameCount=50, gameSpeed=1, startLevel=0, startLives=1,
+    stats = calculatePerformanceOverXGames(HumanAgent, gameCount=10, gameSpeed=1, startLevel=0, startLives=1,
                                            ghostsEnabled=True, freightEnabled=True, logging=False, lockDeltaTime=True)
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -19,6 +21,6 @@ for i in range(1000):
     scores.append(stats['combinedScore'])
     # print(stats)
     estimatedSecondsLeft = sum(times) / len(times)
-    print(f"{i} Average score: {sum(scores) / len(scores)}  -  Average time: {int(estimatedSecondsLeft / 3600)}h "
-          f"{int(estimatedSecondsLeft / 60 % 60)}m "
-          f"{int(estimatedSecondsLeft % 60)}s")
+    print(f"{i} Average score: {sum(scores) / len(scores)}  -  "
+          f"Average time: {secondsToTime(estimatedSecondsLeft)}  -  "
+          f"Estimated time left: {secondsToTime(estimatedSecondsLeft * (1000 - i))}")
