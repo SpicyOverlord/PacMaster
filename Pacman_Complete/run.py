@@ -65,13 +65,13 @@ class GameController(object):
             self.textgroup.hideText()
 
         self.mazedata.loadMaze(self.level)
-        self.mazesprites = MazeSprites(self.mazedata.obj.name + ".txt", self.mazedata.obj.name + "_rotation.txt")
+        self.mazesprites = MazeSprites(f"Pacman_complete/{self.mazedata.obj.name}.txt", f"Pacman_complete/{self.mazedata.obj.name}_rotation.txt")
         self.setBackground()
-        self.nodes = NodeGroup(self.mazedata.obj.name + ".txt")
+        self.nodes = NodeGroup(f"Pacman_complete/{self.mazedata.obj.name}.txt")
         self.mazedata.obj.setPortalPairs(self.nodes)
         self.mazedata.obj.connectHomeNodes(self.nodes)
         self.pacman = Pacman(self.nodes.getNodeFromTiles(*self.mazedata.obj.pacmanStart), self.isHumanPlayer, agent)
-        self.pellets = PelletGroup(self.mazedata.obj.name + ".txt")
+        self.pellets = PelletGroup(f"Pacman_complete/{self.mazedata.obj.name}.txt")
         self.ghosts = GhostGroup(self.nodes.getStartTempNode(), self.pacman)
 
         self.ghosts.pinky.setStartNode(self.nodes.getNodeFromTiles(*self.mazedata.obj.addOffset(2, 3)))
