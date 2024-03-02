@@ -13,7 +13,7 @@ scores = []
 times = []
 for i in range(1000):
     start_time = time.time()
-    stats = calculatePerformanceOverXGames(HumanAgent, gameCount=10, gameSpeed=1, startLevel=0, startLives=1,
+    stats = calculatePerformanceOverXGames(FirstRealAgent, gameCount=10, gameSpeed=1, startLevel=0, startLives=1,
                                            ghostsEnabled=True, freightEnabled=True, logging=False, lockDeltaTime=True)
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -21,7 +21,6 @@ for i in range(1000):
     scores.append(stats['combinedScore'])
     # print(stats)
     estimatedSecondsLeft = sum(times) / len(times)
-    print(f"{i} Average score: {round(sum(scores) / len(scores),2)}  -  "
-          f"Average time: {secondsToTime(estimatedSecondsLeft)}  -  "
-          f"Estimated time left: {secondsToTime(estimatedSecondsLeft * (1000 - i))}")
-    
+    print(f"{i} score: {round(sum(scores) / len(scores),2)}  -  "
+          f"time: {secondsToTime(estimatedSecondsLeft)}  -  "
+          f"Estimated: {secondsToTime(estimatedSecondsLeft * (1000 - i))}")
