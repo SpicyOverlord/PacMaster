@@ -15,7 +15,7 @@ class GameStats(object):
 
     @staticmethod
     def calculateCombinedPerformance(gameStats: list['GameStats']):
-        weights = {'score': 0.5, 'pellets': 1.2, 'efficiencyPercentile': 0.3}
+        weights = {'score': 0.4, 'pellets': 1, 'efficiencyPercentile': 0.3}
 
         baseScores = [game.score for game in gameStats]
         efficiency = [game.efficiency for game in gameStats]
@@ -45,7 +45,7 @@ class GameStats(object):
         combinedScore = weightedAveragePelletScore
 
         # # multiply to make the score higher if the agent reaches higher levels
-        combinedScore *= weighedAverageLevel
+        # combinedScore *= weighedAverageLevel
 
         # Statistical Analysis
         medianScore = sorted(baseScores)[len(baseScores) // 2]
