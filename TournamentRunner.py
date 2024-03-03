@@ -63,6 +63,8 @@ class TournamentRunner:
 
                 # estimate seconds left until simulation is finished
                 timeTaken = end_time - start_time
+                print(f"Time taken: {secondsToTime(timeTaken)}")
+
                 agentTestingTimes.append(timeTaken)
                 averageTimeTaken = sum(agentTestingTimes) / len(agentTestingTimes)
                 estimatedSecondsLeft = (totalGameCount - finishedGameCount) / gameCount * averageTimeTaken
