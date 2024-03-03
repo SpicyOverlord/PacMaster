@@ -19,36 +19,29 @@ class FirstRealAgent(IAgent):
         super().__init__(gameController)
 
         if weightContainer is None:
-            self.weightContainer = FirstRealAgent.getDefaultWeightContainer()
+            self.weightContainer = FirstRealAgent.getBestWeightContainer()
         else:
             self.weightContainer = weightContainer
 
     @staticmethod
+    def getBestWeightContainer() -> WeightContainer:
+        return WeightContainer({
+            'fleeThreshold': 0.192,
+            'pelletLevelDistance': 1.126,
+            'wayTooCloseThreshold': 77.053,
+            'tooCloseThreshold': 207.475,
+            'tooFarAwayThreshold': 1167.487,
+            'wayTooCloseValue': 700.586,
+            'tooCloseValue': 29.333, 'dangerZoneMultiplier': 1.579,
+            'dangerZoneMiddleMapNodeMultiplier': 0.279,
+            'ghostInDangerZoneMultiplier': 2.024,
+            'closestGhostMultiplier': 0.52,
+            'ghostIsCloserMultiplier': 1.373,
+            'edgeMultiplier': 2.123
+        })
+
+    @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
-        # return WeightContainer({'fleeThreshold': 0.192, 'pelletLevelDistance': 1.126, 'wayTooCloseThreshold': 77.053,
-        #                         'tooCloseThreshold': 207.475, 'tooFarAwayThreshold': 1167.487,
-        #                         'wayTooCloseValue': 700.586, 'tooCloseValue': 29.333, 'dangerZoneMultiplier': 1.579,
-        #                         'dangerZoneMiddleMapNodeMultiplier': 0.279, 'ghostInDangerZoneMultiplier': 2.024,
-        #                         'closestGhostMultiplier': 0.52, 'ghostIsCloserMultiplier': 1.373,
-        #                         'edgeMultiplier': 2.123}
-        #                        )
-
-        # return WeightContainer({
-        #     'fleeThreshold': 0.179,
-        #     'pelletLevelDistance': 1,
-        #     'wayTooCloseThreshold': 77.651,
-        #     'tooCloseThreshold': 339.684,
-        #     'tooFarAwayThreshold': 1449.416,
-        #     'wayTooCloseValue': 502.271,
-        #     'tooCloseValue': 73.681,
-        #     'dangerZoneMultiplier': 1.657,
-        #     'dangerZoneMiddleMapNodeMultiplier': 1.556,
-        #     'ghostInDangerZoneMultiplier': 0.949,
-        #     'closestGhostMultiplier': 1.093,
-        #     'ghostIsCloserMultiplier': 1.39,
-        #     'edgeMultiplier': 1.549
-        # })
-
         return WeightContainer({
             'fleeThreshold': 0.2,
             'pelletLevelDistance': 60,
@@ -64,22 +57,6 @@ class FirstRealAgent(IAgent):
             'ghostIsCloserMultiplier': 1,
             'edgeMultiplier': 1}
         )
-
-        # return WeightContainer({
-        #     'fleeThreshold': 0.166,
-        #     'pelletLevelDistance': -0.91,
-        #     'wayTooCloseThreshold': 40.464,
-        #     'tooCloseThreshold': 206.539,
-        #     'tooFarAwayThreshold': 102.199,
-        #     'wayTooCloseValue': 329.268,
-        #     'tooCloseValue': 82.789,
-        #     'dangerZoneMultiplier': 1.606,
-        #     'dangerZoneMiddleMapNodeMultiplier': 1.826,
-        #     'ghostInDangerZoneMultiplier': 3.604,
-        #     'closestGhostMultiplier': 50.886,
-        #     'ghostIsCloserMultiplier': 2.889,
-        #     'edgeMultiplier': 1}
-        # )
 
     def calculateNextMove(self):
         obs = Observation(self.gameController, self.weightContainer)

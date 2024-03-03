@@ -24,7 +24,7 @@ class WeightModifier:
         mutation = WeightContainer()
 
         for key, value in weights.items():
-            if random.random() < 0.3:
+            if random.random() < 0.5:
                 mutateDistance = random.uniform(0, 1)
                 mutatedValue = value + value * random.uniform(-mutateDistance, mutateDistance) * 2
             else:
@@ -32,6 +32,8 @@ class WeightModifier:
 
             mutation.addWeight(key, round(mutatedValue, 3))
 
+        if set(mutation.items()) == set(weights.items()):
+            return WeightModifier.startMutate(weights)
         return mutation
 
     @staticmethod

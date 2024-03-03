@@ -14,8 +14,8 @@ class GameStats(object):
         return f"GameStats(score={self.score}, efficiency={round(self.efficiency, 3)}, totalPelletsEaten={self.totalPelletsEaten}, actionsTaken={self.actionsTaken}, levelsCompleted={self.levelsCompleted})"
 
     @staticmethod
-    def calculateCombinedRating(gameStats: list['GameStats']):
-        weights = {'score': 0.5, 'pellets': 1.2, 'efficiencyPercentile': 0.3}
+    def calculateCombinedPerformance(gameStats: list['GameStats']):
+        weights = {'score': 0.4, 'pellets': 1, 'efficiency': 0.3}
 
         baseScores = [game.score for game in gameStats]
         efficiency = [game.efficiency for game in gameStats]
@@ -41,11 +41,11 @@ class GameStats(object):
 
         # Combined Score Calculation
         # basically makes averageEfficiency only change 30% of the combined score
-        # combinedScore = weights['efficiencyPercentile'] * (averageEfficiency + 1) * (weightedAverageBaseScore + weightedAveragePelletScore)
+        # combinedScore = weights['efficiency'] * (averageEfficiency + 1) * (weightedAverageBaseScore + weightedAveragePelletScore)
         combinedScore = weightedAveragePelletScore
 
         # # multiply to make the score higher if the agent reaches higher levels
-        combinedScore *= weighedAverageLevel
+        # combinedScore *= weighedAverageLevel
 
         # Statistical Analysis
         medianScore = sorted(baseScores)[len(baseScores) // 2]

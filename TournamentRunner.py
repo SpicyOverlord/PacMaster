@@ -4,6 +4,7 @@ import time
 from PacMaster.Genetics.WeightContainer import WeightContainer
 from PacMaster.Genetics.WeightModifier import WeightModifier
 from PacMaster.agents.FirstRealAgent import FirstRealAgent
+from PacMaster.agents.HumanAgent import HumanAgent
 from PacMaster.agents.Iagent import IAgent
 from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.runnerFunctions import calculatePerformanceOverXGames
@@ -13,7 +14,7 @@ from PacMaster.utils.utils import secondsToTime
 class TournamentRunner:
     @staticmethod
     def startNewSimulation(agentClass: type[IAgent], populationSize: int, generationCount: int, mutationRate: float,
-                           gameCount: int, lockDeltaTime: bool):
+                           gameCount: int):
         totalGameCount = populationSize * generationCount * gameCount
         finishedGameCount = 0
         print("--- Starting new simulation ---")
@@ -53,12 +54,12 @@ class TournamentRunner:
                 start_time = time.time()  # Record the start time before testing begins
 
                 stats = calculatePerformanceOverXGames(agentClass, population[i],
-                                                       gameCount=gameCount, lockDeltaTime=lockDeltaTime, gameSpeed=15,
+                                                       gameCount=gameCount, lockDeltaTime=True, gameSpeed=15,
                                                        freightEnabled=True)
                 end_time = time.time()  # Record the end time after testing is finished
                 finishedGameCount += gameCount
                 print(f"Performance: {stats}")
-                population[i].setFitness(stats['combinedScore'])
+                population[i].addFitness(stats['combinedScore'])
 
                 # estimate seconds left until simulation is finished
                 timeTaken = end_time - start_time
@@ -72,12 +73,13 @@ class TournamentRunner:
             bestOfEachGenerations.append(population[0])
 
             # print top 5 of previous generation
-            # print(f"\nTop 5 of generation {generation + 1}:")
-            # for j in range(5):
-            #     print(population[j])
+            print(f"\nTop 5 of generation {generation + 1}:")
+            for j in range(min(5, populationSize)):
+                print(population[j])
 
-            for pop in population:
-                print(pop)
+            # print all of previous generation
+            # for pop in population:
+            #     print(pop)
 
             newPopulation = TournamentRunner.generateNewPopulation(
                 population=population,
@@ -102,7 +104,7 @@ class TournamentRunner:
         top20population = population[:int(populationSize * 0.2)]
 
         # 20% of the new population will be the top 20% of the previous generation
-        newPopulation = [top20population]
+        newPopulation = top20population
         # 40% of the new population will be child of the previous generation
         for _ in range(int(populationSize * 0.2)):
             parentA = WeightModifier.tournamentSelectParent(population, poolSize)
@@ -128,4 +130,4 @@ class TournamentRunner:
 
 DebugHelper.disable()
 TournamentRunner.startNewSimulation(FirstRealAgent, 50, 20, 1.5,
-                                    50, True)
+                                    50)
