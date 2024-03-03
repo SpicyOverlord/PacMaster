@@ -32,7 +32,7 @@ class TournamentRunner:
 
         # generate random population from the default weight container from the agent
         population = [defaultWeightContainer]
-        for i in range(int(populationSize*0.7 - 1)):
+        for i in range(int(populationSize * 0.7 - 1)):
             newWeightContainer = WeightModifier.startMutate(defaultWeightContainer)
             population.append(newWeightContainer)
         while len(population) < populationSize:
@@ -51,12 +51,18 @@ class TournamentRunner:
                       f"({round(finishedGameCount / (totalGameCount / 100), 1)}%)   "
                       f"Estimated time left: {secondsToTime(estimatedSecondsLeft)}")
                 print(population[i])
+
                 start_time = time.time()  # Record the start time before testing begins
 
-                stats = calculatePerformanceOverXGames(agentClass, population[i],
-                                                       gameCount=gameCount, lockDeltaTime=True, gameSpeed=15,
-                                                       freightEnabled=True)
+                stats = calculatePerformanceOverXGames(
+                    agentClass=agentClass,
+                    weightContainer=population[i],
+                    gameCount=gameCount,
+                    lockDeltaTime=True,
+                    gameSpeed=15,
+                    freightEnabled=True)
                 end_time = time.time()  # Record the end time after testing is finished
+
                 finishedGameCount += gameCount
                 print(f"Performance: {stats}")
                 population[i].addFitness(stats['combinedScore'])
@@ -66,6 +72,12 @@ class TournamentRunner:
                 print(f"Time taken: {secondsToTime(timeTaken)}")
 
                 agentTestingTimes.append(timeTaken)
+                # the average time is only calculated from the last 2 generations of games.
+                # this is because as the agents improve, the games will take longer,
+                # and therefore the average will be more accurate if it only includes the most recent games.
+                if len(agentTestingTimes) > populationSize * 2:
+                    agentTestingTimes.pop(0)
+
                 averageTimeTaken = sum(agentTestingTimes) / len(agentTestingTimes)
                 estimatedSecondsLeft = (totalGameCount - finishedGameCount) / gameCount * averageTimeTaken
 
