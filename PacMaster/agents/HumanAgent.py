@@ -14,6 +14,38 @@ class HumanAgent(IAgent):
     def __init__(self, gameController, weightContainer: WeightContainer = None):
         super().__init__(gameController)
 
+
+    @staticmethod
+    def getBestWeightContainer() -> WeightContainer:
+        return WeightContainer({
+            'testValue0': 1,
+            'testValue1': 1,
+            'testValue2': 1,
+            'testValue3': 1,
+            'testValue4': 1,
+            'testValue5': 1,
+            'testValue6': 1,
+            'testValue7': 1,
+            'testValue8': 1,
+            'testValue9': 1,
+        })
+
+    @staticmethod
+    def getDefaultWeightContainer() -> WeightContainer:
+        return WeightContainer({
+            'testValue0': 1,
+            'testValue1': 1,
+            'testValue2': 1,
+            'testValue3': 1,
+            'testValue4': 1,
+            'testValue5': 1,
+            'testValue6': 1,
+            'testValue7': 1,
+            'testValue8': 1,
+            'testValue9': 1,
+        })
+
+
     def calculateNextMove(self):
         obs = Observation(self.gameController)
         self.takeStats(obs)

@@ -41,5 +41,5 @@ class WeightContainer:
 
     def __str__(self):
         if len(self.__fitness__) != 0:
-            return f"Fitness:{self.__fitness__} Survived:{len(self.__fitness__)} Weights:{str(self.__weightDict__)}"
+            return f"Fitness:{self.getFitness()} Survived:{len(self.__fitness__)} Weights:{str(self.__weightDict__)}"
         return f"Weights:{str(self.__weightDict__)}"

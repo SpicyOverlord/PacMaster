@@ -12,6 +12,9 @@ class IAgent(ABC):
         self.pelletsEatenThisLevel = 0
 
     @staticmethod
+    def getBestWeightContainer() -> WeightContainer:
+        raise Exception("NotImplementedException")
+    @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
         raise Exception("NotImplementedException")
 

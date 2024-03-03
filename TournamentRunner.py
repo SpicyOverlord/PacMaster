@@ -4,6 +4,7 @@ import time
 from PacMaster.Genetics.WeightContainer import WeightContainer
 from PacMaster.Genetics.WeightModifier import WeightModifier
 from PacMaster.agents.FirstRealAgent import FirstRealAgent
+from PacMaster.agents.HumanAgent import HumanAgent
 from PacMaster.agents.Iagent import IAgent
 from PacMaster.utils.debugHelper import DebugHelper
 from PacMaster.utils.runnerFunctions import calculatePerformanceOverXGames
@@ -73,7 +74,7 @@ class TournamentRunner:
 
             # print top 5 of previous generation
             print(f"\nTop 5 of generation {generation + 1}:")
-            for j in range(5):
+            for j in range(min(5, populationSize)):
                 print(population[j])
 
             # print all of previous generation
@@ -103,7 +104,7 @@ class TournamentRunner:
         top20population = population[:int(populationSize * 0.2)]
 
         # 20% of the new population will be the top 20% of the previous generation
-        newPopulation = [top20population]
+        newPopulation = top20population
         # 40% of the new population will be child of the previous generation
         for _ in range(int(populationSize * 0.2)):
             parentA = WeightModifier.tournamentSelectParent(population, poolSize)
