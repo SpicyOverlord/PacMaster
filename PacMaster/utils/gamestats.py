@@ -14,7 +14,7 @@ class GameStats(object):
         return f"GameStats(score={self.score}, efficiency={round(self.efficiency, 3)}, totalPelletsEaten={self.totalPelletsEaten}, actionsTaken={self.actionsTaken}, levelsCompleted={self.levelsCompleted})"
 
     @staticmethod
-    def calculateCombinedRating(gameStats: list['GameStats']):
+    def calculateCombinedPerformance(gameStats: list['GameStats']):
         weights = {'score': 0.5, 'pellets': 1.2, 'efficiencyPercentile': 0.3}
 
         baseScores = [game.score for game in gameStats]
