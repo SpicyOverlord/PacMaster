@@ -41,9 +41,9 @@ class TournamentRunner:
             population.append(newWeightContainer)
 
         # only print start population
-        for pop in population:
-            print(pop)
-        exit()
+        # for pop in population:
+        #     print(pop)
+        # exit()
 
         agentTestingTimes = []
         estimatedSecondsLeft = 0
