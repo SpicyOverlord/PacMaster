@@ -24,20 +24,26 @@ class TournamentRunner:
 
         bestOfEachGenerations = []
 
-        poolSize = max(int(populationSize * 0.2), 2)
+        poolSize = max(int(populationSize * 0.1), 2)
 
         currentMutationRate = mutationRate
 
         defaultWeightContainer = agentClass.getDefaultWeightContainer()
+        BestWeightContainer = agentClass.getBestWeightContainer()
 
         # generate random population from the default weight container from the agent
         population = [defaultWeightContainer]
-        for i in range(int(populationSize * 0.7 - 1)):
-            newWeightContainer = WeightModifier.startMutate(defaultWeightContainer)
+        for i in range(int(populationSize * 0.9)):
+            newWeightContainer = WeightModifier.mutateAll(defaultWeightContainer, 1.1)
             population.append(newWeightContainer)
         while len(population) < populationSize:
-            newWeightContainer = WeightModifier.startMutate(defaultWeightContainer, 0.7)
+            newWeightContainer = WeightModifier.mutateAll(BestWeightContainer, 0.7)
             population.append(newWeightContainer)
+
+        # only print start population
+        for pop in population:
+            print(pop)
+        exit()
 
         agentTestingTimes = []
         estimatedSecondsLeft = 0
@@ -52,7 +58,7 @@ class TournamentRunner:
                       f"Estimated time left: {secondsToTime(estimatedSecondsLeft)}")
                 print(population[i])
 
-                start_time = time.time()  # Record the start time before testing begins
+                start_time = time.time()
 
                 stats = calculatePerformanceOverXGames(
                     agentClass=agentClass,
@@ -60,8 +66,10 @@ class TournamentRunner:
                     gameCount=gameCount,
                     lockDeltaTime=True,
                     gameSpeed=15,
-                    freightEnabled=True)
-                end_time = time.time()  # Record the end time after testing is finished
+                    freightEnabled=True
+                )
+
+                end_time = time.time()
 
                 finishedGameCount += gameCount
                 print(f"Performance: {stats}")
@@ -114,30 +122,41 @@ class TournamentRunner:
     @staticmethod
     def generateNewPopulation(population: list[WeightContainer],
                               populationSize: int, currentMutationRate: float, poolSize: int) -> list[WeightContainer]:
-        # save some of population
-        top20population = population[:int(populationSize * 0.2)]
 
-        # 20% of the new population will be the top 20% of the previous generation
-        newPopulation = top20population
-        # 40% of the new population will be child of the previous generation
-        for _ in range(int(populationSize * 0.2)):
+        top10population = population[:int(populationSize * 0.1)]
+        top10to30population = population[int(populationSize * 0.1):int(populationSize * 0.3)]
+
+        # 10% of the new population will be the top 10% of the previous generation
+        newPopulation = top10population
+        # 60% of the new population will be a child of the previous generation
+        for i in range(int(populationSize * 0.6)):
             parentA = WeightModifier.tournamentSelectParent(population, poolSize)
             parentB = WeightModifier.tournamentSelectParent(population, poolSize)
             child = WeightModifier.blendByFitnessCombine(parentA, parentB)
 
-            newPopulation.append(child)
-            newPopulation.append(WeightModifier.mutate(child, currentMutationRate))
-        # 20% of the new population will be child of the top 20% of the previous generation
-        for _ in range(int(populationSize * 0.1)):
-            parentA = random.choice(top20population)
-            parentB = random.choice(top20population)
-            child = WeightModifier.blendCombine(parentA, parentB)
+            # mutate half of the children
+            if i % 2 == 0:
+                child = WeightModifier.mutateRandom(child, currentMutationRate)
 
             newPopulation.append(child)
-            newPopulation.append(WeightModifier.mutate(child, currentMutationRate * 0.5))
-        # 20% of the new population will be mutations of the top 20% of the previous generation
-        for _ in range(int(populationSize * 0.2)):
-            newPopulation.append(WeightModifier.mutate(random.choice(top20population), currentMutationRate))
+
+        # 20% of the new population will be a child of the top 10% of the previous generation
+        for i in range(int(populationSize * 0.2)):
+            parentA = random.choice(top10population)
+            parentB = random.choice(top10population)
+            child = WeightModifier.blendRandomCombine(parentA, parentB)
+
+            # mutate half of the children
+            if i % 2 == 0:
+                child = WeightModifier.mutateRandom(child, currentMutationRate)
+
+            newPopulation.append(child)
+
+        # 10% of the new population will be mutations of the top 10% to 30% of the previous generation
+        for _ in range(int(populationSize * 0.1)):
+            parent = WeightModifier.tournamentSelectParent(top10to30population, 2)
+            mutatedParent = WeightModifier.mutateRandom(parent, currentMutationRate)
+            newPopulation.append(mutatedParent)
 
         return newPopulation
 

@@ -5,7 +5,7 @@ from PacMaster.Genetics.WeightContainer import WeightContainer
 
 class WeightModifier:
     @staticmethod
-    def mutate(weights: WeightContainer, mutationRate: float):
+    def mutateRandom(weights: WeightContainer, mutationRate: float):
         mutation = WeightContainer()
 
         for key, value in weights.items():
@@ -20,7 +20,7 @@ class WeightModifier:
         return mutation
 
     @staticmethod
-    def startMutate(weights: WeightContainer, mutateRate: float = 2):
+    def mutateAll(weights: WeightContainer, mutateRate):
         mutation = WeightContainer()
 
         for key, value in weights.items():
@@ -28,9 +28,6 @@ class WeightModifier:
             mutatedValue = value + value * random.uniform(-mutateDistance, mutateDistance) * mutateRate
 
             mutation.addWeight(key, round(mutatedValue, 3))
-
-        if set(mutation.items()) == set(weights.items()):
-            return WeightModifier.startMutate(weights)
         return mutation
 
     @staticmethod
@@ -69,7 +66,7 @@ class WeightModifier:
 
     # TODO: Make a function where alpha is decided by the fitness of the parents?
     @staticmethod
-    def blendCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
+    def blendRandomCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
         WeightModifier.checkSameKeySet(weightsA, weightsB)
 
         offspring = WeightContainer()
