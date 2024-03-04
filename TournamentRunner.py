@@ -22,11 +22,12 @@ class TournamentRunner:
         print(f"{totalGameCount} games will be played over "
               f"{generationCount} generations with a population size of {populationSize}.")
 
+
         bestOfEachGenerations = []
 
         poolSize = max(int(populationSize * 0.1), 2)
-
         currentMutationRate = mutationRate
+        mutationRateMultiplier = (10 ** (-1 / generationCount)) * (1 / mutationRate) ** (1 / generationCount)
 
         defaultWeightContainer = agentClass.getDefaultWeightContainer()
         BestWeightContainer = agentClass.getBestWeightContainer()
@@ -113,7 +114,7 @@ class TournamentRunner:
 
             # decrease mutation rate
             # currentMutationRate -= mutationRate / generationCount
-            currentMutationRate *= 0.95
+            currentMutationRate *= mutationRateMultiplier
 
         print("\nBest of each generations:")
         for i in range(len(bestOfEachGenerations)):
