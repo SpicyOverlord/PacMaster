@@ -42,7 +42,8 @@ class GameStats(object):
         # Combined Score Calculation
         # basically makes averageEfficiency only change 30% of the combined score
         # combinedScore = weights['efficiency'] * (averageEfficiency + 1) * (weightedAverageBaseScore + weightedAveragePelletScore)
-        combinedScore = weightedAveragePelletScore
+        # combinedScore = weightedAveragePelletScore
+        combinedScore = GameStats.calculateTruncatedMean(normalizedPelletScores, 20)
 
         # # multiply to make the score higher if the agent reaches higher levels
         # combinedScore *= weighedAverageLevel
@@ -66,3 +67,19 @@ class GameStats(object):
                 "maxScore": max(baseScores),
                 "minScore": min(baseScores),
                 "stdDeviation": round(stdDeviation, 3)}
+
+    @staticmethod
+    def calculateTruncatedMean(scores, truncationPercent):
+        # Sort the list of scores
+        sortedScores = sorted(scores)
+
+        # Calculate the number of scores to truncate from each end
+        scoreCount = len(sortedScores)
+        numberToTruncate = int(scoreCount * truncationPercent / 100)
+
+        # Truncate scores from both ends
+        truncatedScores = sortedScores[numberToTruncate:-numberToTruncate] if numberToTruncate > 0 else sortedScores
+
+        # Calculate and return the mean of the truncated list
+        truncatedMeanValue = sum(truncatedScores) / len(truncatedScores)
+        return truncatedMeanValue

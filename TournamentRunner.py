@@ -113,7 +113,7 @@ class TournamentRunner:
 
             # decrease mutation rate
             # currentMutationRate -= mutationRate / generationCount
-            currentMutationRate *= 0.9
+            currentMutationRate *= 0.95
 
         print("\nBest of each generations:")
         for i in range(len(bestOfEachGenerations)):
@@ -163,4 +163,4 @@ class TournamentRunner:
 
 DebugHelper.disable()
 TournamentRunner.startNewSimulation(FirstRealAgent, 50, 40, 1.5,
-                                    10)
+                                    20)
