@@ -9,6 +9,22 @@ import time
 from PacMaster.utils.utils import secondsToTime
 
 DebugHelper.disable()
+stats = calculatePerformanceOverXGames(
+    FirstRealAgent,
+    weightContainer=None,
+    gameCount=50,
+    gameSpeed=1,
+    startLevel=0,
+    startLives=3,
+    ghostsEnabled=True,
+    freightEnabled=True,
+    logging=True,
+    lockDeltaTime=True
+)
+
+exit()
+
+DebugHelper.disable()
 scores = []
 times = []
 for i in range(1000):
@@ -20,11 +36,11 @@ for i in range(1000):
         gameCount=20,
         gameSpeed=1,
         startLevel=0,
-        startLives=1,
+        startLives=3,
         ghostsEnabled=True,
         freightEnabled=True,
         logging=False,
-        lockDeltaTime=True
+        lockDeltaTime=False
     )
 
     end_time = time.time()

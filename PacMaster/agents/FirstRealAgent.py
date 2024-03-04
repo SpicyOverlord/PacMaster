@@ -88,7 +88,6 @@ class FirstRealAgent(IAgent):
             return RIGHT
 
         DebugHelper.drawMap(obs)
-        DebugHelper.drawDangerLevels(obs)
 
         pacmanPosition = obs.getPacmanPosition()
 
@@ -127,9 +126,17 @@ class FirstRealAgent(IAgent):
         for neighborContainer in startMapNode.neighborContainers:
             endMapNode, path, distance = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode,
                                                                                      neighborContainer.direction)
+
+            if obs.isGhostInPath(path):
+                DebugHelper.drawPath(path, DebugHelper.RED, 5)
+                continue
+            DebugHelper.drawPath(path, DebugHelper.BLUE, 5)
+
             pelletsInPath = obs.getPelletCountInPath(path)
 
             pathPelletLevel = obs.calculatePelletLevel(endMapNode.position) * (pelletsInPath + 1)
+            DebugHelper.drawPelletLevel(obs, endMapNode.position)
+
             if pathPelletLevel > maxPelletLevel:
                 maxPelletLevel = pathPelletLevel
                 maxPelletDirection = neighborContainer.direction
@@ -140,6 +147,8 @@ class FirstRealAgent(IAgent):
             pelletPath, _ = obs.map.calculateShortestPath(startMapNode.position, nearestPelletMapNode.position)
 
             if len(pelletPath) >= 2:
+                DebugHelper.drawPath(pelletPath, DebugHelper.BLUE, 5)
+
                 maxPelletDirection = self.__getDirection__(obs, pelletPath[1])
 
         return maxPelletDirection
@@ -155,12 +164,12 @@ class FirstRealAgent(IAgent):
 
             if obs.isGhostInPath(path):
                 DebugHelper.drawPath(path, DebugHelper.RED, 5)
-                # DebugHelper.pauseGame()
                 continue
-
             DebugHelper.drawPath(path, DebugHelper.GREEN, 5)
 
             dangerLevel = obs.calculateDangerLevel(endMapNode.position)
+            DebugHelper.drawDangerLevel(obs, endMapNode.position)
+
             if dangerLevel < minDangerLevel:
                 minDangerLevel = dangerLevel
                 minDangerDirection = neighborContainer.direction
