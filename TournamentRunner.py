@@ -36,7 +36,7 @@ class TournamentRunner:
             newWeightContainer = WeightModifier.startMutate(defaultWeightContainer)
             population.append(newWeightContainer)
         while len(population) < populationSize:
-            newWeightContainer = WeightModifier.mutate(defaultWeightContainer, 0.5)
+            newWeightContainer = WeightModifier.startMutate(defaultWeightContainer, 0.7)
             population.append(newWeightContainer)
 
         agentTestingTimes = []

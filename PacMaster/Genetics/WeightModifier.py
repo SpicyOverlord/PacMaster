@@ -20,15 +20,12 @@ class WeightModifier:
         return mutation
 
     @staticmethod
-    def startMutate(weights: WeightContainer):
+    def startMutate(weights: WeightContainer, mutateRate: float = 2):
         mutation = WeightContainer()
 
         for key, value in weights.items():
-            if random.random() < 0.5:
-                mutateDistance = random.uniform(0, 1)
-                mutatedValue = value + value * random.uniform(-mutateDistance, mutateDistance) * 2
-            else:
-                mutatedValue = value
+            mutateDistance = random.uniform(random.uniform(0, 1), 1)
+            mutatedValue = value + value * random.uniform(-mutateDistance, mutateDistance) * mutateRate
 
             mutation.addWeight(key, round(mutatedValue, 3))
 
