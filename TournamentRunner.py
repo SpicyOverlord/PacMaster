@@ -162,5 +162,5 @@ class TournamentRunner:
 
 
 DebugHelper.disable()
-TournamentRunner.startNewSimulation(FirstRealAgent, 50, 20, 1.5,
-                                    50)
+TournamentRunner.startNewSimulation(FirstRealAgent, 50, 40, 1.5,
+                                    10)
