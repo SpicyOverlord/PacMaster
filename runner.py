@@ -15,7 +15,7 @@ stats = calculatePerformanceOverXGames(
     gameCount=50,
     gameSpeed=1,
     startLevel=0,
-    startLives=3,
+    startLives=1,
     ghostsEnabled=True,
     freightEnabled=True,
     logging=True,
@@ -36,11 +36,11 @@ for i in range(1000):
         gameCount=20,
         gameSpeed=1,
         startLevel=0,
-        startLives=3,
+        startLives=1,
         ghostsEnabled=True,
         freightEnabled=True,
         logging=False,
-        lockDeltaTime=False
+        lockDeltaTime=True
     )
 
     end_time = time.time()
