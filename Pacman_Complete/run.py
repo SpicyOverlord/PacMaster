@@ -89,7 +89,7 @@ class GameController(object):
 
     def update(self):
         if self.lockDeltaTime:
-            dt = 0.034
+            dt = 0.045
         else:
             dt = self.clock.tick(30 * self.gameSpeed) / (1000.0 / self.gameSpeed)
 
