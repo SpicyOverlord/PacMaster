@@ -50,15 +50,12 @@ class GameStats(object):
 
         # Statistical Analysis
         medianScore = sorted(baseScores)[len(baseScores) // 2]
-        averageNormalizedScore = sum(normalizedBaseScores) / len(normalizedBaseScores)
-        variance = sum((s - averageNormalizedScore) ** 2 for s in normalizedBaseScores) / len(normalizedBaseScores)
+        averageNormalizedPelletScore = sum(normalizedPelletScores) / len(normalizedPelletScores)
+        variance = sum((s - averageNormalizedPelletScore) ** 2 for s in normalizedPelletScores) / len(normalizedPelletScores)
         stdDeviation = variance ** 0.5
         averageScore = sum(baseScores) / len(baseScores)
 
         return {"combinedScore": round(combinedScore, 3),
-                "averageEfficiency": round(averageEfficiency, 3),
-                "weightedAverageBaseScore": round(weightedAverageBaseScore, 3),
-                "weightedAveragePelletScore": round(weightedAveragePelletScore, 3),
                 "averageLevelsCompleted": round(averageLevelsCompleted, 3),
                 "maxLevelsCompleted": maxLevelsCompleted,
 

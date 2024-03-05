@@ -10,8 +10,10 @@ class WeightModifier:
 
         for key, value in weights.items():
             if random.random() < mutationRate:
-                mutateDistance = random.uniform(0, 1)
-                mutatedValue = value + value * random.uniform(-mutateDistance, mutateDistance) * mutationRate
+                # mutateDistance = random.uniform(0, 1)
+                # mutatedValue = value + value * random.uniform(-mutateDistance, mutateDistance) * mutationRate
+                mutateDistance = random.uniform(-1, 1) * mutationRate
+                mutatedValue = value + value * mutateDistance
             else:
                 mutatedValue = value
 
@@ -20,14 +22,20 @@ class WeightModifier:
         return mutation
 
     @staticmethod
-    def mutateAll(weights: WeightContainer, mutateRate):
+    def mutateAll(weights: WeightContainer, mutationRate):
         mutation = WeightContainer()
 
         for key, value in weights.items():
-            mutateDistance = random.uniform(random.uniform(0, 1), 1)
-            mutatedValue = value + value * random.uniform(-mutateDistance, mutateDistance) * mutateRate
+            # mutateDistance = random.uniform(random.uniform(0, 1), 1)
+            # mutatedValue = value + value * random.uniform(-mutateDistance, mutateDistance) * mutationRate
+            mutateDistance = random.uniform(-1, 1)
+            mutatedValue = value + value * mutateDistance * mutationRate
+
+            if mutatedValue < 0:
+                mutatedValue *= -1
 
             mutation.addWeight(key, round(mutatedValue, 3))
+
         return mutation
 
     @staticmethod
