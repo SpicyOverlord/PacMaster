@@ -27,7 +27,7 @@ class GameStats(object):
         # calculate average and max level reached
         averageLevelsCompleted = sum([game.levelsCompleted for game in gameStats]) / len(gameStats)
         weighedAverageLevel = (averageLevelsCompleted * 0.5) + 1
-        maxLevelCompleted = max([game.levelsCompleted for game in gameStats])
+        maxLevelsCompleted = max([game.levelsCompleted for game in gameStats])
 
         # Calculate total pellets eaten
         maxPelletsPerLevel = 240
@@ -42,27 +42,41 @@ class GameStats(object):
         # Combined Score Calculation
         # basically makes averageEfficiency only change 30% of the combined score
         # combinedScore = weights['efficiency'] * (averageEfficiency + 1) * (weightedAverageBaseScore + weightedAveragePelletScore)
-        combinedScore = weightedAveragePelletScore
+        # combinedScore = weightedAveragePelletScore
+        combinedScore = GameStats.calculateTruncatedMean(normalizedPelletScores, 20)
 
         # # multiply to make the score higher if the agent reaches higher levels
         # combinedScore *= weighedAverageLevel
 
         # Statistical Analysis
         medianScore = sorted(baseScores)[len(baseScores) // 2]
-        averageNormalizedScore = sum(normalizedBaseScores) / len(normalizedBaseScores)
-        variance = sum((s - averageNormalizedScore) ** 2 for s in normalizedBaseScores) / len(normalizedBaseScores)
+        averageNormalizedPelletScore = sum(normalizedPelletScores) / len(normalizedPelletScores)
+        variance = sum((s - averageNormalizedPelletScore) ** 2 for s in normalizedPelletScores) / len(normalizedPelletScores)
         stdDeviation = variance ** 0.5
         averageScore = sum(baseScores) / len(baseScores)
 
         return {"combinedScore": round(combinedScore, 3),
-                "averageEfficiency": round(averageEfficiency, 3),
-                "weightedAverageBaseScore": round(weightedAverageBaseScore, 3),
-                "weightedAveragePelletScore": round(weightedAveragePelletScore, 3),
                 "averageLevelsCompleted": round(averageLevelsCompleted, 3),
-                "maxLevelCompleted": maxLevelCompleted,
+                "maxLevelsCompleted": maxLevelsCompleted,
 
                 "medianScore": medianScore,
                 "averageScore": round(averageScore, 3),
                 "maxScore": max(baseScores),
                 "minScore": min(baseScores),
                 "stdDeviation": round(stdDeviation, 3)}
+
+    @staticmethod
+    def calculateTruncatedMean(scores, truncationPercent):
+        # Sort the list of scores
+        sortedScores = sorted(scores)
+
+        # Calculate the number of scores to truncate from each end
+        scoreCount = len(sortedScores)
+        numberToTruncate = int(scoreCount * truncationPercent / 100)
+
+        # Truncate scores from both ends
+        truncatedScores = sortedScores[numberToTruncate:-numberToTruncate] if numberToTruncate > 0 else sortedScores
+
+        # Calculate and return the mean of the truncated list
+        truncatedMeanValue = sum(truncatedScores) / len(truncatedScores)
+        return truncatedMeanValue

@@ -25,20 +25,28 @@ class FirstRealAgent(IAgent):
 
     @staticmethod
     def getBestWeightContainer() -> WeightContainer:
-        return WeightContainer({
-            'fleeThreshold': 0.192,
-            'pelletLevelDistance': 1.126,
-            'wayTooCloseThreshold': 77.053,
-            'tooCloseThreshold': 207.475,
-            'tooFarAwayThreshold': 1167.487,
-            'wayTooCloseValue': 700.586,
-            'tooCloseValue': 29.333, 'dangerZoneMultiplier': 1.579,
-            'dangerZoneMiddleMapNodeMultiplier': 0.279,
-            'ghostInDangerZoneMultiplier': 2.024,
-            'closestGhostMultiplier': 0.52,
-            'ghostIsCloserMultiplier': 1.373,
-            'edgeMultiplier': 2.123
-        })
+        return WeightContainer({'fleeThreshold': 0.237, 'pelletLevelDistance': 156.099, 'wayTooCloseThreshold': 74.912,
+                                'tooCloseThreshold': 156.781, 'tooFarAwayThreshold': 1373.129,
+                                'wayTooCloseValue': 1206.227, 'tooCloseValue': 206.199, 'dangerZoneMultiplier': 0.851,
+                                'dangerZoneMiddleMapNodeMultiplier': 1.158, 'ghostInDangerZoneMultiplier': 0.73,
+                                'closestGhostMultiplier': 1.43, 'ghostIsCloserMultiplier': 1.576,
+                                'edgeMultiplier': 1.904})
+
+        # return WeightContainer({
+        #     'fleeThreshold': 0.192,
+        #     'pelletLevelDistance': 1.126,
+        #     'wayTooCloseThreshold': 77.053,
+        #     'tooCloseThreshold': 207.475,
+        #     'tooFarAwayThreshold': 1167.487,
+        #     'wayTooCloseValue': 700.586,
+        #     'tooCloseValue': 29.333,
+        #     'dangerZoneMultiplier': 1.579,
+        #     'dangerZoneMiddleMapNodeMultiplier': 0.279,
+        #     'ghostInDangerZoneMultiplier': 2.024,
+        #     'closestGhostMultiplier': 0.52,
+        #     'ghostIsCloserMultiplier': 1.373,
+        #     'edgeMultiplier': 2.123
+        # })
 
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
@@ -73,7 +81,6 @@ class FirstRealAgent(IAgent):
             return RIGHT
 
         DebugHelper.drawMap(obs)
-        DebugHelper.drawDangerLevels(obs)
 
         pacmanPosition = obs.getPacmanPosition()
 
@@ -112,9 +119,17 @@ class FirstRealAgent(IAgent):
         for neighborContainer in startMapNode.neighborContainers:
             endMapNode, path, distance = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode,
                                                                                      neighborContainer.direction)
+
+            if obs.isGhostInPath(path):
+                DebugHelper.drawPath(path, DebugHelper.RED, 5)
+                continue
+            DebugHelper.drawPath(path, DebugHelper.BLUE, 5)
+
             pelletsInPath = obs.getPelletCountInPath(path)
 
             pathPelletLevel = obs.calculatePelletLevel(endMapNode.position) * (pelletsInPath + 1)
+            DebugHelper.drawPelletLevel(obs, endMapNode.position)
+
             if pathPelletLevel > maxPelletLevel:
                 maxPelletLevel = pathPelletLevel
                 maxPelletDirection = neighborContainer.direction
@@ -125,6 +140,8 @@ class FirstRealAgent(IAgent):
             pelletPath, _ = obs.map.calculateShortestPath(startMapNode.position, nearestPelletMapNode.position)
 
             if len(pelletPath) >= 2:
+                DebugHelper.drawPath(pelletPath, DebugHelper.BLUE, 5)
+
                 maxPelletDirection = self.__getDirection__(obs, pelletPath[1])
 
         return maxPelletDirection
@@ -140,12 +157,12 @@ class FirstRealAgent(IAgent):
 
             if obs.isGhostInPath(path):
                 DebugHelper.drawPath(path, DebugHelper.RED, 5)
-                # DebugHelper.pauseGame()
                 continue
-
             DebugHelper.drawPath(path, DebugHelper.GREEN, 5)
 
             dangerLevel = obs.calculateDangerLevel(endMapNode.position)
+            DebugHelper.drawDangerLevel(obs, endMapNode.position)
+
             if dangerLevel < minDangerLevel:
                 minDangerLevel = dangerLevel
                 minDangerDirection = neighborContainer.direction
