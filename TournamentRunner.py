@@ -83,7 +83,7 @@ class TournamentRunner:
                 #     gameSpeed=15,
                 #     freightEnabled=True
                 # )
-                jitter = 0.1
+                jitter = 0.2
 
                 value = TournamentRunner.valueFunction(population[i]) * random.uniform(1 - jitter, 1 + jitter)
 
