@@ -10,7 +10,7 @@ class WeightContainer:
         self.__fitness__.append(fitness)
 
     def getFitness(self) -> float:
-        return round(sum(self.__fitness__) / len(self.__fitness__), 3)
+        return sum(self.__fitness__) / len(self.__fitness__)
 
     def hasFitness(self) -> bool:
         return len(self.__fitness__) != 0

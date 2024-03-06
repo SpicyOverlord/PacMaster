@@ -14,10 +14,13 @@ class WeightModifier:
                 # mutatedValue = value + value * random.uniform(-mutateDistance, mutateDistance) * mutationRate
                 mutateDistance = random.uniform(-1, 1) * mutationRate
                 mutatedValue = value + value * mutateDistance
+
+                if mutatedValue < 0:
+                    mutatedValue *= -1
             else:
                 mutatedValue = value
 
-            mutation.addWeight(key, round(mutatedValue, 3))
+            mutation.addWeight(key, mutatedValue)
 
         return mutation
 
@@ -34,7 +37,7 @@ class WeightModifier:
             if mutatedValue < 0:
                 mutatedValue *= -1
 
-            mutation.addWeight(key, round(mutatedValue, 3))
+            mutation.addWeight(key, mutatedValue)
 
         return mutation
 
@@ -67,10 +70,12 @@ class WeightModifier:
     def averageCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
         WeightModifier.checkSameKeySet(weightsA, weightsB)
 
-        offspring = WeightContainer()
+        child = WeightContainer()
         for key, value in weightsA.items():
-            averageWeight = round((value + weightsB.getWeight(key)) / 2, 3)
-            offspring.addWeight(key, averageWeight)
+            averageWeight = (value + weightsB.getWeight(key)) / 2
+            child.addWeight(key, averageWeight)
+
+        return child
 
     # TODO: Make a function where alpha is decided by the fitness of the parents?
     @staticmethod
@@ -82,7 +87,7 @@ class WeightModifier:
             # ratio = random.uniform(0.2, 0.8)
             ratio = random.random()
             blendedWeight = (1 - ratio) * value + ratio * weightsB.getWeight(key)
-            offspring.addWeight(key, round(blendedWeight, 3))
+            offspring.addWeight(key, blendedWeight)
 
         return offspring
 
@@ -90,11 +95,15 @@ class WeightModifier:
     def blendByFitnessCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
         WeightModifier.checkSameKeySet(weightsA, weightsB)
 
+        if weightsA.getFitness() == 0 and weightsB.getFitness() == 0:
+            ratio = 0.5
+        else:
+            ratio = weightsA.getFitness() / (weightsA.getFitness() + weightsB.getFitness())
+
         offspring = WeightContainer()
         for key, value in weightsA.items():
-            ratio = weightsA.getFitness() / (weightsA.getFitness() + weightsB.getFitness())
             blendedWeight = (1 - ratio) * value + ratio * weightsB.getWeight(key)
-            offspring.addWeight(key, round(blendedWeight, 3))
+            offspring.addWeight(key, blendedWeight)
 
         return offspring
 
