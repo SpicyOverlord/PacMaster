@@ -83,7 +83,7 @@ class TournamentRunner:
                 #     gameSpeed=15,
                 #     freightEnabled=True
                 # )
-                jitter = 0.2
+                jitter = 0.1
 
                 value = TournamentRunner.valueFunction(population[i]) * random.uniform(1 - jitter, 1 + jitter)
 
@@ -151,6 +151,14 @@ class TournamentRunner:
                   TournamentRunner.valueFunction(bestOfEachGenerations[i]),
                   averageOfEachGeneration[i])
 
+        print("\nHighest:")
+        highest = 0
+        for i in range(len(bestOfEachGenerations)):
+            if bestOfEachGenerations[i].getFitness() > bestOfEachGenerations[highest].getFitness():
+                highest = i
+        print(f"{highest + 1}: {bestOfEachGenerations[highest].getFitness()}\n{bestOfEachGenerations[highest]}")
+
+
     @staticmethod
     def generateNewPopulation(population: list[WeightContainer], populationSize: int,
                               currentMutationRate: float, poolSize: int) -> list[WeightContainer]:
@@ -209,4 +217,4 @@ class TournamentRunner:
 
 
 DebugHelper.disable()
-TournamentRunner.startNewSimulation(FirstRealAgent, 20, 40, 1.5, 30)
+TournamentRunner.startNewSimulation(FirstRealAgent, 50, 40, 1.5, 30)
