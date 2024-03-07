@@ -2,7 +2,7 @@ from __future__ import annotations
 import heapq
 from typing import List
 
-from PacMaster.utils.utils import manhattanDistance, distanceSquared, isPortalPath, getOppositeDirection, roundVector, \
+from PacmanAgentBuilder.Utils.utils import manhattanDistance, distanceSquared, isPortalPath, getOppositeDirection, roundVector, \
     directionToString, distanceToNearestEdge, isInCenterArea
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Ghost
@@ -428,7 +428,8 @@ class Map(object):
         else:
             endMapNode, endIsCustom = self.getOrCreateCustomMapNodeOnVector(endVector)
 
-        startMapNodeDistance = manhattanDistance(startMapNode.position, startVector)
+        aStarHeuristic = manhattanDistance(startMapNode.position, endVector) * 2
+        startMapNodeDistance = manhattanDistance(startMapNode.position, startVector) + aStarHeuristic
         endMapNodeDistance = manhattanDistance(endMapNode.position, endVector)
 
         oppositeDirection = STOP
@@ -461,9 +462,11 @@ class Map(object):
                 if isGhost and neighborContainer.direction == oppositeDirection:
                     continue
 
-                distance = currentDistance + neighborContainer.distance
+                aStarHeuristic = manhattanDistance(neighborContainer.mapNode.position, endMapNode.position) * 2
+                distance = currentDistance + neighborContainer.distance + aStarHeuristic
                 if neighborContainer.mapNode not in distances or distance < distances[neighborContainer.mapNode]:
                     previousNodes[neighborContainer.mapNode] = currentNode
+
                     distances[neighborContainer.mapNode] = distance
                     fromDirections[neighborContainer.mapNode] = neighborContainer.direction
 

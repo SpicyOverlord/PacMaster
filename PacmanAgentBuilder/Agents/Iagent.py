@@ -1,27 +1,38 @@
 from abc import abstractmethod, ABC
 
-from PacMaster.Genetics.WeightContainer import WeightContainer
-from PacMaster.utils.observation import Observation
+from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
+from PacmanAgentBuilder.Utils.observation import Observation
 
 
 class IAgent(ABC):
+    """
+    THis is the interface for the agent. All Agents must implement this interface.
+    """
+
     @abstractmethod
     def __init__(self, gameController, weightContainer: WeightContainer = None):
         self.gameController = gameController
         self.actionsTaken = 0
         self.pelletsEatenThisLevel = 0
 
+        if weightContainer is None:
+            self.weightContainer = self.getBestWeightContainer()
+        else:
+            self.weightContainer = weightContainer
+
     @staticmethod
     def getBestWeightContainer() -> WeightContainer:
         raise Exception("NotImplementedException")
+
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
         raise Exception("NotImplementedException")
 
-    def calculateNextMove(self):
+    @abstractmethod
+    def calculateNextMove(self, obs: Observation):
         raise Exception("NotImplementedException")
 
-    def takeStats(self, obs: Observation):
+    def takeStats(self):
         self.actionsTaken += 1
-        self.pelletsEatenThisLevel = obs.getPelletsEaten()
+        self.pelletsEatenThisLevel = self.gameController.pellets.numEaten
         pass

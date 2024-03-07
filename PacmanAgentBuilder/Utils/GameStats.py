@@ -1,4 +1,4 @@
-from PacMaster.agents.Iagent import IAgent
+from PacmanAgentBuilder.Agents.Iagent import IAgent
 from Pacman_Complete.run import GameController
 
 
@@ -14,7 +14,7 @@ class GameStats(object):
         return f"GameStats(score={self.score}, efficiency={round(self.efficiency, 3)}, totalPelletsEaten={self.totalPelletsEaten}, actionsTaken={self.actionsTaken}, levelsCompleted={self.levelsCompleted})"
 
     @staticmethod
-    def calculateCombinedPerformance(gameStats: list['GameStats']):
+    def calculatePerformance(gameStats: list['GameStats']):
         weights = {'score': 0.4, 'pellets': 1, 'efficiency': 0.3}
 
         baseScores = [game.score for game in gameStats]
@@ -43,7 +43,8 @@ class GameStats(object):
         # basically makes averageEfficiency only change 30% of the combined score
         # combinedScore = weights['efficiency'] * (averageEfficiency + 1) * (weightedAverageBaseScore + weightedAveragePelletScore)
         # combinedScore = weightedAveragePelletScore
-        combinedScore = GameStats.calculateTruncatedMean(normalizedPelletScores, 20)
+        combinedScore = GameStats.calculateTruncatedMean(normalizedPelletScores, 10)
+        combinedScore *= 1+averageLevelsCompleted*2
 
         # # multiply to make the score higher if the agent reaches higher levels
         # combinedScore *= weighedAverageLevel

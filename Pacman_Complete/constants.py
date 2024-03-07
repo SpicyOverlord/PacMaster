@@ -1,6 +1,8 @@
-TILESIZE = 20
-TILEWIDTH = TILESIZE
-TILEHEIGHT = TILESIZE
+# this changes the size of the game window (higher number = bigger window)
+WINDOWSIZE = 20
+
+TILEWIDTH = WINDOWSIZE
+TILEHEIGHT = WINDOWSIZE
 NROWS = 36
 NCOLS = 28
 SCREENWIDTH = NCOLS * TILEWIDTH
@@ -15,8 +17,6 @@ PINK = (255, 100, 150)
 TEAL = (100, 255, 255)
 ORANGE = (230, 190, 40)
 GREEN = (0, 255, 0)
-
-
 
 STOP = 0
 UP = 1
