@@ -8,18 +8,18 @@ import time
 
 from PacMaster.utils.utils import secondsToTime
 
-DebugHelper.disable()
+# DebugHelper.disable()
 stats = calculatePerformanceOverXGames(
     FirstRealAgent,
     weightContainer=None,
     gameCount=50,
     gameSpeed=1,
     startLevel=0,
-    startLives=3,
+    startLives=1,
     ghostsEnabled=True,
     freightEnabled=True,
     logging=True,
-    lockDeltaTime=True
+    lockDeltaTime=False
 )
 
 exit()
