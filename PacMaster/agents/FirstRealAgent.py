@@ -25,12 +25,20 @@ class FirstRealAgent(IAgent):
 
     @staticmethod
     def getBestWeightContainer() -> WeightContainer:
-        return WeightContainer({'fleeThreshold': 0.237, 'pelletLevelDistance': 156.099, 'wayTooCloseThreshold': 74.912,
-                                'tooCloseThreshold': 156.781, 'tooFarAwayThreshold': 1373.129,
-                                'wayTooCloseValue': 1206.227, 'tooCloseValue': 206.199, 'dangerZoneMultiplier': 0.851,
-                                'dangerZoneMiddleMapNodeMultiplier': 1.158, 'ghostInDangerZoneMultiplier': 0.73,
-                                'closestGhostMultiplier': 1.43, 'ghostIsCloserMultiplier': 1.576,
-                                'edgeMultiplier': 1.904})
+        return WeightContainer({
+            'fleeThreshold': 0.117,
+            'pelletLevelDistance': 32.945,
+            'wayTooCloseThreshold': 89.816,
+            'tooCloseThreshold': 166.13,
+            'tooFarAwayThreshold': 1167.553,
+            'wayTooCloseValue': 375.088,
+            'tooCloseValue': 67.789, 'dangerZoneMultiplier': 1.424,
+            'dangerZoneMiddleMapNodeMultiplier': 1.26,
+            'ghostInDangerZoneMultiplier': 1.413,
+            'closestGhostMultiplier': 1.047,
+            'ghostIsCloserMultiplier': 1.728,
+            'edgeMultiplier': 1.378
+        })
 
         # return WeightContainer({
         #     'fleeThreshold': 0.192,
