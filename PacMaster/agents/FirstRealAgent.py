@@ -26,19 +26,34 @@ class FirstRealAgent(IAgent):
     @staticmethod
     def getBestWeightContainer() -> WeightContainer:
         return WeightContainer({
-            'fleeThreshold': 0.117,
-            'pelletLevelDistance': 32.945,
-            'wayTooCloseThreshold': 89.816,
-            'tooCloseThreshold': 166.13,
-            'tooFarAwayThreshold': 1167.553,
-            'wayTooCloseValue': 375.088,
-            'tooCloseValue': 67.789, 'dangerZoneMultiplier': 1.424,
-            'dangerZoneMiddleMapNodeMultiplier': 1.26,
-            'ghostInDangerZoneMultiplier': 1.413,
-            'closestGhostMultiplier': 1.047,
-            'ghostIsCloserMultiplier': 1.728,
-            'edgeMultiplier': 1.378
+            'fleeThreshold': 0.192,
+            'pelletLevelDistance': 1.126,
+            'wayTooCloseThreshold': 77.053,
+            'tooCloseThreshold': 207.475,
+            'tooFarAwayThreshold': 1167.487,
+            'wayTooCloseValue': 700.586,
+            'tooCloseValue': 29.333,
+            'dangerZoneMultiplier': 1.579,
+            'dangerZoneMiddleMapNodeMultiplier': 0.279,
+            'ghostInDangerZoneMultiplier': 2.024,
+            'closestGhostMultiplier': 0.52,
+            'ghostIsCloserMultiplier': 1.373,
+            'edgeMultiplier': 2.123
         })
+        # return WeightContainer({
+        #     'fleeThreshold': 0.117,
+        #     'pelletLevelDistance': 32.945,
+        #     'wayTooCloseThreshold': 89.816,
+        #     'tooCloseThreshold': 166.13,
+        #     'tooFarAwayThreshold': 1167.553,
+        #     'wayTooCloseValue': 375.088,
+        #     'tooCloseValue': 67.789, 'dangerZoneMultiplier': 1.424,
+        #     'dangerZoneMiddleMapNodeMultiplier': 1.26,
+        #     'ghostInDangerZoneMultiplier': 1.413,
+        #     'closestGhostMultiplier': 1.047,
+        #     'ghostIsCloserMultiplier': 1.728,
+        #     'edgeMultiplier': 1.378
+        # })
 
         # return WeightContainer({
         #     'fleeThreshold': 0.192,

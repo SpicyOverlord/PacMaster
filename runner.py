@@ -7,4 +7,4 @@ from PacMaster.utils.runnerFunctions import *
 
 DebugHelper.disable()
 calculatePerformanceOverXGames(FirstRealAgent, gameCount=50, gameSpeed=1, startLevel=0, startLives=1,
-                               ghostsEnabled=True, freightEnabled=True, logging=True, lockDeltaTime=False)
+                               ghostsEnabled=True, freightEnabled=True, logging=True, lockDeltaTime=True)
