@@ -22,8 +22,6 @@ class TournamentRunner:
                            gameCount: int, cpuCount):
         tournamentStartTime = time.time()
 
-        print(f"Starting tournament at {getCurrentTimestamp()}")
-
         totalGameCount = populationSize * generationCount * gameCount
 
         bestOfEachGenerations = []
@@ -50,14 +48,14 @@ class TournamentRunner:
 
         constArgs = (agentClass, gameCount)
 
-        print("\n--- Starting new genetic tournament ---")
+        print("\n\n------------- Starting new genetic tournament -------------")
+        print(f"Starting at: {getCurrentTimestamp()}")
         print(f"Agent: {agentClass.__name__}")
         print(f"{totalGameCount} games will be played over "
               f"{generationCount} generations with a population size of {populationSize}.")
-        print(f"Each agent will be tested on {gameCount} games.")
+        print(f"Each agent will be tested on {gameCount} games, using {cpuCount} CPU cores.\n")
 
         for generation in range(generationCount):
-
             print(f"\n------------- Generation {generation + 1} of {generationCount} -------------")
             print(f"Started at: {getCurrentTimestamp()}")
             print(f"Mutation rate: {currentMutationRate}")
@@ -158,8 +156,8 @@ if __name__ == "__main__":
     DebugHelper.disable()
     TournamentRunner.startNewTournament(
         agentClass=MyFirstAgent,
-        populationSize=40,
-        generationCount=2,
+        populationSize=20,
+        generationCount=5,
         mutationRate=2,
         gameCount=10,
         cpuCount=multiprocessing.cpu_count()
