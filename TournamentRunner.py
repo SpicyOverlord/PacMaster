@@ -24,11 +24,6 @@ class TournamentRunner:
 
         totalGameCount = populationSize * generationCount * gameCount
         finishedGameCount = 0
-        print("\n--- Starting new genetic tournament ---")
-        print(f"Agent: {agentClass.__name__}")
-        print(f"{totalGameCount} games will be played over "
-              f"{generationCount} generations with a population size of {populationSize}.")
-        print(f"Each agent will be tested on {gameCount} games.")
 
         bestOfEachGenerations = []
 
@@ -52,6 +47,15 @@ class TournamentRunner:
 
         agentTestingTimes = []
         estimatedSecondsLeft = 0
+
+        constArgs = (agentClass, gameCount)
+
+        print("\n--- Starting new genetic tournament ---")
+        print(f"Agent: {agentClass.__name__}")
+        print(f"{totalGameCount} games will be played over "
+              f"{generationCount} generations with a population size of {populationSize}.")
+        print(f"Each agent will be tested on {gameCount} games.")
+
         for generation in range(generationCount):
 
             print(f"\n------------- Generation {generation + 1} of {generationCount} -------------")
@@ -61,17 +65,12 @@ class TournamentRunner:
             for i in range(populationSize):
                 start_time = time.time()
 
-                stats = calculatePerformanceOverXGames(
-                    agentClass=agentClass,
-                    weightContainer=population[i],
-                    gameCount=gameCount,
-                    lockDeltaTime=True
-                )
+                fitness = TournamentRunner.fitnessFunctionWrapper(population[i], constArgs)
 
                 end_time = time.time()
 
                 finishedGameCount += gameCount
-                population[i].addFitness(stats['combinedScore'])
+                population[i].addFitness(fitness)
 
                 print("{:<12} {:<12} {:<17} {:<17}".format(
                     f"{i + 1} of {populationSize}",
@@ -131,6 +130,19 @@ class TournamentRunner:
         tournamentEndTime = time.time()
         print(f"\nThe tournament took: {secondsToTime(tournamentEndTime - tournamentStartTime)}")
         print(f"The tournament finished at: {getCurrentTimestamp()}")
+
+    @staticmethod
+    def fitnessFunctionWrapper(member, args):
+        agentClass = args[0]
+        gameCount = args[1]
+
+        stats = calculatePerformanceOverXGames(
+            agentClass=agentClass,
+            weightContainer=member,
+            gameCount=gameCount,
+            lockDeltaTime=True
+        )
+        return stats['combinedScore']
 
 
 if __name__ == "__main__":
