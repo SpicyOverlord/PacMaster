@@ -9,6 +9,6 @@ stats = calculatePerformanceOverXGames(
     startLevel=0,  # Choose the starting level for the agent (0 for level one, 1 for level two, and so on).
     ghostsEnabled=True,  # Toggle ghosts on or off.
     freightEnabled=True,  # Toggle if the effect of power pellets should be ignored.
-    lockDeltaTime=False,  # When enabled, the game will run at the highest possible speed.
+    lockDeltaTime=True,  # When enabled, the game will run at the highest possible speed.
     logging=True  # Toggle the logging of game-related information to the console while the agent is playing.
 )
