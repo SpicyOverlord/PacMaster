@@ -1,6 +1,8 @@
 import random
 import time
 from datetime import datetime
+import multiprocessing
+
 
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Genetics.WeightModifier import WeightModifier
@@ -114,7 +116,7 @@ class TournamentRunner:
             # for pop in population:
             #     print(pop)
 
-            newPopulation = TournamentRunner.generateNewPopulation(
+            newPopulation = WeightModifier.generateNewPopulation(
                 population=population,
                 populationSize=populationSize,
                 currentMutationRate=currentMutationRate,
@@ -130,24 +132,7 @@ class TournamentRunner:
         print(f"\nThe tournament took: {secondsToTime(tournamentEndTime - tournamentStartTime)}")
         print(f"The tournament finished at: {getCurrentTimestamp()}")
 
-    @staticmethod
-    def generateNewPopulation(population: list[WeightContainer], populationSize: int,
-                              currentMutationRate: float, poolSize: int) -> list[WeightContainer]:
-        # 10% of the new population will be the top 10% of the previous generation
-        newPopulation = population[:int(populationSize * 0.1)]
-        # newPopulation = []
-        # 90% of the new population will be a child of the previous generation
-        while len(newPopulation) < populationSize:
-            parentA = WeightModifier.tournamentSelectParent(population, poolSize)
-            parentB = WeightModifier.tournamentSelectParent(population, poolSize)
 
-            child = WeightModifier.randomSelectCombine(parentA, parentB)
-            child = WeightModifier.mutateRandom(child, currentMutationRate)
-
-            newPopulation.append(child)
-
-        return newPopulation
-
-
-DebugHelper.disable()
-TournamentRunner.startNewTournament(FirstRealAgent, 5, 3, 2, 1)
+if __name__ == "__main__":
+    DebugHelper.disable()
+    TournamentRunner.startNewTournament(MyFirstAgent, 5, 3, 2, 1)

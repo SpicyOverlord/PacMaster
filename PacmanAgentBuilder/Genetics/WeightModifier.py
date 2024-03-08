@@ -55,7 +55,6 @@ class WeightModifier:
 
         return offspring
 
-
     @staticmethod
     def tournamentSelectParent(weightsList: list[WeightContainer], poolSize: int) -> WeightContainer:
         tournament = []
@@ -64,6 +63,7 @@ class WeightModifier:
             tournament.append(random.choice(weightsList))
 
         return max(tournament, key=lambda x: x.getFitness())
+
     @staticmethod
     def sortByFitness(weightsList: list[WeightContainer]) -> list[WeightContainer]:
         return sorted(weightsList, key=lambda x: x.getFitness(), reverse=True)
@@ -75,3 +75,21 @@ class WeightModifier:
             raise ValueError("Weights does not have the same keys")
 
         return True
+
+    @staticmethod
+    def generateNewPopulation(population: list[WeightContainer], populationSize: int,
+                              currentMutationRate: float, poolSize: int) -> list[WeightContainer]:
+        # 10% of the new population will be the top 10% of the previous generation
+        newPopulation = population[:int(populationSize * 0.1)]
+        # newPopulation = []
+        # 90% of the new population will be a child of the previous generation
+        while len(newPopulation) < populationSize:
+            parentA = WeightModifier.tournamentSelectParent(population, poolSize)
+            parentB = WeightModifier.tournamentSelectParent(population, poolSize)
+
+            child = WeightModifier.randomSelectCombine(parentA, parentB)
+            child = WeightModifier.mutateRandom(child, currentMutationRate)
+
+            newPopulation.append(child)
+
+        return newPopulation
