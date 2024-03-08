@@ -43,8 +43,8 @@ class GameStats(object):
         # basically makes averageEfficiency only change 30% of the combined score
         # combinedScore = weights['efficiency'] * (averageEfficiency + 1) * (weightedAverageBaseScore + weightedAveragePelletScore)
         # combinedScore = weightedAveragePelletScore
-        combinedScore = GameStats.calculateTruncatedMean(normalizedPelletScores, 20)
-        combinedScore *= 1+averageLevelsCompleted*2
+        combinedScore = GameStats.calculateTruncatedMean(normalizedPelletScores, 10)
+        combinedScore *= 1+averageLevelsCompleted*0.5
 
         # # multiply to make the score higher if the agent reaches higher levels
         # combinedScore *= weighedAverageLevel
