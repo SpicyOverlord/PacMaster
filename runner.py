@@ -12,7 +12,7 @@ DebugHelper.disable()
 stats = calculatePerformanceOverXGames(
     FirstRealAgent,
     weightContainer=None,
-    gameCount=50,
+    gameCount=100,
     gameSpeed=1,
     startLevel=0,
     startLives=1,
