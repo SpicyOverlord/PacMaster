@@ -54,10 +54,10 @@ class TournamentRunner:
         print(f"Agent: {agentClass.__name__}")
         print(f"{totalGameCount} games will be played over "
               f"{generationCount} generations with a population size of {populationSize}.")
-        print(f"Each agent will be tested on {gameCount} games, using {cpuCount} CPU cores.\n")
+        print(f"Each agent will be tested on {gameCount} games, using {cpuCount} CPU cores.")
 
         for generation in range(generationCount):
-            print(f"\n------------- Generation {generation + 1} of {generationCount} -------------")
+            print(f"\n\n------------- Generation {generation + 1} of {generationCount} -------------")
             print(f"Started at: {getCurrentTimestamp()}")
             print(f"Mutation rate: {currentMutationRate}")
 
@@ -156,9 +156,9 @@ if __name__ == "__main__":
     DebugHelper.disable()
     TournamentRunner.startNewTournament(
         agentClass=MyFirstAgent,
-        populationSize=4,
+        populationSize=20,
         generationCount=5,
         mutationRate=2,
-        gameCount=1,
+        gameCount=10,
         cpuCount=4  # multiprocessing.cpu_count()
     )
