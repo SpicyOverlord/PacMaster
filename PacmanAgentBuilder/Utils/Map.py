@@ -428,8 +428,8 @@ class Map(object):
         else:
             endMapNode, endIsCustom = self.getOrCreateCustomMapNodeOnVector(endVector)
 
-        aStarHeuristic = manhattanDistance(startMapNode.position, endVector) * 2
-        startMapNodeDistance = manhattanDistance(startMapNode.position, startVector) + aStarHeuristic
+        # aStarHeuristic = manhattanDistance(startMapNode.position, endVector) * 2
+        startMapNodeDistance = manhattanDistance(startMapNode.position, startVector) #+ aStarHeuristic
         endMapNodeDistance = manhattanDistance(endMapNode.position, endVector)
 
         oppositeDirection = STOP
@@ -462,8 +462,8 @@ class Map(object):
                 if isGhost and neighborContainer.direction == oppositeDirection:
                     continue
 
-                aStarHeuristic = manhattanDistance(neighborContainer.mapNode.position, endMapNode.position) * 2
-                distance = currentDistance + neighborContainer.distance + aStarHeuristic
+                # aStarHeuristic = manhattanDistance(neighborContainer.mapNode.position, endMapNode.position) * 2
+                distance = currentDistance + neighborContainer.distance #+ aStarHeuristic
                 if neighborContainer.mapNode not in distances or distance < distances[neighborContainer.mapNode]:
                     previousNodes[neighborContainer.mapNode] = currentNode
 

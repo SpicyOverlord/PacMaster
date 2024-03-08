@@ -1,6 +1,8 @@
 from PacmanAgentBuilder.Agents.MyFirstAgent import MyFirstAgent
+from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
 from PacmanAgentBuilder.Utils.runnerFunctions import *
 
+DebugHelper.disable()
 stats = calculatePerformanceOverXGames(
     agentClass=MyFirstAgent,  # Specify the agent to be evaluated.
     weightContainer=None,  # Specify the weights to be used by the agent. If None, the default weights will be used.

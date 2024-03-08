@@ -54,7 +54,6 @@ class MyFirstAgent(IAgent):
         )
 
     def calculateNextMove(self, obs: Observation):
-
         if self.__isInDanger__(obs):
             return self.__flee__(obs)
 

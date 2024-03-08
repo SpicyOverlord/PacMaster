@@ -246,7 +246,7 @@ class Observation(object):
         #     return minDistance * 0.1
         return totalDistance / (minDistance + 1)
 
-    def calculateDangerLevel(self, vector: Vector2, weights: WeightContainer = None) -> float:
+    def calculateDangerLevel(self, vector: Vector2, weights: WeightContainer) -> float:
         minDistance = 9999999
         totalDistance = 0.0
         numberOfCloseGhosts = 0
