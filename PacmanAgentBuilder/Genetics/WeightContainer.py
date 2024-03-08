@@ -12,6 +12,8 @@ class WeightContainer:
     def getFitness(self) -> float:
         return round(sum(self.__fitness__) / len(self.__fitness__), 3)
 
+    def getGenerationsSurvived(self) -> int:
+        return len(self.__fitness__)
     def hasFitness(self) -> bool:
         return len(self.__fitness__) != 0
 
