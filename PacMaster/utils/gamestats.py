@@ -1,4 +1,4 @@
-from PacmanAgentBuilder.Agents.Iagent import IAgent
+from PacMaster.agents.Iagent import IAgent
 from Pacman_Complete.run import GameController
 
 
@@ -14,7 +14,7 @@ class GameStats(object):
         return f"GameStats(score={self.score}, efficiency={round(self.efficiency, 3)}, totalPelletsEaten={self.totalPelletsEaten}, actionsTaken={self.actionsTaken}, levelsCompleted={self.levelsCompleted})"
 
     @staticmethod
-    def calculatePerformance(gameStats: list['GameStats']):
+    def calculateCombinedPerformance(gameStats: list['GameStats']):
         weights = {'score': 0.4, 'pellets': 1, 'efficiency': 0.3}
 
         baseScores = [game.score for game in gameStats]
@@ -44,19 +44,22 @@ class GameStats(object):
         # combinedScore = weights['efficiency'] * (averageEfficiency + 1) * (weightedAverageBaseScore + weightedAveragePelletScore)
         # combinedScore = weightedAveragePelletScore
         combinedScore = GameStats.calculateTruncatedMean(normalizedPelletScores, 20)
-        combinedScore *= 1+averageLevelsCompleted*0.5
+        # combinedScore *= 1+averageLevelsCompleted*2
 
         # # multiply to make the score higher if the agent reaches higher levels
         # combinedScore *= weighedAverageLevel
 
         # Statistical Analysis
         medianScore = sorted(baseScores)[len(baseScores) // 2]
-        averageNormalizedPelletScore = sum(normalizedPelletScores) / len(normalizedPelletScores)
-        variance = sum((s - averageNormalizedPelletScore) ** 2 for s in normalizedPelletScores) / len(normalizedPelletScores)
+        averageNormalizedScore = sum(normalizedBaseScores) / len(normalizedBaseScores)
+        variance = sum((s - averageNormalizedScore) ** 2 for s in normalizedBaseScores) / len(normalizedBaseScores)
         stdDeviation = variance ** 0.5
         averageScore = sum(baseScores) / len(baseScores)
 
         return {"combinedScore": round(combinedScore, 3),
+                "averageEfficiency": round(averageEfficiency, 3),
+                "weightedAverageBaseScore": round(weightedAverageBaseScore, 3),
+                "weightedAveragePelletScore": round(weightedAveragePelletScore, 3),
                 "averageLevelsCompleted": round(averageLevelsCompleted, 3),
                 "maxLevelsCompleted": maxLevelsCompleted,
 
