@@ -156,9 +156,9 @@ if __name__ == "__main__":
     DebugHelper.disable()
     TournamentRunner.startNewTournament(
         agentClass=MyFirstAgent,
-        populationSize=20,
-        generationCount=5,
+        populationSize=50,
+        generationCount=1,
         mutationRate=2,
-        gameCount=10,
+        gameCount=50,
         cpuCount=4  # multiprocessing.cpu_count()
     )
