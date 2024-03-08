@@ -64,10 +64,6 @@ class WeightModifier:
 
         return max(tournament, key=lambda x: x.getFitness())
 
-    @staticmethod
-    def sortByFitness(weightsList: list[WeightContainer]) -> list[WeightContainer]:
-        return sorted(weightsList, key=lambda x: x.getFitness(), reverse=True)
-
     # TODO: remove this when we know everything works!
     @staticmethod
     def checkSameKeySet(weightsA: WeightContainer, weightsB: WeightContainer) -> bool:

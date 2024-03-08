@@ -81,7 +81,11 @@ class TournamentRunner:
             averageGenerationTimeTaken = sum(generationTestingTime) / len(generationTestingTime) / populationSize
             estimatedSecondsLeft = (generationCount - generation) / gameCount * averageGenerationTimeTaken
 
-            population = WeightModifier.sortByFitness(population)
+            # sort population by fitness (with stats)
+            paired_sorted_lists = sorted(zip(population, stats), key=lambda x: x[0].getFitness(), reverse=True)
+            population, stats = zip(*paired_sorted_lists)
+            population = list(population)
+            stats = list(stats)
 
             # print stats
             print("\nAgent      Fitness     Avg Lvls Completed     Survived")
@@ -97,15 +101,15 @@ class TournamentRunner:
             print(f"Current runtime:     {secondsToTime(time.time() - tournamentStartTime)}")
             print(f"Progress:            {round(generation / (generationCount / 100), 1)}%")
 
-            # print top 5 of previous generation
-            print(f"\nTop 10 of generation {generation + 1}:")
-            print("Place Fitness Survived")
-            for j in range(min(10, populationSize)):
-                print("{:<5} {:<7} {:<8}".format(
-                    f"{j + 1}.",
-                    population[j].getFitness(),
-                    population[j].getGenerationsSurvived()
-                ))
+            # print top 10 of previous generation
+            # print(f"\nTop 10 of generation {generation + 1}:")
+            # print("Place Fitness Survived")
+            # for j in range(min(10, populationSize)):
+            #     print("{:<5} {:<7} {:<8}".format(
+            #         f"{j + 1}.",
+            #         population[j].getFitness(),
+            #         population[j].getGenerationsSurvived()
+            #     ))
 
             bestOfEachGenerations.append(population[0])
 
@@ -152,9 +156,9 @@ if __name__ == "__main__":
     DebugHelper.disable()
     TournamentRunner.startNewTournament(
         agentClass=MyFirstAgent,
-        populationSize=20,
+        populationSize=4,
         generationCount=5,
         mutationRate=2,
-        gameCount=10,
+        gameCount=1,
         cpuCount=4  # multiprocessing.cpu_count()
     )
