@@ -80,6 +80,9 @@ class TournamentRunner:
 
             averageGenerationTimeTaken = sum(generationTestingTime) / len(generationTestingTime) / populationSize
             estimatedSecondsLeft = (generationCount - generation) / gameCount * averageGenerationTimeTaken
+
+            population = WeightModifier.sortByFitness(population)
+
             # print stats
             print("\nAgent      Fitness     Avg Lvls Completed     Survived")
             for i in range(populationSize):
@@ -94,16 +97,6 @@ class TournamentRunner:
             print(f"Current runtime:     {secondsToTime(time.time() - tournamentStartTime)}")
             print(f"Progress:            {round(generation / (generationCount / 100), 1)}%")
 
-            # ----------------------------------
-
-            population = WeightModifier.sortByFitness(population)
-
-            bestOfEachGenerations.append(population[0])
-
-            # print all of previous generation
-            # for pop in population:
-            #     print(pop)
-
             # print top 5 of previous generation
             print(f"\nTop 10 of generation {generation + 1}:")
             print("Place Fitness Survived")
@@ -113,6 +106,8 @@ class TournamentRunner:
                     population[j].getFitness(),
                     population[j].getGenerationsSurvived()
                 ))
+
+            bestOfEachGenerations.append(population[0])
 
             print("\nBest of each generations:")
             print("Generation Fitness Survived")
