@@ -15,6 +15,10 @@ ssh -t root@192.168.1.50 'tmux attach -t pacmantour'
 git add --all && git commit -m "update" && git push
 ssh -t root@192.168.1.50 'cd /root/PacMaster; git pull'
 ```
+### pull from Linux server
+```shell
+ssh -t root@192.168.1.50 'cd /root/PacMaster; git pull'
+```
 
 ### Copy Tournament data to local machine
 ```shell
