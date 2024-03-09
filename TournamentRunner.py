@@ -168,7 +168,7 @@ if __name__ == "__main__":
     TournamentRunner.startNewTournament(
         agentClass=MyFirstAgent,
         populationSize=50,
-        generationCount=40,
+        generationCount=60,
         mutationRate=2,
         gameCount=50,
         cpuCount=4  # multiprocessing.cpu_count()
