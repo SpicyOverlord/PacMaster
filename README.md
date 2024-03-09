@@ -10,12 +10,9 @@ ssh -t root@192.168.1.50 'tmux attach -t pacmantour'
 ```
 
 # Sync
-### Push
+### Push to Linux server
 ```shell
 git add --all && git commit -m "update" && git push
-```
-### pull from Linux server
-```shell
 ssh -t root@192.168.1.50 'cd /root/PacMaster; git pull'
 ```
 
