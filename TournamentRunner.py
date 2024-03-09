@@ -22,6 +22,9 @@ class TournamentRunner:
                            gameCount: int, cpuCount):
         tournamentStartTime = time.time()
 
+        logFileName = f"Tournaments/{agentClass.__name__}_{getCurrentTimestamp()}.txt"
+        allMembers = []
+
         totalGameCount = populationSize * generationCount * gameCount
 
         bestOfEachGenerations = []
@@ -61,7 +64,7 @@ class TournamentRunner:
             print(f"Started at: {getCurrentTimestamp()}")
             print(f"Mutation rate: {currentMutationRate}")
 
-            # don't remove!
+            # don't remove thjs line!
             stats = []
 
             start_time = time.time()
@@ -73,14 +76,6 @@ class TournamentRunner:
             for j in range(populationSize):
                 population[j].addFitness(stats[j]['combinedScore'])
 
-            generationTimeTaken = end_time - start_time
-            generationTestingTime.append(generationTimeTaken)
-            if len(generationTestingTime) > 5:
-                generationTestingTime.pop(0)
-
-            averageGenerationTimeTaken = sum(generationTestingTime) / len(generationTestingTime) / populationSize
-            estimatedSecondsLeft = (generationCount - generation) / gameCount * averageGenerationTimeTaken
-
             # sort population by fitness (with stats)
             paired_sorted_lists = sorted(zip(population, stats), key=lambda x: x[0].getFitness(), reverse=True)
             population, stats = zip(*paired_sorted_lists)
@@ -88,9 +83,17 @@ class TournamentRunner:
             stats = list(stats)
 
             # print stats
-            print("\nAgent      Fitness     Avg Lvls Completed     Survived")
+            generationTimeTaken = end_time - start_time
+            generationTestingTime.append(generationTimeTaken)
+            if len(generationTestingTime) > 5:
+                generationTestingTime.pop(0)
+
+            averageGenerationTimeTaken = sum(generationTestingTime) / len(generationTestingTime) / populationSize
+            estimatedSecondsLeft = (generationCount - generation) * averageGenerationTimeTaken
+
+            print("\nAgent      Fitness  Avg Lvl Comp  Survived")
             for i in range(populationSize):
-                print("{:<10} {:<11} {:<22} {:<8}".format(
+                print("{:<10} {:<8} {:<13} {:<8}".format(
                     f"{i + 1} of {populationSize}",
                     population[i].getFitness(),
                     stats[i]['averageLevelsCompleted'],
@@ -100,16 +103,6 @@ class TournamentRunner:
             print(f"Estimated time left: {secondsToTime(estimatedSecondsLeft)}")
             print(f"Current runtime:     {secondsToTime(time.time() - tournamentStartTime)}")
             print(f"Progress:            {round(generation / (generationCount / 100), 1)}%")
-
-            # print top 10 of previous generation
-            # print(f"\nTop 10 of generation {generation + 1}:")
-            # print("Place Fitness Survived")
-            # for j in range(min(10, populationSize)):
-            #     print("{:<5} {:<7} {:<8}".format(
-            #         f"{j + 1}.",
-            #         population[j].getFitness(),
-            #         population[j].getGenerationsSurvived()
-            #     ))
 
             bestOfEachGenerations.append(population[0])
 
@@ -122,6 +115,24 @@ class TournamentRunner:
                     bestOfEachGenerations[j].getGenerationsSurvived()
                 ))
 
+            # add all members of population to all members
+            allMembers += population
+            # remove duplicates
+            allMembers = list(set(allMembers))
+            # sort all members by fitness
+            allMembers.sort(key=lambda x: x.getFitness(), reverse=True)
+
+            with open(logFileName, 'w') as file:
+                file.write("{:<8} {:<13} {:<200}\n".format('Fitness', 'Gen Survived', 'Weights'))
+
+                for i in range(len(allMembers)):
+                    file.write("{:<8} {:<13} {:<200}\n".format(
+                        allMembers[i].getFitness(),
+                        allMembers[i].getGenerationsSurvived(),
+                        str(allMembers[i])
+                    ))
+
+            # generate new population
             newPopulation = WeightModifier.generateNewPopulation(
                 population=population,
                 populationSize=populationSize,

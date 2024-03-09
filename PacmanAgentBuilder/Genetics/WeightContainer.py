@@ -14,6 +14,7 @@ class WeightContainer:
 
     def getGenerationsSurvived(self) -> int:
         return len(self.__fitness__)
+
     def hasFitness(self) -> bool:
         return len(self.__fitness__) != 0
 
@@ -45,11 +46,14 @@ class WeightContainer:
         return self.__weightDict__.values()
 
     def __str__(self):
-        if len(self.__fitness__) != 0:
-            return f"Fitness:{self.getFitness()} Survived:{len(self.__fitness__)} Weights:{str(self.__weightDict__)}"
-        return f"Weights:{str(self.__weightDict__)}"
+        # if len(self.__fitness__) != 0:
+        #     return f"Fitness:{self.getFitness()} Survived:{len(self.__fitness__)} Weights:{str(self.__weightDict__)}"
+        return str(self.__weightDict__)
 
     def __eq__(self, other):
         if not isinstance(other, WeightContainer):
             return False
         return self.__weightDict__ == other.__weightDict__
+
+    def __hash__(self):
+        return hash(str(self.__weightDict__))
