@@ -1,4 +1,5 @@
-### Comment to Server
+# Connect
+### Connect to Server
 ```shell
 ssh root@192.168.1.50
 ```
@@ -8,10 +9,7 @@ ssh root@192.168.1.50
 ssh -t root@192.168.1.50 'tmux attach -t pacmantour'
 ```
 
-### Git push from local machine
-```shell
-git add --all && git commit -m "update" && git push
-```
+# Sync
 ### Push to Linux server
 ```shell
 git add --all && git commit -m "update" && git push

@@ -279,3 +279,4 @@ class GameController(object):
 
 if __name__ == '__main__':
     print("Hello, you are executing the wrong file! read the readme for instructions on how to run the bot builder!")
+

@@ -6,14 +6,14 @@ if __name__ == "__main__":
     DebugHelper.disable()
     stats = calculatePerformanceOverXGames(
         agentClass=MyFirstAgent,
-        weightContainer=WeightContainer({'fleeThreshold': 0.169, 'pelletLevelDistance': 3.336, 'wayTooCloseThreshold': 93.95, 'tooCloseThreshold': 4.068, 'tooFarAwayThreshold': 4896.327, 'wayTooCloseValue': 1954.034, 'tooCloseValue': 229.013, 'dangerZoneMultiplier': 0.765, 'dangerZoneMiddleMapNodeMultiplier': 0.313, 'ghostInDangerZoneMultiplier': 0.142, 'closestGhostMultiplier': 0.003, 'ghostIsCloserMultiplier': 6.329, 'edgeMultiplier': 2.466}),
+        weightContainer=WeightContainer({'fleeThreshold': 0.142, 'pelletLevelDistance': 2.699, 'wayTooCloseThreshold': 60.868, 'tooCloseThreshold': 0.263, 'tooFarAwayThreshold': 1769.249, 'wayTooCloseValue': 864.227, 'tooCloseValue': 47.85, 'dangerZoneMultiplier': 0.485, 'dangerZoneMiddleMapNodeMultiplier': 0.043, 'ghostInDangerZoneMultiplier': 0.002, 'closestGhostMultiplier': 0.579, 'ghostIsCloserMultiplier': 8.302, 'edgeMultiplier': 2.0}),
         # weightContainer=None,
-        gameCount=10,
+        gameCount=100,
         gameSpeed=1,
         startLevel=0,
         startLives=1,
         ghostsEnabled=True,
         freightEnabled=True,
-        lockDeltaTime=False,
+        lockDeltaTime=True,
         logging=True
     )
