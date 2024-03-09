@@ -23,6 +23,7 @@ class TournamentRunner:
         tournamentStartTime = time.time()
 
         logFileName = f"Tournaments/{agentClass.__name__}_{getCurrentTimestamp()}.txt"
+
         allMembers = []
 
         totalGameCount = populationSize * generationCount * gameCount
@@ -88,7 +89,7 @@ class TournamentRunner:
             if len(generationTestingTime) > 5:
                 generationTestingTime.pop(0)
 
-            averageGenerationTimeTaken = sum(generationTestingTime) / len(generationTestingTime) / populationSize
+            averageGenerationTimeTaken = sum(generationTestingTime) / len(generationTestingTime)
             estimatedSecondsLeft = (generationCount - generation) * averageGenerationTimeTaken
 
             print("\nAgent      Fitness  Avg Lvl Comp  Survived")
