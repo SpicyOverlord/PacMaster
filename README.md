@@ -14,7 +14,8 @@ git add --all && git commit -m "update" && git push
 ```
 ### Push to Linux server
 ```shell
-git add --all && git commit -m "update" && git push && ssh -t root@192.168.1.50 'cd /root/PacMaster; git pull'
+git add --all && git commit -m "update" && git push
+ssh -t root@192.168.1.50 'cd /root/PacMaster; git pull'
 ```
 
 ### Copy Tournament data to local machine
