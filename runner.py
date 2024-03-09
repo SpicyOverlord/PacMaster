@@ -5,14 +5,15 @@ from PacmanAgentBuilder.Utils.runnerFunctions import *
 if __name__ == "__main__":
     DebugHelper.disable()
     stats = calculatePerformanceOverXGames(
-        agentClass=MyFirstAgent,  # Specify the agent to be evaluated.
-        weightContainer=None,  # Specify the weights to be used by the agent. If None, the default weights will be used.
-        gameCount=50,  # Number of games the agent will play.
-        gameSpeed=5,  # Sets the speed of the game from 0.1 (slow) to 5 (fast). For a higher speed, enable lockDeltaTime.
-        startLevel=0,  # Choose the starting level for the agent (0 for level one, 1 for level two, and so on).
-        startLives=3,  # Choose the starting lives for the agent.
-        ghostsEnabled=True,  # Toggle ghosts on or off.
-        freightEnabled=True,  # Toggle if the effect of power pellets should be ignored.
-        lockDeltaTime=False,  # When enabled, the game will run at the highest possible speed.
-        logging=True  # Toggle the logging of game-related information to the console while the agent is playing.
+        agentClass=MyFirstAgent,
+        weightContainer=WeightContainer({'fleeThreshold': 0.169, 'pelletLevelDistance': 3.336, 'wayTooCloseThreshold': 93.95, 'tooCloseThreshold': 4.068, 'tooFarAwayThreshold': 4896.327, 'wayTooCloseValue': 1954.034, 'tooCloseValue': 229.013, 'dangerZoneMultiplier': 0.765, 'dangerZoneMiddleMapNodeMultiplier': 0.313, 'ghostInDangerZoneMultiplier': 0.142, 'closestGhostMultiplier': 0.003, 'ghostIsCloserMultiplier': 6.329, 'edgeMultiplier': 2.466}),
+        # weightContainer=None,
+        gameCount=10,
+        gameSpeed=1,
+        startLevel=0,
+        startLives=1,
+        ghostsEnabled=True,
+        freightEnabled=True,
+        lockDeltaTime=False,
+        logging=True
     )
