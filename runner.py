@@ -35,7 +35,7 @@ if __name__ == "__main__":
         startLives=3,
         ghostsEnabled=True,
         freightEnabled=True,
-        lockDeltaTime=False,
+        lockDeltaTime=True,
         logging=True
     )
 

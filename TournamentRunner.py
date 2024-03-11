@@ -42,8 +42,7 @@ class TournamentRunner:
         BestWeightContainer = agentClass.getBestWeightContainer()
 
         # generate random population from the default weight container from the agent
-        # TODO: remove best!!!!
-        population = [defaultWeightContainer, BestWeightContainer]
+        population = [defaultWeightContainer]
         while len(population) < populationSize:
             newWeightContainer = WeightModifier.mutateAll(defaultWeightContainer, 5)
             population.append(newWeightContainer)
@@ -175,10 +174,10 @@ if __name__ == "__main__":
     DebugHelper.disable()
     TournamentRunner.startNewTournament(
         agentClass=MyFirstAgent,
-        populationSize=50,
-        generationCount=45,
+        populationSize=30,
+        generationCount=50,
         mutationRate=3,
-        gameCount=50,
+        gameCount=100,
         cpuCount=4  # multiprocessing.cpu_count()
     )
 
