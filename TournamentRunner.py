@@ -4,6 +4,10 @@ from datetime import datetime
 import multiprocessing
 import os
 
+import numpy as np
+
+from PacmanAgentBuilder.Utils.GameStats import GameStats
+
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
@@ -177,3 +181,4 @@ if __name__ == "__main__":
         gameCount=50,
         cpuCount=4  # multiprocessing.cpu_count()
     )
+

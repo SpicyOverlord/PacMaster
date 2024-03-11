@@ -10,6 +10,11 @@ class GameStats(object):
         self.totalPelletsEaten = game.level * 240 + agent.pelletsEatenThisLevel
         self.efficiency = self.totalPelletsEaten * 10 / agent.actionsTaken / 2
 
+    def getScore(self):
+        maxPelletsPerLevel = 240
+        normalizedPelletScores = self.totalPelletsEaten / maxPelletsPerLevel
+        return normalizedPelletScores * (1 + self.levelsCompleted * 0.5)
+
     def __str__(self):
         return f"GameStats(score={self.score}, efficiency={round(self.efficiency, 3)}, totalPelletsEaten={self.totalPelletsEaten}, actionsTaken={self.actionsTaken}, levelsCompleted={self.levelsCompleted})"
 
@@ -44,7 +49,7 @@ class GameStats(object):
         # combinedScore = weights['efficiency'] * (averageEfficiency + 1) * (weightedAverageBaseScore + weightedAveragePelletScore)
         # combinedScore = weightedAveragePelletScore
         combinedScore = GameStats.calculateTruncatedMean(normalizedPelletScores, 20)
-        combinedScore *= 1+averageLevelsCompleted*0.5
+        combinedScore *= 1 + averageLevelsCompleted * 0.5
 
         # # multiply to make the score higher if the agent reaches higher levels
         # combinedScore *= weighedAverageLevel
@@ -52,7 +57,8 @@ class GameStats(object):
         # Statistical Analysis
         medianScore = sorted(baseScores)[len(baseScores) // 2]
         averageNormalizedPelletScore = sum(normalizedPelletScores) / len(normalizedPelletScores)
-        variance = sum((s - averageNormalizedPelletScore) ** 2 for s in normalizedPelletScores) / len(normalizedPelletScores)
+        variance = sum((s - averageNormalizedPelletScore) ** 2 for s in normalizedPelletScores) / len(
+            normalizedPelletScores)
         stdDeviation = variance ** 0.5
         averageScore = sum(baseScores) / len(baseScores)
 
