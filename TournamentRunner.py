@@ -32,7 +32,7 @@ class TournamentRunner:
 
         poolSize = max(int(populationSize * 0.2), 2)
         currentMutationRate = mutationRate
-        mutationRateMultiplier = (10 ** (-1 / generationCount)) * (1 / mutationRate) ** (1 / generationCount)
+        mutationRateMultiplier = (10 ** (-1 / (generationCount-5))) * (1 / mutationRate) ** (1 / (generationCount-5))
 
         defaultWeightContainer = agentClass.getDefaultWeightContainer()
         BestWeightContainer = agentClass.getBestWeightContainer()
@@ -143,6 +143,9 @@ class TournamentRunner:
             population = newPopulation
 
             # decrease mutation rate each generation
+            # skip first 5 generations
+            if generation < 5:
+                continue
             currentMutationRate *= mutationRateMultiplier
 
         print(f"\nThe tournament took: {secondsToTime(time.time() - tournamentStartTime)}")
@@ -169,8 +172,8 @@ if __name__ == "__main__":
     TournamentRunner.startNewTournament(
         agentClass=MyFirstAgent,
         populationSize=50,
-        generationCount=40,
-        mutationRate=2,
+        generationCount=45,
+        mutationRate=3,
         gameCount=50,
         cpuCount=4  # multiprocessing.cpu_count()
     )
