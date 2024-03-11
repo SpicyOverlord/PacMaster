@@ -225,91 +225,91 @@ class Observation(object):
         return self.ghostGroup.clyde
 
     # ------------------ Custom Functions ------------------
-    def calculatePelletLevel(self, vector: Vector2, weights: WeightContainer) -> float:
-        minDistance = 99999
-        totalDistance = 1.0
-
-        for pellet in self.pelletGroup.pelletList:
-            dist = manhattanDistance(pellet.position, vector)
-            if dist < weights.getWeight('pelletLevelDistance'):
-                totalDistance += dist
-                if dist < minDistance:
-                    minDistance = dist
-        for powerPellet in self.pelletGroup.powerpellets:
-            dist = manhattanDistance(powerPellet.position, vector)
-            if dist < weights.getWeight('pelletLevelDistance'):
-                totalDistance += dist
-                if dist < minDistance:
-                    minDistance = dist
-
-        # if totalDistance == 0:
-        #     return minDistance * 0.1
-        return totalDistance / (minDistance + 1)
-
-    def calculateDangerLevel(self, vector: Vector2, weights: WeightContainer) -> float:
-        minDistance = 9999999
-        totalDistance = 0.0
-        numberOfCloseGhosts = 0
-        numberOfReallyCloseGhosts = 0
-
-        for ghost in self.getGhosts():
-            # ignore ghost if it is not dangerous
-            if ghost.mode.current in (FREIGHT, SPAWN) or isInCenterArea(ghost.position):
-                continue
-
-            path, dist = self.map.calculateGhostPath(ghost=ghost, endVector=vector)
-
-            # ignore ghost if it can't reach position (this normally only happens if the ghost is in the start area)
-            if len(path) == 0:
-                continue
-
-            minDistance = min(minDistance, dist)
-
-            # Threshold distance for a ghost to be considered 'too far away'
-            # it will be ignored
-            if dist > weights.getWeight('tooFarAwayThreshold'):
-                continue
-
-            totalDistance += dist
-
-            # Threshold distance for a ghost to be considered 'close'
-            if dist < weights.getWeight('wayTooCloseThreshold'):
-                numberOfReallyCloseGhosts += 1
-            # Threshold distance for a ghost to be considered 'close'
-            elif dist < weights.getWeight('tooCloseThreshold'):
-                numberOfCloseGhosts += 1
-
-        # Adjust danger level based on the closest ghost
-        closestGhostValue = (1 / (minDistance + 1)) * 1000 * (1 + weights.getWeight('closestGhostMultiplier'))
-        # Further adjust based on the number of close ghosts
-        closeGhostValue = numberOfCloseGhosts * weights.getWeight('tooCloseValue')
-        closeGhostValue += numberOfReallyCloseGhosts * weights.getWeight('wayTooCloseValue')
-        # Calculate danger level
-        dangerLevel = closestGhostValue + closeGhostValue
-
-        # Danger zone multipliers
-        # TODO: comment this and see if it actually makes the Agents better
-        mapPos = MapPosition(self.map, vector)
-        if mapPos.isInDangerZone:
-            dangerLevel *= 1 + weights.getWeight('dangerZoneMultiplier')
-
-            if mapPos.dangerZone.vectorIsMidMapNode(vector):
-                dangerLevel *= 1 + weights.getWeight('dangerZoneMiddleMapNodeMultiplier')
-
-            if mapPos.dangerZone.ghostInDangerZone:
-                dangerLevel *= 1 + weights.getWeight('ghostInDangerZoneMultiplier')
-
-        # a ghost is closer than pacman multiplier
-        if self.map.calculateDistance(self.getPacmanPosition(), vector) > minDistance:
-            dangerLevel *= 1 + weights.getWeight('ghostIsCloserMultiplier')
-
-        # close to edge multiplier
-        if distanceToNearestEdge(vector) < 40:
-            dangerLevel *= 1 + weights.getWeight('edgeMultiplier')
-
-        # Normalize based on total distance to avoid high values in less dangerous situations
-        normalizedDanger = dangerLevel / (totalDistance + 1)
-
-        # if normalizedDanger < 2:
-        #     print("YES")
-        return round(normalizedDanger, 5)
+    # def calculatePelletLevel(self, vector: Vector2, weights: WeightContainer) -> float:
+    #     minDistance = 99999
+    #     totalDistance = 1.0
+    #
+    #     for pellet in self.pelletGroup.pelletList:
+    #         dist = manhattanDistance(pellet.position, vector)
+    #         if dist < weights.getWeight('pelletLevelDistance'):
+    #             totalDistance += dist
+    #             if dist < minDistance:
+    #                 minDistance = dist
+    #     for powerPellet in self.pelletGroup.powerpellets:
+    #         dist = manhattanDistance(powerPellet.position, vector)
+    #         if dist < weights.getWeight('pelletLevelDistance'):
+    #             totalDistance += dist
+    #             if dist < minDistance:
+    #                 minDistance = dist
+    #
+    #     # if totalDistance == 0:
+    #     #     return minDistance * 0.1
+    #     return totalDistance / (minDistance + 1)
+    #
+    # def calculateDangerLevel(self, vector: Vector2, weights: WeightContainer) -> float:
+    #     minDistance = 9999999
+    #     totalDistance = 0.0
+    #     numberOfCloseGhosts = 0
+    #     numberOfReallyCloseGhosts = 0
+    #
+    #     for ghost in self.getGhosts():
+    #         # ignore ghost if it is not dangerous
+    #         if ghost.mode.current in (FREIGHT, SPAWN) or isInCenterArea(ghost.position):
+    #             continue
+    #
+    #         path, dist = self.map.calculateGhostPath(ghost=ghost, endVector=vector)
+    #
+    #         # ignore ghost if it can't reach position (this normally only happens if the ghost is in the start area)
+    #         if len(path) == 0:
+    #             continue
+    #
+    #         minDistance = min(minDistance, dist)
+    #
+    #         # Threshold distance for a ghost to be considered 'too far away'
+    #         # it will be ignored
+    #         if dist > weights.getWeight('tooFarAwayThreshold'):
+    #             continue
+    #
+    #         totalDistance += dist
+    #
+    #         # Threshold distance for a ghost to be considered 'close'
+    #         if dist < weights.getWeight('wayTooCloseThreshold'):
+    #             numberOfReallyCloseGhosts += 1
+    #         # Threshold distance for a ghost to be considered 'close'
+    #         elif dist < weights.getWeight('tooCloseThreshold'):
+    #             numberOfCloseGhosts += 1
+    #
+    #     # Adjust danger level based on the closest ghost
+    #     closestGhostValue = (1 / (minDistance + 1)) * 1000 * (1 + weights.getWeight('closestGhostMultiplier'))
+    #     # Further adjust based on the number of close ghosts
+    #     closeGhostValue = numberOfCloseGhosts * weights.getWeight('tooCloseValue')
+    #     closeGhostValue += numberOfReallyCloseGhosts * weights.getWeight('wayTooCloseValue')
+    #     # Calculate danger level
+    #     dangerLevel = closestGhostValue + closeGhostValue
+    #
+    #     # Danger zone multipliers
+    #     # TODO: comment this and see if it actually makes the Agents better
+    #     mapPos = MapPosition(self.map, vector)
+    #     if mapPos.isInDangerZone:
+    #         dangerLevel *= 1 + weights.getWeight('dangerZoneMultiplier')
+    #
+    #         if mapPos.dangerZone.vectorIsMidMapNode(vector):
+    #             dangerLevel *= 1 + weights.getWeight('dangerZoneMiddleMapNodeMultiplier')
+    #
+    #         if mapPos.dangerZone.ghostInDangerZone:
+    #             dangerLevel *= 1 + weights.getWeight('ghostInDangerZoneMultiplier')
+    #
+    #     # a ghost is closer than pacman multiplier
+    #     if self.map.calculateDistance(self.getPacmanPosition(), vector) > minDistance:
+    #         dangerLevel *= 1 + weights.getWeight('ghostIsCloserMultiplier')
+    #
+    #     # close to edge multiplier
+    #     if distanceToNearestEdge(vector) < 40:
+    #         dangerLevel *= 1 + weights.getWeight('edgeMultiplier')
+    #
+    #     # Normalize based on total distance to avoid high values in less dangerous situations
+    #     normalizedDanger = dangerLevel / (totalDistance + 1)
+    #
+    #     # if normalizedDanger < 2:
+    #     #     print("YES")
+    #     return round(normalizedDanger, 5)

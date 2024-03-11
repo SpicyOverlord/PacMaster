@@ -70,7 +70,7 @@ if __name__ == "__main__":
             agentClass=MyFirstAgent,
             weightContainer=weightList[i],
             # weightContainer=None,
-            gameCount=50,
+            gameCount=100,
             gameSpeed=1,
             startLevel=0,
             startLives=3,

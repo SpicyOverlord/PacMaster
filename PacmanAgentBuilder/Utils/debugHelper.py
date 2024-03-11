@@ -121,7 +121,6 @@ class DebugHelper(object):
         for i in range(len(path) - 1):
             DebugHelper.drawLine(startVector=path[i], endVector=path[i + 1], color=color, width=width)
 
-
     @staticmethod
     def drawDashedPath(path: list[Vector2], color: tuple[int, int, int], width: int = 5, dashLength: int = 10):
         if not DebugHelper._enabled:
@@ -197,11 +196,10 @@ class DebugHelper(object):
                 DebugHelper.drawLine(mapNode.position, neighbor.mapNode.position, DebugHelper.WHITE, 1)
 
     @staticmethod
-    def drawDangerLevel(obs: Observation, vector: Vector2, weights: WeightContainer):
+    def drawDangerLevel(dangerLevel: float, vector: Vector2):
         if not DebugHelper._enabled:
             return
 
-        dangerLevel = obs.calculateDangerLevel(vector, weights) * 5
         if 0.05 <= dangerLevel <= 1:
             DebugHelper.drawDot(vector, 5, DebugHelper.WHITE)
         elif dangerLevel < 2:
