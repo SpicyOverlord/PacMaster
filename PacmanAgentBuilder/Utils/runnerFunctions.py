@@ -5,7 +5,7 @@ from PacmanAgentBuilder.Utils.GameStats import GameStats
 from Pacman_Complete.run import GameController
 
 
-def runGameWithAgent(agentType: type[IAgent], weightContainer: WeightContainer = None,
+def runGameWithAgent(agentClass: type[IAgent], weightContainer: WeightContainer = None,
                      gameSpeed=3, startLives=3, startLevel: int = 0,
                      ghostsEnabled: bool = True, freightEnabled: bool = True, lockDeltaTime=False) -> GameStats:
     if gameSpeed < 0.1 or 15 < gameSpeed:
@@ -14,7 +14,7 @@ def runGameWithAgent(agentType: type[IAgent], weightContainer: WeightContainer =
     game = GameController(gameSpeed=gameSpeed, startLives=startLives,
                           startLevel=startLevel, ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled,
                           lockDeltaTime=lockDeltaTime)
-    agent = agentType(gameController=game, weightContainer=weightContainer)
+    agent = agentClass(gameController=game, weightContainer=weightContainer)
     game.startGame(agent=agent)
     while True:
         game.update()
