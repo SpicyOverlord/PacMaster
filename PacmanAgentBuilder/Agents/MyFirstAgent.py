@@ -36,7 +36,8 @@ class MyFirstAgent(IAgent):
     def __isInDanger__(self, obs: Observation, mapPos: MapPosition) -> bool:
         dangerLevel = self.calculateDangerLevel(obs, mapPos, mapPos.mapNode1.position, self.weightContainer)
         if mapPos.isBetweenMapNodes:
-            dangerLevel = max(dangerLevel, self.calculateDangerLevel(obs, mapPos, mapPos.mapNode2.position, self.weightContainer))
+            dangerLevel = max(dangerLevel,
+                              self.calculateDangerLevel(obs, mapPos, mapPos.mapNode2.position, self.weightContainer))
 
         return dangerLevel > self.weightContainer.getWeight('fleeThreshold')
 
@@ -46,14 +47,16 @@ class MyFirstAgent(IAgent):
         maxPelletLevel = 0
         maxPelletDirection = STOP
         for neighborContainer in startMapNode.neighborContainers:
-            endMapNode, path, distance = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode, neighborContainer.direction)
+            endMapNode, path, distance = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode,
+                                                                                     neighborContainer.direction)
 
             if obs.isGhostInPath(path):
                 continue
 
             pelletsInPath = obs.getPelletCountInPath(path)
 
-            pathPelletLevel = self.calculatePelletLevel(obs, endMapNode.position, self.weightContainer) * (pelletsInPath + 1)
+            pathPelletLevel = self.calculatePelletLevel(obs, endMapNode.position, self.weightContainer) * (
+                    pelletsInPath + 1)
 
             if pathPelletLevel > maxPelletLevel:
                 maxPelletLevel = pathPelletLevel
@@ -83,7 +86,7 @@ class MyFirstAgent(IAgent):
                 continue
             DebugHelper.drawPath(path, DebugHelper.GREEN, 5)
 
-            dangerLevel = self.calculateDangerLevel(obs,mapPos, endMapNode.position, self.weightContainer)
+            dangerLevel = self.calculateDangerLevel(obs, mapPos, endMapNode.position, self.weightContainer)
             DebugHelper.drawDangerLevel(dangerLevel, endMapNode.position)
 
             if dangerLevel < minDangerLevel:
@@ -113,7 +116,7 @@ class MyFirstAgent(IAgent):
         #     return minDistance * 0.1
         return totalDistance / (minDistance + 1)
 
-    def calculateDangerLevel(self,obs: Observation, mapPos: MapPosition,
+    def calculateDangerLevel(self, obs: Observation, mapPos: MapPosition,
                              vector: Vector2, weights: WeightContainer) -> float:
 
         minDistance = 9999999
@@ -197,19 +200,19 @@ class MyFirstAgent(IAgent):
     @staticmethod
     def getBestWeightContainer() -> WeightContainer:
         return WeightContainer({
-            'fleeThreshold': 0.117,
-            'pelletLevelDistance': 32.945,
-            'wayTooCloseThreshold': 89.816,
-            'tooCloseThreshold': 166.13,
-            'tooFarAwayThreshold': 1167.553,
-            'wayTooCloseValue': 375.088,
-            'tooCloseValue': 67.789,
-            'dangerZoneMultiplier': 1.424,
-            'dangerZoneMiddleMapNodeMultiplier': 1.26,
-            'ghostInDangerZoneMultiplier': 1.413,
-            'closestGhostMultiplier': 1.047,
-            'ghostIsCloserMultiplier': 1.728,
-            'edgeMultiplier': 1.378
+            'fleeThreshold': 0.035,
+            'pelletLevelDistance': 15.939,
+            'wayTooCloseThreshold': 20.949,
+            'tooCloseThreshold': 71.731,
+            'tooFarAwayThreshold': 1979.009,
+            'wayTooCloseValue': 4372.183,
+            'tooCloseValue': 1363.13,
+            'dangerZoneMultiplier': 0.005,
+            'dangerZoneMiddleMapNodeMultiplier': 0.001,
+            'ghostInDangerZoneMultiplier': 5.431,
+            'closestGhostMultiplier': 0.144,
+            'ghostIsCloserMultiplier': 2.612,
+            'edgeMultiplier': 1.237
         })
 
     @staticmethod
