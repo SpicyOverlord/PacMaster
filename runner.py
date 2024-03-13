@@ -12,16 +12,16 @@ from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
 from PacmanAgentBuilder.Utils.runnerFunctions import *
 
 if __name__ == "__main__":
-    # DebugHelper.disable()
+    DebugHelper.disable()
 
-    agentClass = FirstRealAgent
-    # agentClass = FinalAgent
+    # agentClass = FirstRealAgent
+    agentClass = FinalAgent
 
     stats = calculatePerformanceOverXGames(
         agentClass=agentClass,
         weightContainer=agentClass.getBestWeightContainer(),
         # weightContainer=None,
-        gameCount=500,
+        gameCount=50,
         gameSpeed=1,
         startLevel=0,
         startLives=3,

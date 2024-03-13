@@ -201,6 +201,7 @@ class TournamentRunner:
     @staticmethod
     def fitnessFunctionWrapper(member, args):
         DebugHelper.disable()
+        print(f"##############################################\n{member}")
 
         agentClass = args[0]
         gameCount = args[1]
@@ -221,6 +222,6 @@ if __name__ == "__main__":
         populationSize=50,
         generationCount=40,
         mutationRate=3,
-        gameCount=70,
+        gameCount=3,
         cpuCount=4  # multiprocessing.cpu_count()
     )

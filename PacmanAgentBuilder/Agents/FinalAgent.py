@@ -1,4 +1,5 @@
 import random
+from time import sleep
 
 import pygame
 from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
@@ -20,7 +21,7 @@ class FinalAgent(IAgent):
 
     def calculateNextMove(self, obs: Observation):
         mapPos = obs.map.createMapPosition(obs.getPacmanPosition())
-
+        # sleep(0.03)
         # DebugHelper.drawMap(obs)
         # DebugHelper.drawDangerZone(mapPos.dangerZone)
 

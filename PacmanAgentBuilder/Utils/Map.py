@@ -102,8 +102,7 @@ class DangerZone(object):
     def __str__(self):
         return (
             f"DangerZone(mapNodes={[str(node) for node in self.mapNodes]}, "
-            f"isDangerous={self.isDangerous}, escapeEdgeMapNode={self.escapeEdgeMapNode}, "
-            f"edgeMapNodeDangerLevels={self.edgeMapNodeDangerLevels})")
+            f"isDangerous={self.isDangerous}")
 
     def __collectMidMapNodes__(self, mapPosition: MapPosition) -> list[MapNode]:
         visited = set()
