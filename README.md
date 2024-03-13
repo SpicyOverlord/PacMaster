@@ -8,6 +8,10 @@ ssh root@192.168.1.50
 ```shell
 ssh -t root@192.168.1.50 'tmux attach -t pacmantour'
 ```
+### Connect to Tmux Test Session
+```shell
+ssh -t root@192.168.1.50 'tmux attach -t pacmantest'
+```
 
 # Sync
 ### Push to Linux server
