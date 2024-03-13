@@ -13,8 +13,8 @@ if __name__ == "__main__":
 
     stats = calculatePerformanceOverXGames(
         agentClass=MyFirstAgent,
-        weightContainer=WeightContainer({'fleeThreshold': 0.008, 'pelletLevelDistance': 0.702, 'wayTooCloseThreshold': 25.613, 'tooCloseThreshold': 0.003, 'tooFarAwayThreshold': 4857.633, 'wayTooCloseValue': 412.091, 'tooCloseValue': 250.258, 'dangerZoneMultiplier': 1.431, 'dangerZoneMiddleMapNodeMultiplier': 0.458, 'ghostInDangerZoneMultiplier': 0.0, 'closestGhostMultiplier': 0.0, 'ghostIsCloserMultiplier': 10.304, 'edgeMultiplier': 2.237}),
-        # weightContainer=MyFirstAgent.getBestWeightContainer(),
+        # weightContainer=WeightContainer(),
+        weightContainer=MyFirstAgent.getBestWeightContainer(),
         # weightContainer=None,
         gameCount=100,
         gameSpeed=1,
