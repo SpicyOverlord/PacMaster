@@ -1,4 +1,5 @@
 import random
+import sys
 import time
 from datetime import datetime
 import multiprocessing
@@ -200,8 +201,10 @@ class TournamentRunner:
 
     @staticmethod
     def fitnessFunctionWrapper(member, args):
+        id = random.randint(0, sys.maxsize)
+
         DebugHelper.disable()
-        print(f"################################### {getCurrentTimestamp()}\n{member}")
+        print(f"############################  {getCurrentTimestamp()}  {id}\n{member}")
 
         agentClass = args[0]
         gameCount = args[1]
@@ -212,6 +215,8 @@ class TournamentRunner:
             gameCount=gameCount,
             lockDeltaTime=True
         )
+        print(f"-------- DONE: {id}")
+
         return stats
 
 
