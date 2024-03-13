@@ -21,13 +21,13 @@ if __name__ == "__main__":
         agentClass=agentClass,
         weightContainer=agentClass.getBestWeightContainer(),
         # weightContainer=None,
-        gameCount=100,
+        gameCount=500,
         gameSpeed=1,
         startLevel=0,
-        startLives=1,
+        startLives=3,
         ghostsEnabled=True,
         freightEnabled=True,
-        lockDeltaTime=True,
+        lockDeltaTime=False,
         logging=True
     )
 
