@@ -201,7 +201,7 @@ class TournamentRunner:
     @staticmethod
     def fitnessFunctionWrapper(member, args):
         DebugHelper.disable()
-        print(f"##############################################\n{member}")
+        print(f"################################### {getCurrentTimestamp()}\n{member}")
 
         agentClass = args[0]
         gameCount = args[1]
