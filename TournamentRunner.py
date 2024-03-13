@@ -12,7 +12,7 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Genetics.WeightModifier import WeightModifier
-from PacmanAgentBuilder.Agents.MyFirstAgent import MyFirstAgent
+from PacmanAgentBuilder.Agents.FirstRealAgent import FirstRealAgent
 from PacmanAgentBuilder.Agents.HumanAgent import HumanAgent
 from PacmanAgentBuilder.Agents.Iagent import IAgent
 from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
@@ -91,10 +91,10 @@ class TournamentRunner:
             newWeightContainer = WeightModifier.mutateAll(defaultWeightContainer, 5)
             population.append(newWeightContainer)
 
-        # only print start population
-        # for pop in population:
-        #     print(pop)
-        # exit()
+        # print start population
+     #   for pop in population:
+     #        print(pop)
+      #  exit()
 
         generationTestingTime = []
 
@@ -217,7 +217,7 @@ class TournamentRunner:
 if __name__ == "__main__":
     DebugHelper.disable()
     TournamentRunner.startNewTournament(
-        agentClass=MyFirstAgent,
+        agentClass=FirstRealAgent,
         populationSize=50,
         generationCount=40,
         mutationRate=3,

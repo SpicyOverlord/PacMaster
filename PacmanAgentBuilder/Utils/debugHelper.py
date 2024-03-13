@@ -95,8 +95,7 @@ class DebugHelper(object):
             :param radius: The radius of the dot.
             :param color: The color of the dot.
         """
-        DebugHelper.__addDrawObject__("dot",
-                                      [center.asInt(), radius, color])
+        DebugHelper.__addDrawObject__("dot", [center.asInt(), radius, color])
 
     @staticmethod
     def drawDashedCircle(center: Vector2, radius: float, color: tuple[int, int, int], width=1, dash_length=10):
@@ -126,8 +125,8 @@ class DebugHelper(object):
         if not DebugHelper._enabled:
             return
 
-        DebugHelper.drawDot(path[0], DebugHelper.RED, 3)
-        DebugHelper.drawDot(path[-1], DebugHelper.RED, 3)
+        DebugHelper.drawDot(path[0], 3, DebugHelper.RED)
+        DebugHelper.drawDot(path[-1], 3, DebugHelper.RED)
         for i in range(len(path) - 1):
             DebugHelper.drawDashedLine(startVector=path[i], endVector=path[i + 1], color=color,
                                        width=width, dashLength=dashLength)
@@ -191,7 +190,7 @@ class DebugHelper(object):
             return
 
         for mapNode in obs.map.mapNodes:
-            DebugHelper.drawDot(mapNode.position, DebugHelper.BLUE, 3)
+            DebugHelper.drawDot(mapNode.position, 3, DebugHelper.BLUE)
             for neighbor in mapNode.neighborContainers:
                 DebugHelper.drawLine(mapNode.position, neighbor.mapNode.position, DebugHelper.WHITE, 1)
 
@@ -212,12 +211,13 @@ class DebugHelper(object):
             DebugHelper.drawDot(vector, dangerLevel, DebugHelper.YELLOW)
 
     @staticmethod
-    def drawDangerLevels(obs: Observation):
+    def drawDangerLevels(obs: Observation, dangerFunction: callable):
         if not DebugHelper._enabled:
             return
 
         for mapNode in obs.map.mapNodes:
-            DebugHelper.drawDangerLevel(obs, mapNode.position)
+            dangerLevel = dangerFunction(obs, mapNode.position)
+            DebugHelper.drawDangerLevel(dangerLevel, mapNode.position)
 
     @staticmethod
     def drawPelletLevel(obs: Observation, vector: Vector2, weights: WeightContainer):

@@ -2,27 +2,32 @@ import os
 
 import numpy as np
 
+from PacmanAgentBuilder.Agents.FinalAgent import FinalAgent
+
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
-from PacmanAgentBuilder.Agents.MyFirstAgent import MyFirstAgent
+from PacmanAgentBuilder.Agents.FirstRealAgent import FirstRealAgent
 from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
 from PacmanAgentBuilder.Utils.runnerFunctions import *
 
 if __name__ == "__main__":
     DebugHelper.disable()
 
+    # agentClass = FirstRealAgent
+    agentClass = FinalAgent
+
     stats = calculatePerformanceOverXGames(
-        agentClass=MyFirstAgent,
+        agentClass=agentClass,
         # weightContainer=WeightContainer(),
-        weightContainer=MyFirstAgent.getBestWeightContainer(),
+        weightContainer=agentClass.getBestWeightContainer(),
         # weightContainer=None,
         gameCount=100,
-        gameSpeed=1,
+        gameSpeed=3,
         startLevel=0,
         startLives=3,
         ghostsEnabled=True,
         freightEnabled=True,
-        lockDeltaTime=True,
+        lockDeltaTime=False,
         logging=True
     )
 
