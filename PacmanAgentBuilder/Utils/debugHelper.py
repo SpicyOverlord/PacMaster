@@ -174,6 +174,9 @@ class DebugHelper(object):
         if not DebugHelper._enabled:
             return
 
+        if dangerZone is None:
+            return
+
         previousMapNode = None
         for mapNode in dangerZone.mapNodes:
             if previousMapNode is not None:

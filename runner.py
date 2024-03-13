@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 
+from PacmanAgentBuilder.Agents.CollectorAgent import CollectorAgent
 from PacmanAgentBuilder.Agents.FinalAgent import FinalAgent
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
@@ -11,23 +12,22 @@ from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
 from PacmanAgentBuilder.Utils.runnerFunctions import *
 
 if __name__ == "__main__":
-    DebugHelper.disable()
+    # DebugHelper.disable()
 
-    # agentClass = FirstRealAgent
-    agentClass = FinalAgent
+    agentClass = FirstRealAgent
+    # agentClass = FinalAgent
 
     stats = calculatePerformanceOverXGames(
         agentClass=agentClass,
-        # weightContainer=WeightContainer(),
         weightContainer=agentClass.getBestWeightContainer(),
         # weightContainer=None,
         gameCount=100,
-        gameSpeed=3,
+        gameSpeed=1,
         startLevel=0,
-        startLives=3,
+        startLives=1,
         ghostsEnabled=True,
         freightEnabled=True,
-        lockDeltaTime=False,
+        lockDeltaTime=True,
         logging=True
     )
 

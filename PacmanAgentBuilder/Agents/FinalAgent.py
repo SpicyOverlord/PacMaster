@@ -21,13 +21,14 @@ class FinalAgent(IAgent):
     def calculateNextMove(self, obs: Observation):
         mapPos = obs.map.createMapPosition(obs.getPacmanPosition())
 
-        DebugHelper.drawMap(obs)
+        # DebugHelper.drawMap(obs)
+        # DebugHelper.drawDangerZone(mapPos.dangerZone)
 
-        if self.__isInDanger__(obs, mapPos):
-            return self.__flee__(obs, mapPos)
+        if self.isInDanger(obs, mapPos):
+            return self.flee(obs, mapPos)
 
         elif self.isOnNode(mapPos):
-            return self.__collect_(obs)
+            return self.collect(obs)
 
         # don't change direction
         return STOP
@@ -35,7 +36,7 @@ class FinalAgent(IAgent):
     def isOnNode(self, mapPos: MapPosition) -> bool:
         return not mapPos.isBetweenMapNodes
 
-    def __isInDanger__(self, obs: Observation, mapPos: MapPosition) -> bool:
+    def isInDanger(self, obs: Observation, mapPos: MapPosition) -> bool:
         dangerLevel = self.calculateDangerLevel(obs, mapPos, mapPos.mapNode1.position, self.weightContainer)
         if mapPos.isBetweenMapNodes:
             dangerLevel = max(dangerLevel,
@@ -43,7 +44,7 @@ class FinalAgent(IAgent):
 
         return dangerLevel > self.weightContainer.getWeight('fleeThreshold')
 
-    def __collect_(self, obs: Observation) -> int:
+    def collect(self, obs: Observation) -> int:
         startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
 
         maxPelletLevel = 0
@@ -74,7 +75,7 @@ class FinalAgent(IAgent):
 
         return maxPelletDirection
 
-    def __flee__(self, obs: Observation, mapPos: MapPosition) -> int:
+    def flee(self, obs: Observation, mapPos: MapPosition) -> int:
         startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
 
         minDangerLevel = 99999
@@ -169,16 +170,6 @@ class FinalAgent(IAgent):
         # close to edge multiplier
         if distanceToNearestEdge(vector) < 40:
             dangerLevel *= 1 + weights.getWeight('edgeMultiplier')
-
-        print(dangerLevel)
-        powerPelletPositions = obs.getPowerPelletPositions()
-        closestPowerPellet = None
-        closestPowerPelletDistance = 9999999
-        for powerPelletPosition in powerPelletPositions:
-            dist = obs.map.calculateDistance(powerPelletPosition, vector)
-            if dist < closestPowerPelletDistance:
-                closestPowerPelletDistance = dist
-                closestPowerPellet = powerPelletPosition
         # Normalize based on total distance to avoid high values in less dangerous situations
         normalizedDanger = dangerLevel / (totalDistance + 1)
 
@@ -202,7 +193,7 @@ class FinalAgent(IAgent):
     @staticmethod
     def getBestWeightContainer() -> WeightContainer:
         return WeightContainer({
-            'fleeThreshold': 0.008,
+            'fleeThreshold': 0.018,
             'pelletLevelDistance': 0.702,
             'tooCloseThreshold': 25.613,
             'tooCloseValue': 412.091,
@@ -216,8 +207,6 @@ class FinalAgent(IAgent):
             'pinky': 5,
             'inky': 5,
             'clyde': 5,
-
-            'closestPowerPellet': 5,
         })
 
     @staticmethod
@@ -230,5 +219,11 @@ class FinalAgent(IAgent):
             'dangerZoneMultiplier': 1,
             'dangerZoneMiddleMapNodeMultiplier': 1,
             'ghostIsCloserMultiplier': 1,
-            'edgeMultiplier': 1}
-        )
+            'edgeMultiplier': 1,
+
+            'ghostMultiplier': 10,
+            'blinky': 5,
+            'pinky': 5,
+            'inky': 5,
+            'clyde': 5
+        })

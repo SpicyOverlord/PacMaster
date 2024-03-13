@@ -22,11 +22,11 @@ class IAgent(ABC):
 
     @staticmethod
     def getBestWeightContainer() -> WeightContainer:
-        raise Exception("NotImplementedException")
+        return None
 
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
-        raise Exception("NotImplementedException")
+        return None
 
     @abstractmethod
     def calculateNextMove(self, obs: Observation):

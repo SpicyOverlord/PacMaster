@@ -21,11 +21,11 @@ class FirstRealAgent(IAgent):
     def calculateNextMove(self, obs: Observation):
         mapPos = obs.map.createMapPosition(obs.getPacmanPosition())
 
-        if self.__isInDanger__(obs, mapPos):
-            return self.__flee__(obs, mapPos)
+        if self.isInDanger(obs, mapPos):
+            return self.flee(obs, mapPos)
 
         elif self.isOnNode(mapPos):
-            return self.__collect_(obs)
+            return self.collect(obs)
 
         # don't change direction
         return STOP
@@ -33,7 +33,7 @@ class FirstRealAgent(IAgent):
     def isOnNode(self, mapPos: MapPosition) -> bool:
         return not mapPos.isBetweenMapNodes
 
-    def __isInDanger__(self, obs: Observation, mapPos: MapPosition) -> bool:
+    def isInDanger(self, obs: Observation, mapPos: MapPosition) -> bool:
         dangerLevel = self.calculateDangerLevel(obs, mapPos, mapPos.mapNode1.position, self.weightContainer)
         if mapPos.isBetweenMapNodes:
             dangerLevel = max(dangerLevel,
@@ -41,7 +41,7 @@ class FirstRealAgent(IAgent):
 
         return dangerLevel > self.weightContainer.getWeight('fleeThreshold')
 
-    def __collect_(self, obs: Observation) -> int:
+    def collect(self, obs: Observation) -> int:
         startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
 
         maxPelletLevel = 0
@@ -72,7 +72,7 @@ class FirstRealAgent(IAgent):
 
         return maxPelletDirection
 
-    def __flee__(self, obs: Observation, mapPos: MapPosition) -> int:
+    def flee(self, obs: Observation, mapPos: MapPosition) -> int:
         startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
 
         minDangerLevel = 99999
