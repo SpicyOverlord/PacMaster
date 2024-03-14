@@ -150,6 +150,7 @@ class TournamentRunner:
             newPopulation = WeightModifier.generateNewPopulation(
                 population=population,
                 populationSize=populationSize,
+                savePercentage=savePercentage,
                 currentMutationRate=currentMutationRate,
                 poolSize=poolSize,
                 freeGenerationCount=freeGenerationCount,
