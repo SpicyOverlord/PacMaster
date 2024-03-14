@@ -25,7 +25,7 @@ from PacmanAgentBuilder.Utils.utils import secondsToTime, getCurrentTimestamp
 class TournamentRunner:
     @staticmethod
     def startNewTournament(agentClass: type[IAgent], populationSize: int, generationCount: int,
-                           freeGenerationCount: int, mutationRate: float,
+                           freeGenerationCount: int, savePercentage: int, mutationRate: float,
                            gameCount: int, cpuCount: int, timeoutSeconds: int):
         tournamentStartTime = time.time()
 
@@ -205,6 +205,7 @@ if __name__ == "__main__":
         populationSize=40,
         freeGenerationCount=5,
         generationCount=50,
+        savePercentage=0,
         mutationRate=3,
         gameCount=50,
         cpuCount=4,  # multiprocessing.cpu_count(),

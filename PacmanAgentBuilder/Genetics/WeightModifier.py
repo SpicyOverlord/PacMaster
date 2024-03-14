@@ -74,11 +74,12 @@ class WeightModifier:
 
     @staticmethod
     def generateNewPopulation(population: list[WeightContainer], populationSize: int, freeGenerationCount: int,
-                              currentMutationRate: float, poolSize: int, generation: int) -> list[WeightContainer]:
+                              savePercentage: int, currentMutationRate: float,
+                              poolSize: int, generation: int) -> list[WeightContainer]:
         # 10% of the new population will be the top 10% of the previous generation
         newPopulation = []
         if generation >= freeGenerationCount:
-            newPopulation = population[:int(populationSize * 0.1)]
+            newPopulation = population[:int(populationSize * (savePercentage / 100))]
 
         # 90% of the new population will be a child of the previous generation
         while len(newPopulation) < populationSize:
