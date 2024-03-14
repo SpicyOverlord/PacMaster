@@ -21,16 +21,16 @@ class WeightContainer:
     def copy(self) -> 'WeightContainer':
         newWeights = WeightContainer()
         for key, value in self.__weightDict__.items():
-            newWeights.addWeight(key, value)
+            newWeights.add(key, value)
         return newWeights
 
-    def addWeight(self, name: str, weight: float):
+    def add(self, name: str, weight: float):
         if name in self.__weightDict__:
             raise ValueError("Weight with name " + name + " already exists")
 
         self.__weightDict__[name] = weight
 
-    def getWeight(self, name: str) -> float:
+    def get(self, name: str) -> float:
         return self.__weightDict__[name]
 
     def hasWeight(self, name: str) -> bool:

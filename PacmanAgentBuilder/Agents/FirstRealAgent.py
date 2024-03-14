@@ -39,7 +39,7 @@ class FirstRealAgent(IAgent):
             dangerLevel = max(dangerLevel,
                               self.calculateDangerLevel(obs, mapPos, mapPos.mapNode2.position, self.weightContainer))
 
-        return dangerLevel > self.weightContainer.getWeight('fleeThreshold')
+        return dangerLevel > self.weightContainer.get('fleeThreshold')
 
     def collect(self, obs: Observation) -> int:
         startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
@@ -98,11 +98,11 @@ class FirstRealAgent(IAgent):
     def calculatePelletLevel(self, obs: Observation, vector: Vector2, weights: WeightContainer) -> float:
         for pellet in obs.pelletGroup.pelletList:
             dist = manhattanDistance(pellet.position, vector)
-            if dist < weights.getWeight('pelletLevelDistance'):
+            if dist < weights.get('pelletLevelDistance'):
                 return 1.0
         for powerPellet in obs.pelletGroup.powerpellets:
             dist = manhattanDistance(powerPellet.position, vector)
-            if dist < weights.getWeight('pelletLevelDistance'):
+            if dist < weights.get('pelletLevelDistance'):
                 return 1.0
 
         return 1.0 / 100000.0
@@ -130,43 +130,43 @@ class FirstRealAgent(IAgent):
 
             # Threshold distance for a ghost to be considered 'too far away'
             # it will be ignored
-            if dist > weights.getWeight('tooFarAwayThreshold'):
+            if dist > weights.get('tooFarAwayThreshold'):
                 continue
 
             totalDistance += dist
 
             # Threshold distance for a ghost to be considered 'close'
-            if dist < weights.getWeight('wayTooCloseThreshold'):
+            if dist < weights.get('wayTooCloseThreshold'):
                 numberOfReallyCloseGhosts += 1
             # Threshold distance for a ghost to be considered 'close'
-            elif dist < weights.getWeight('tooCloseThreshold'):
+            elif dist < weights.get('tooCloseThreshold'):
                 numberOfCloseGhosts += 1
 
         # Adjust danger level based on the closest ghost
-        closestGhostValue = (1 / (minDistance + 1)) * 1000 * (1 + weights.getWeight('closestGhostMultiplier'))
+        closestGhostValue = (1 / (minDistance + 1)) * 1000 * (1 + weights.get('closestGhostMultiplier'))
         # Further adjust based on the number of close ghosts
-        closeGhostValue = numberOfCloseGhosts * weights.getWeight('tooCloseValue')
-        closeGhostValue += numberOfReallyCloseGhosts * weights.getWeight('wayTooCloseValue')
+        closeGhostValue = numberOfCloseGhosts * weights.get('tooCloseValue')
+        closeGhostValue += numberOfReallyCloseGhosts * weights.get('wayTooCloseValue')
         # Calculate danger level
         dangerLevel = closestGhostValue + closeGhostValue
 
         # Danger zone multipliers
         if mapPos.isInDangerZone:
-            dangerLevel *= 1 + weights.getWeight('dangerZoneMultiplier')
+            dangerLevel *= 1 + weights.get('dangerZoneMultiplier')
 
             if mapPos.dangerZone.vectorIsMidMapNode(vector):
-                dangerLevel *= 1 + weights.getWeight('dangerZoneMiddleMapNodeMultiplier')
+                dangerLevel *= 1 + weights.get('dangerZoneMiddleMapNodeMultiplier')
 
             if mapPos.dangerZone.ghostInDangerZone:
-                dangerLevel *= 1 + weights.getWeight('ghostInDangerZoneMultiplier')
+                dangerLevel *= 1 + weights.get('ghostInDangerZoneMultiplier')
 
         # a ghost is closer than pacman multiplier
         if obs.map.calculateDistance(obs.getPacmanPosition(), vector) > minDistance:
-            dangerLevel *= 1 + weights.getWeight('ghostIsCloserMultiplier')
+            dangerLevel *= 1 + weights.get('ghostIsCloserMultiplier')
 
         # close to edge multiplier
         if distanceToNearestEdge(vector) < 40:
-            dangerLevel *= 1 + weights.getWeight('edgeMultiplier')
+            dangerLevel *= 1 + weights.get('edgeMultiplier')
 
         # Normalize based on total distance to avoid high values in less dangerous situations
         normalizedDanger = dangerLevel / (totalDistance + 1)

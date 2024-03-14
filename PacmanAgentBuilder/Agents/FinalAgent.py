@@ -43,7 +43,7 @@ class FinalAgent(IAgent):
             dangerLevel = max(dangerLevel,
                               self.calculateDangerLevel(obs, mapPos, mapPos.mapNode2.position, self.weightContainer))
 
-        return dangerLevel > self.weightContainer.getWeight('fleeThreshold')
+        return dangerLevel > self.weightContainer.get('fleeThreshold')
 
     def collect(self, obs: Observation) -> int:
         startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
@@ -102,11 +102,11 @@ class FinalAgent(IAgent):
     def calculatePelletLevel(self, obs: Observation, vector: Vector2, weights: WeightContainer) -> float:
         for pellet in obs.pelletGroup.pelletList:
             dist = manhattanDistance(pellet.position, vector)
-            if dist < weights.getWeight('pelletLevelDistance'):
+            if dist < weights.get('pelletLevelDistance'):
                 return 1.0
         for powerPellet in obs.pelletGroup.powerpellets:
             dist = manhattanDistance(powerPellet.position, vector)
-            if dist < weights.getWeight('pelletLevelDistance'):
+            if dist < weights.get('pelletLevelDistance'):
                 return 1.0
 
         return 1.0 / 100000.0
@@ -131,46 +131,59 @@ class FinalAgent(IAgent):
                 continue
 
             minDistance = min(minDistance, dist)
+
+            # Threshold distance for a ghost to be considered 'too far away'. it will be ignored
+            if dist > weights.get('tooFarAwayThreshold'):
+                continue
+
             totalDistance += dist
 
             # Threshold distance for a ghost to be considered 'close'
-            if dist < weights.getWeight('tooCloseThreshold'):
+            if dist < weights.get('tooCloseThreshold'):
                 numberOfCloseGhosts += 1
 
-            if dist == 0:
-                continue
             ghostWeight = 0
             if ghost.name == BLINKY:
-                ghostWeight = weights.getWeight('blinky')
+                ghostWeight = weights.get('blinky')
             elif ghost.name == PINKY:
-                ghostWeight = weights.getWeight('pinky')
+                ghostWeight = weights.get('pinky')
             elif ghost.name == INKY:
-                ghostWeight = weights.getWeight('inky')
+                ghostWeight = weights.get('inky')
             elif ghost.name == CLYDE:
-                ghostWeight = weights.getWeight('clyde')
-            ghostsDangerValue += ((1 + ghostWeight) / dist) * (1 + weights.getWeight('ghostMultiplier'))
+                ghostWeight = weights.get('clyde')
+            ghostsDangerValue += ((1 + ghostWeight) / (1+dist)) * (1 + weights.get('ghostMultiplier'))
 
         # Adjust danger level based on the closest ghost
         closestGhostValue = (1 / (minDistance + 1)) * 1000
         # Further adjust based on the number of close ghosts
-        closeGhostValue = numberOfCloseGhosts * weights.getWeight('tooCloseValue')
+        closeGhostValue = numberOfCloseGhosts * weights.get('tooCloseValue')
+
+
+
+
+        pelletLevel = self.calculatePelletLevel(obs, vector, weights) * weights.get('pelletInDangerLevelMultiplier')
+
+
+
+
+        
         # Calculate danger level
-        dangerLevel = closestGhostValue + closeGhostValue + ghostsDangerValue
+        dangerLevel = closestGhostValue + closeGhostValue + ghostsDangerValue - pelletLevel
 
         # Danger zone multipliers
         if mapPos.isInDangerZone:
-            dangerLevel *= 1 + weights.getWeight('dangerZoneMultiplier')
+            dangerLevel *= 1 + weights.get('dangerZoneMultiplier')
 
             if mapPos.dangerZone.vectorIsMidMapNode(vector):
-                dangerLevel *= 1 + weights.getWeight('dangerZoneMiddleMapNodeMultiplier')
+                dangerLevel *= 1 + weights.get('dangerZoneMiddleMapNodeMultiplier')
 
         # a ghost is closer than pacman multiplier
         if obs.map.calculateDistance(obs.getPacmanPosition(), vector) > minDistance:
-            dangerLevel *= 1 + weights.getWeight('ghostIsCloserMultiplier')
+            dangerLevel *= 1 + weights.get('ghostIsCloserMultiplier')
 
         # close to edge multiplier
         if distanceToNearestEdge(vector) < 40:
-            dangerLevel *= 1 + weights.getWeight('edgeMultiplier')
+            dangerLevel *= 1 + weights.get('edgeMultiplier')
         # Normalize based on total distance to avoid high values in less dangerous situations
         normalizedDanger = dangerLevel / (totalDistance + 1)
 
@@ -198,6 +211,7 @@ class FinalAgent(IAgent):
             'pelletLevelDistance': 0.702,
             'tooCloseThreshold': 25.613,
             'tooCloseValue': 412.091,
+            'tooFarAwayThreshold': 4857.633,
             'dangerZoneMultiplier': 1.431,
             'dangerZoneMiddleMapNodeMultiplier': 0.458,
             'ghostIsCloserMultiplier': 10.304,
@@ -217,10 +231,13 @@ class FinalAgent(IAgent):
             'pelletLevelDistance': 60,
             'tooCloseThreshold': 300,
             'tooCloseValue': 100,
+            'tooFarAwayThreshold': 1000,
             'dangerZoneMultiplier': 1,
             'dangerZoneMiddleMapNodeMultiplier': 1,
             'ghostIsCloserMultiplier': 1,
             'edgeMultiplier': 1,
+
+            'pelletInDangerLevelMultiplier': 1,
 
             'ghostMultiplier': 10,
             'blinky': 5,

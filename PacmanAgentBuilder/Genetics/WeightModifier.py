@@ -20,7 +20,7 @@ class WeightModifier:
             else:
                 mutatedValue = value
 
-            mutation.addWeight(key, round(mutatedValue, 3))
+            mutation.add(key, round(mutatedValue, 3))
 
         return mutation
 
@@ -37,7 +37,7 @@ class WeightModifier:
             if mutatedValue < 0:
                 mutatedValue *= -1
 
-            mutation.addWeight(key, round(mutatedValue, 3))
+            mutation.add(key, round(mutatedValue, 3))
 
         return mutation
 
@@ -49,9 +49,9 @@ class WeightModifier:
         offspring = WeightContainer()
         for key, value in weightsA.items():
             if random.random() < 0.5:
-                offspring.addWeight(key, value)
+                offspring.add(key, value)
             else:
-                offspring.addWeight(key, weightsB.getWeight(key))
+                offspring.add(key, weightsB.get(key))
 
         return offspring
 
