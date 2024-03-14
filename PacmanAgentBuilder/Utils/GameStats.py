@@ -76,15 +76,15 @@ class GameStats(object):
         averageScore = sum(baseScores) / len(baseScores)
 
         return {
-            "combinedScore": round(combinedScore, 3),
-            "averageLevelsCompleted": round(averageLevelsCompleted, 3),
+            "combinedScore": round(combinedScore, 5),
+            "averageLevelsCompleted": round(averageLevelsCompleted, 5),
             "maxLevelsCompleted": maxLevelsCompleted,
 
             "medianScore": medianScore,
-            "averageScore": round(averageScore, 3),
+            "averageScore": round(averageScore, 5),
             "maxScore": max(baseScores),
             "minScore": min(baseScores),
-            "stdDeviation": round(stdDeviation, 3)
+            "stdDeviation": round(stdDeviation, 5)
         }
 
     @staticmethod

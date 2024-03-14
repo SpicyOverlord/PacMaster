@@ -20,7 +20,7 @@ class WeightModifier:
             else:
                 mutatedValue = value
 
-            mutation.add(key, round(mutatedValue, 3))
+            mutation.add(key, round(mutatedValue, 5))
 
         return mutation
 
@@ -37,7 +37,7 @@ class WeightModifier:
             if mutatedValue < 0:
                 mutatedValue *= -1
 
-            mutation.add(key, round(mutatedValue, 3))
+            mutation.add(key, round(mutatedValue, 5))
 
         return mutation
 

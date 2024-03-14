@@ -151,24 +151,43 @@ class FinalAgent(IAgent):
                 ghostWeight = weights.get('inky')
             elif ghost.name == CLYDE:
                 ghostWeight = weights.get('clyde')
-            ghostsDangerValue += ((1 + ghostWeight) / (1+dist)) * (1 + weights.get('ghostMultiplier'))
+            ghostsDangerValue += (1 + ghostWeight * weights.get('ghostMultiplier')) / (1 + dist)
 
         # Adjust danger level based on the closest ghost
         closestGhostValue = (1 / (minDistance + 1)) * 1000
         # Further adjust based on the number of close ghosts
         closeGhostValue = numberOfCloseGhosts * weights.get('tooCloseValue')
 
+        # Calculate pellet level
+        minDistance = 99999
+        totalDistance = 1.0
+        for pelletPosition in obs.getPelletPositions():
+            dist = manhattanDistance(pelletPosition, vector)
+            if dist < weights.get('pelletLevelDistanceInDangerLevel'):
+                totalDistance += dist
+                if dist < minDistance:
+                    minDistance = dist
+        for powerPelletPosition in obs.getPowerPelletPositions():
+            dist = manhattanDistance(powerPelletPosition, vector)
+            if dist < weights.get('pelletLevelDistanceInDangerLevel'):
+                totalDistance += dist
+                if dist < minDistance:
+                    minDistance = dist
+        pelletLevel = totalDistance / (minDistance + 1) * 0.001 * weights.get('pelletsInDangerLevelMultiplier')
 
+        # distance to pacman
+        distanceToPacman = manhattanDistance(vector, obs.getPacmanPosition()) * 0.001 * weights.get('distanceToPacManMultiplier')
 
-
-        pelletLevel = self.calculatePelletLevel(obs, vector, weights) * weights.get('pelletInDangerLevelMultiplier')
-
-
-
-
-        
         # Calculate danger level
-        dangerLevel = closestGhostValue + closeGhostValue + ghostsDangerValue - pelletLevel
+        dangerLevel = closestGhostValue + closeGhostValue + ghostsDangerValue + distanceToPacman - pelletLevel
+        print(
+            f"danger: {dangerLevel}, "
+            f"Closest ghost value: {closestGhostValue}, "
+            f"close ghost value: {closeGhostValue}, "
+            f"ghost danger value: {ghostsDangerValue}, "
+            f"distance to pacman: {distanceToPacman}, "
+            f"pellet level: {pelletLevel}"
+        )
 
         # Danger zone multipliers
         if mapPos.isInDangerZone:
@@ -207,7 +226,8 @@ class FinalAgent(IAgent):
     @staticmethod
     def getBestWeightContainer() -> WeightContainer:
         return WeightContainer({
-            'fleeThreshold': 0.018,
+            # 'fleeThreshold': 0.018,
+            'fleeThreshold': 5,
             'pelletLevelDistance': 0.702,
             'tooCloseThreshold': 25.613,
             'tooCloseValue': 412.091,
@@ -217,17 +237,21 @@ class FinalAgent(IAgent):
             'ghostIsCloserMultiplier': 10.304,
             'edgeMultiplier': 2.237,
 
+            'pelletLevelDistanceInDangerLevel': 60,
+            'pelletsInDangerLevelMultiplier': 1,
+            'distanceToPacManMultiplier': 1,
+
             'ghostMultiplier': 10,
-            'blinky': 5,
-            'pinky': 5,
-            'inky': 5,
-            'clyde': 5,
+            'blinky': 1,
+            'pinky': 1,
+            'inky': 1,
+            'clyde': 1,
         })
 
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
         return WeightContainer({
-            'fleeThreshold': 0.2,
+            'fleeThreshold': 0.5,
             'pelletLevelDistance': 60,
             'tooCloseThreshold': 300,
             'tooCloseValue': 100,
@@ -237,7 +261,9 @@ class FinalAgent(IAgent):
             'ghostIsCloserMultiplier': 1,
             'edgeMultiplier': 1,
 
-            'pelletInDangerLevelMultiplier': 1,
+            'pelletLevelDistanceInDangerLevel': 60,
+            'pelletsInDangerLevelMultiplier': 1,
+            'distanceToPacManMultiplier': 1,
 
             'ghostMultiplier': 10,
             'blinky': 5,

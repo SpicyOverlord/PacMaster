@@ -12,14 +12,14 @@ from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
 from PacmanAgentBuilder.Utils.runnerFunctions import *
 
 if __name__ == "__main__":
-    DebugHelper.disable()
+    # DebugHelper.disable()
 
-    agentClass = FirstRealAgent
-    # agentClass = FinalAgent
+    # agentClass = FirstRealAgent
+    agentClass = FinalAgent
 
     stats = calculatePerformanceOverXGames(
         agentClass=agentClass,
-        weightContainer=agentClass.getBestWeightContainer(),
+        weightContainer=agentClass.getDefaultWeightContainer(),
         # weightContainer=WeightContainer(
         #     {'fleeThreshold': 0.093, 'pelletLevelDistance': 31.92, 'wayTooCloseThreshold': 54.865,
         #      'tooCloseThreshold': 0.006, 'tooFarAwayThreshold': 14.209, 'wayTooCloseValue': 9474.625,
@@ -32,6 +32,6 @@ if __name__ == "__main__":
         startLives=3,
         ghostsEnabled=True,
         freightEnabled=True,
-        lockDeltaTime=True,
+        lockDeltaTime=False,
         logging=True
     )
