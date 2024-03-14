@@ -19,6 +19,19 @@ class GameStats(object):
         return f"GameStats(score={self.score}, efficiency={round(self.efficiency, 3)}, totalPelletsEaten={self.totalPelletsEaten}, actionsTaken={self.actionsTaken}, levelsCompleted={self.levelsCompleted})"
 
     @staticmethod
+    def getEmpty():
+        return {
+            "combinedScore": 0,
+            "averageLevelsCompleted": 0,
+            "maxLevelsCompleted": 0,
+            "medianScore": 0,
+            "averageScore": 0,
+            "maxScore": 0,
+            "minScore": 0,
+            "stdDeviation": 0
+        }
+
+    @staticmethod
     def calculatePerformance(gameStats: list['GameStats']):
         weights = {'score': 0.4, 'pellets': 1, 'efficiency': 0.3}
 
@@ -62,15 +75,17 @@ class GameStats(object):
         stdDeviation = variance ** 0.5
         averageScore = sum(baseScores) / len(baseScores)
 
-        return {"combinedScore": round(combinedScore, 3),
-                "averageLevelsCompleted": round(averageLevelsCompleted, 3),
-                "maxLevelsCompleted": maxLevelsCompleted,
+        return {
+            "combinedScore": round(combinedScore, 3),
+            "averageLevelsCompleted": round(averageLevelsCompleted, 3),
+            "maxLevelsCompleted": maxLevelsCompleted,
 
-                "medianScore": medianScore,
-                "averageScore": round(averageScore, 3),
-                "maxScore": max(baseScores),
-                "minScore": min(baseScores),
-                "stdDeviation": round(stdDeviation, 3)}
+            "medianScore": medianScore,
+            "averageScore": round(averageScore, 3),
+            "maxScore": max(baseScores),
+            "minScore": min(baseScores),
+            "stdDeviation": round(stdDeviation, 3)
+        }
 
     @staticmethod
     def calculateTruncatedMean(scores, truncationPercent):
