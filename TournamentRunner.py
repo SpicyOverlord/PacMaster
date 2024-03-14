@@ -29,7 +29,7 @@ class TournamentRunner:
                            gameCount: int, cpuCount: int, timeoutSeconds: int):
         tournamentStartTime = time.time()
 
-        logFileName = f"Tournaments/{agentClass.__name__}_{getCurrentTimestamp()}.txt"
+        logFileName = f"Tournaments/{getCurrentTimestamp()}_{agentClass.__name__}.txt"
 
         allMembers = []
 
