@@ -1,33 +1,20 @@
-from PacMaster.Genetics.WeightContainer import WeightContainer
-from PacMaster.agents.HumanAgent import HumanAgent
-from PacMaster.agents.Iagent import IAgent
-from PacMaster.utils.gamestats import GameStats
+from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
+from PacmanAgentBuilder.Agents.HumanAgent import HumanAgent
+from PacmanAgentBuilder.Agents.Iagent import IAgent
+from PacmanAgentBuilder.Utils.GameStats import GameStats
 from Pacman_Complete.run import GameController
 
 
-def runGameWithHuman(gameSpeed=1, startLives=3) -> int:
-    game = GameController(gameSpeed=gameSpeed, startLives=startLives, isHumanPlayer=True)
-    agent = HumanAgent(gameController=game)
-    game.startGame(agent=agent)
-    while True:
-        game.update()
-        if game.gameOver:
-            print("Actions taken:", agent.actionsTaken)
-            print("score:", game.score)
-            print("levels completed:", game.level)
-            return game.score
-
-
-def runGameWithAgent(agentType: type[IAgent], weightContainer: WeightContainer = None,
+def runGameWithAgent(agentClass: type[IAgent], weightContainer: WeightContainer = None,
                      gameSpeed=3, startLives=3, startLevel: int = 0,
                      ghostsEnabled: bool = True, freightEnabled: bool = True, lockDeltaTime=False) -> GameStats:
     if gameSpeed < 0.1 or 15 < gameSpeed:
-        raise ValueError(f"gameSpeed ({gameSpeed}) must be between 0.1 and 10 (inclusive). Otherwise the game breaks.")
+        raise ValueError(f"gameSpeed ({gameSpeed}) must be between 0.1 and 15 (inclusive). Otherwise the game breaks.")
 
-    game = GameController(gameSpeed=gameSpeed, startLives=startLives, isHumanPlayer=False,
+    game = GameController(gameSpeed=gameSpeed, startLives=startLives,
                           startLevel=startLevel, ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled,
                           lockDeltaTime=lockDeltaTime)
-    agent = agentType(gameController=game, weightContainer=weightContainer)
+    agent = agentClass(gameController=game, weightContainer=weightContainer)
     game.startGame(agent=agent)
     while True:
         game.update()
@@ -36,7 +23,7 @@ def runGameWithAgent(agentType: type[IAgent], weightContainer: WeightContainer =
 
 
 def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: WeightContainer = None,
-                                   gameCount: int = 20, gameSpeed=5, startLevel: int = 0, startLives=1,
+                                   gameCount: int = 50, gameSpeed=1, startLevel: int = 0, startLives=1,
                                    ghostsEnabled: bool = True, freightEnabled: bool = True,
                                    logging=False, lockDeltaTime=False):
     gameStats = []
@@ -52,7 +39,7 @@ def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: We
         if logging:
             print(f"Game {i + 1} result: {gameStats[i]}")
 
-    performance = GameStats.calculateCombinedPerformance(gameStats)
+    performance = GameStats.calculatePerformance(gameStats)
 
     if logging:
         print(f"Performance over {gameCount} games: {performance}")

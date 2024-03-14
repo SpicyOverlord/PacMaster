@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
 
@@ -13,6 +15,10 @@ def manhattanDistance(a: Vector2, b: Vector2) -> int:
 def distanceSquared(a: Vector2, b: Vector2) -> int:
     return (a.x - b.x) ** 2 + (a.y - b.y) ** 2
 
+def getCurrentTimestamp() -> str:
+    now = datetime.now()
+    timestamp_str = now.strftime("%Y-%m-%d %H:%M:%S")
+    return timestamp_str
 
 def getOppositeDirection(direction: int) -> int:
     return direction * -1
@@ -41,7 +47,7 @@ def directionToString(direction: int):
 
 def isPortalPath(startVector: Vector2, endVector: Vector2) -> bool:
     # real distance is TILESIZE * 26, but we use 24 to be safe
-    portalDistance = TILESIZE * 24
+    portalDistance = WINDOWSIZE * 24
     return abs(startVector.x - endVector.x) > portalDistance and startVector.y == endVector.y
 
 
@@ -62,4 +68,4 @@ def secondsToTime(seconds) -> str:
     hours = int(seconds // 3600)
     minutes = int((seconds % 3600) // 60)
     seconds = int(seconds % 60)
-    return f"[{hours:03}h {minutes:02}m {seconds:02}s]"
+    return f"{hours:03}h {minutes:02}m {seconds:02}s"

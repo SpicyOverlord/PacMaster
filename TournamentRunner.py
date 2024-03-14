@@ -1,212 +1,212 @@
-import math
 import random
+import sys
 import time
+from datetime import datetime
+import multiprocessing
+import os
+from multiprocessing import TimeoutError
 
-from PacMaster.Genetics.WeightContainer import WeightContainer
-from PacMaster.Genetics.WeightModifier import WeightModifier
-from PacMaster.agents.FirstRealAgent import FirstRealAgent
-from PacMaster.agents.HumanAgent import HumanAgent
-from PacMaster.agents.Iagent import IAgent
-from PacMaster.utils.debugHelper import DebugHelper
-from PacMaster.utils.runnerFunctions import calculatePerformanceOverXGames
-from PacMaster.utils.utils import secondsToTime
+import numpy as np
+
+from PacmanAgentBuilder.Utils.GameStats import GameStats
+
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+
+from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
+from PacmanAgentBuilder.Genetics.WeightModifier import WeightModifier
+from PacmanAgentBuilder.Agents.FirstRealAgent import FirstRealAgent
+from PacmanAgentBuilder.Agents.HumanAgent import HumanAgent
+from PacmanAgentBuilder.Agents.Iagent import IAgent
+from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
+from PacmanAgentBuilder.Utils.runnerFunctions import calculatePerformanceOverXGames
+from PacmanAgentBuilder.Utils.utils import secondsToTime, getCurrentTimestamp
 
 
 class TournamentRunner:
     @staticmethod
-    def startNewSimulation(agentClass: type[IAgent], populationSize: int, generationCount: int, mutationRate: float,
-                           gameCount: int):
+    def startNewTournament(agentClass: type[IAgent], populationSize: int, generationCount: int,
+                           freeGenerationCount: int, mutationRate: float,
+                           gameCount: int, cpuCount: int, timeoutSeconds: int):
+        tournamentStartTime = time.time()
+
+        logFileName = f"Tournaments/{agentClass.__name__}_{getCurrentTimestamp()}.txt"
+
+        allMembers = []
+
         totalGameCount = populationSize * generationCount * gameCount
-        finishedGameCount = 0
-        print("--- Starting new simulation ---")
-        print(f"Agent: {agentClass.__name__}")
-        print(f"{totalGameCount} games will be played over "
-              f"{generationCount} generations with a population size of {populationSize}.")
 
         bestOfEachGenerations = []
-        averageOfEachGeneration = []
 
-        # poolSize = max(min(int(populationSize * 0.1), 5), 2)
-        poolSize = int(populationSize * 0.2)
-
+        poolSize = max(int(populationSize * 0.2), 2)
         currentMutationRate = mutationRate
-        mutationRateMultiplier = (10 ** (-1 / generationCount)) * (1 / mutationRate) ** (1 / generationCount)
+        mutationRateMultiplier = (10 ** (-1 / (generationCount - freeGenerationCount))) * (1 / mutationRate) ** (
+                1 / (generationCount - freeGenerationCount))
 
-        defaultWeightContainer = WeightContainer()
-        defaultWeightContainer.addWeight('testValue', 10)
-        defaultWeightContainer.addWeight('testValue1', 10)
-        defaultWeightContainer.addWeight('testValue2', 10)
-        defaultWeightContainer.addWeight('testValue3', 10)
-        defaultWeightContainer.addWeight('testValue4', 1)
-        defaultWeightContainer.addWeight('testValue5', 1)
-        defaultWeightContainer.addWeight('testValue6', 10)
-        defaultWeightContainer.addWeight('testValue7', 10)
-        defaultWeightContainer.addWeight('testValue8', 10)
-        defaultWeightContainer.addWeight('testValue9', 10)
-        defaultWeightContainer.addWeight('testValue10', 10)
-        defaultWeightContainer.addWeight('testValue11', 10)
-        defaultWeightContainer.addWeight('testValue12', 10)
-        # defaultWeightContainer = agentClass.getDefaultWeightContainer()
-        # BestWeightContainer = agentClass.getBestWeightContainer()
+        defaultWeightContainer = agentClass.getDefaultWeightContainer()
 
         # generate random population from the default weight container from the agent
         population = []
         while len(population) < populationSize:
-            newWeightContainer = WeightModifier.mutateAll(defaultWeightContainer, 10)
+            newWeightContainer = WeightModifier.mutateAll(defaultWeightContainer, 5)
             population.append(newWeightContainer)
 
-        # only print start population
-        # for pop in population:
-        #     print(pop)
-        # exit()
+        # print start population
+        #   for pop in population:
+        #        print(pop)
+        #  exit()
 
-        agentTestingTimes = []
-        estimatedSecondsLeft = 0
+        generationTestingTime = []
+
+        constArgs = (agentClass, gameCount)
+
+        print("\n\n------------- Starting new genetic tournament -------------")
+        print(f"Starting at: {getCurrentTimestamp()}")
+        print(f"Agent: {agentClass.__name__}")
+        print(f"{totalGameCount} games will be played over "
+              f"{generationCount} generations with a population size of {populationSize}.")
+        print(f"Each agent will be tested on {gameCount} games, using {cpuCount} CPU cores.")
+
         for generation in range(generationCount):
+            print(f"\n\n------------- Generation {generation + 1} of {generationCount} -------------")
+            print(f"Started at: {getCurrentTimestamp()}")
+            print(f"Mutation rate: {currentMutationRate}")
 
-            # print(f"\n--- Generation {generation + 1} of {generationCount} ---")
-            # print(f"Mutation rate: {currentMutationRate}")
+            # don't remove thjs line!
+            stats = []
 
+            start_time = time.time()
+            # with multiprocessing.Pool(processes=cpuCount) as pool:
+            #     stats = pool.starmap(TournamentRunner.fitnessFunctionWrapper,
+            #                          [(member, constArgs) for member in population])
+            stats = TournamentRunner.parallelFitnessEvaluation(population, constArgs, timeoutSeconds, cpuCount)
+
+            end_time = time.time()
+
+            for j in range(populationSize):
+                if stats[j] is None:
+                    # print(f"Agent {j + 1} of {populationSize} timed out!")
+                    population[j].addFitness(0)
+                    continue
+
+                population[j].addFitness(stats[j]['combinedScore'])
+
+            # sort population by fitness (with stats)
+            paired_sorted_lists = sorted(zip(population, stats), key=lambda x: x[0].getFitness(), reverse=True)
+            population, stats = zip(*paired_sorted_lists)
+            population = list(population)
+            stats = list(stats)
+
+            # print stats
+            generationTimeTaken = end_time - start_time
+            generationTestingTime.append(generationTimeTaken)
+            if len(generationTestingTime) > 5:
+                generationTestingTime.pop(0)
+
+            averageGenerationTimeTaken = sum(generationTestingTime) / len(generationTestingTime)
+            estimatedSecondsLeft = (generationCount - generation) * averageGenerationTimeTaken
+
+            print("\nAgent      Fitness  Avg Lvl Comp  Survived")
             for i in range(populationSize):
-                # print(f"\nRunning agent {i + 1} of {populationSize}...   "
-                #       f"({round(finishedGameCount / (totalGameCount / 100), 1)}%)   "
-                #       f"Estimated time left: {secondsToTime(estimatedSecondsLeft)}")
-                # print(population[i])
-
-                start_time = time.time()
-
-                # stats = calculatePerformanceOverXGames(
-                #     agentClass=agentClass,
-                #     weightContainer=population[i],
-                #     gameCount=gameCount,
-                #     lockDeltaTime=True,
-                #     gameSpeed=15,
-                #     freightEnabled=True
-                # )
-                jitter = 0.1
-
-                value = TournamentRunner.valueFunction(population[i]) * random.uniform(1 - jitter, 1 + jitter)
-
-                difference = abs(value - 1000)
-                normalized_difference = 1.0 - (difference / 1000.0)
-                fitness = max(0.0, min(1.0, normalized_difference))
-
-                stats = {'combinedScore': fitness}
-
-                end_time = time.time()
-
-                finishedGameCount += gameCount
-                # print(f"Performance: {stats}")
-                population[i].addFitness(stats['combinedScore'])
-
-                # estimate seconds left until simulation is finished
-                timeTaken = end_time - start_time
-                # print(f"Time taken: {secondsToTime(timeTaken)}")
-
-                agentTestingTimes.append(timeTaken)
-                # the average time is only calculated from the last 2 generations of games.
-                # this is because as the agents improve, the games will take longer,
-                # and therefore the average will be more accurate if it only includes the most recent games.
-                if len(agentTestingTimes) > populationSize * 2:
-                    agentTestingTimes.pop(0)
-
-                averageTimeTaken = sum(agentTestingTimes) / len(agentTestingTimes)
-                estimatedSecondsLeft = (totalGameCount - finishedGameCount) / gameCount * averageTimeTaken
-
-                # sort population by fitness
-            population = WeightModifier.sortByFitness(population)
+                print("{:<10} {:<8} {:<13} {:<8}".format(
+                    f"{i + 1} of {populationSize}",
+                    population[i].getFitness(),
+                    stats[i]['averageLevelsCompleted'],
+                    population[i].getGenerationsSurvived()
+                ))
+            print(f"Generation took:     {secondsToTime(generationTimeTaken)}")
+            print(f"Estimated time left: {secondsToTime(estimatedSecondsLeft)}")
+            print(f"Current runtime:     {secondsToTime(time.time() - tournamentStartTime)}")
+            print(f"Progress:            {round(generation / (generationCount / 100), 1)}%")
 
             bestOfEachGenerations.append(population[0])
 
-            averageSum = 0
-            for i in range(populationSize):
-                averageSum += TournamentRunner.valueFunction(population[i])
-            averageSum /= populationSize
-            averageOfEachGeneration.append(averageSum)
+            print("\nBest of each generations:")
+            print("Generation Fitness Survived")
+            for j in range(len(bestOfEachGenerations)):
+                print("{:<10} {:<7} {:<8}".format(
+                    f"Gen {j + 1}",
+                    bestOfEachGenerations[j].getFitness(),
+                    bestOfEachGenerations[j].getGenerationsSurvived()
+                ))
 
-            # print top 5 of previous generation
-            # print(f"\nTop 5 of generation {generation + 1}:")
-            # for j in range(min(5, populationSize)):
-            #     print(population[j])
+            # add all members of population to all members
+            allMembers += population
+            # remove duplicates
+            allMembers = list(set(allMembers))
+            # sort all members by fitness
+            allMembers.sort(key=lambda x: x.getFitness(), reverse=True)
 
-            # print all of previous generation
-            # for pop in population:
-            #     print(pop)
+            with open(logFileName, 'w') as file:
+                file.write("{:<8} {:<13} {:<200}\n".format('Fitness', 'Gen Survived', 'Weights'))
 
-            newPopulation = TournamentRunner.generateNewPopulation(
+                for i in range(len(allMembers)):
+                    file.write("{:<8} {:<13} {:<200}\n".format(
+                        allMembers[i].getFitness(),
+                        allMembers[i].getGenerationsSurvived(),
+                        str(allMembers[i])
+                    ))
+
+            # generate new population
+            newPopulation = WeightModifier.generateNewPopulation(
                 population=population,
                 populationSize=populationSize,
                 currentMutationRate=currentMutationRate,
-                poolSize=poolSize
+                poolSize=poolSize,
+                freeGenerationCount=freeGenerationCount,
+                generation=generation
             )
             population = newPopulation
 
-            # decrease mutation rate
-            # currentMutationRate -= mutationRate / generationCount
+            # decrease mutation rate each generation
+            # skip first 5 generations
+            if generation < freeGenerationCount:
+                continue
             currentMutationRate *= mutationRateMultiplier
 
-        print("\nBest of each generations:")
-        for i in range(len(bestOfEachGenerations)):
-            print(f"Generation {i + 1}: {bestOfEachGenerations[i].getFitness()}",
-                  TournamentRunner.valueFunction(bestOfEachGenerations[i]),
-                  averageOfEachGeneration[i])
+        print(f"\nThe tournament took: {secondsToTime(time.time() - tournamentStartTime)}")
+        print(f"The tournament finished at: {getCurrentTimestamp()}")
 
     @staticmethod
-    def generateNewPopulation(population: list[WeightContainer], populationSize: int,
-                              currentMutationRate: float, poolSize: int) -> list[WeightContainer]:
-        # 10% of the new population will be the top 10% of the previous generation
-        newPopulation = population[:int(populationSize * 0.1)]
-        # newPopulation = []
-        # 90% of the new population will be a child of the previous generation
-        while len(newPopulation) < populationSize:
-            parentA = WeightModifier.tournamentSelectParent(population, poolSize)
-            parentB = WeightModifier.tournamentSelectParent(population, poolSize)
+    def parallelFitnessEvaluation(population, constArgs, timeoutSeconds, cpuCount):
+        with multiprocessing.Pool(processes=cpuCount) as pool:
+            results = [pool.apply_async(TournamentRunner.fitnessFunctionWrapper, (member, constArgs)) for member in population]
+            finished_stats = []
 
-            child = WeightModifier.randomSelectCombine(parentA, parentB)
-            child = WeightModifier.mutateRandom(child, currentMutationRate)
+            for i in range(len(results)):
+                try:
+                    finished_stats.append(results[i].get(timeout=timeoutSeconds))
+                except multiprocessing.TimeoutError:
+                    print(f"An agent timed out!")
+                    finished_stats.append(GameStats.getEmpty())
 
-            newPopulation.append(child)
-
-        return newPopulation
+            return finished_stats
 
     @staticmethod
-    def valueFunction(weights: WeightContainer):
-        x0 = weights.getWeight('testValue')
-        x1 = weights.getWeight('testValue1')
-        x2 = weights.getWeight('testValue2')
-        x3 = weights.getWeight('testValue3')
-        x4 = weights.getWeight('testValue4')
-        x5 = weights.getWeight('testValue5')
-        x6 = weights.getWeight('testValue6')
-        x7 = weights.getWeight('testValue7')
-        x8 = weights.getWeight('testValue8')
-        x9 = weights.getWeight('testValue9')
-        x10 = weights.getWeight('testValue10')
-        x11 = weights.getWeight('testValue11')
-        x12 = weights.getWeight('testValue12')
+    def fitnessFunctionWrapper(member, args):
+        DebugHelper.disable()
 
-        result = math.sin(x0) ** 2 + math.cos(x1) * x2 + math.log(1 + x5 ** 2)
-        result += math.sqrt(abs(x6)) * math.tanh(x7 ** 2 - x8) * x9 ** (1 / 3)
+        agentClass = args[0]
+        gameCount = args[1]
 
-        if x10 > 0:
-            result += x10 ** 2.7 / math.log(x10 + 2)
-        else:
-            result -= math.cosh(x10) * math.atan(x11)
+        stats = calculatePerformanceOverXGames(
+            agentClass=agentClass,
+            weightContainer=member,
+            gameCount=gameCount,
+            lockDeltaTime=True
+        )
 
-        if x11 < 0:
-            result += (x11 ** 2 + x12) ** 0.5
-        else:
-            result -= x12 * math.exp(-x11)
-
-        for i in range(1, 5):
-            result += (x4 ** i) / (i + x6) * math.sinh(x5 * i)
-
-        result += sum(math.sin(x0 + i) * math.cos(x1 * i) for i in range(1, 6))
-
-        result *= (1 + math.erf(x2 * x3 - x4 * x5 + x6 * x7 - x8 * x9 + x10 * x11 - x12))
-
-        return result
+        return stats
 
 
-DebugHelper.disable()
-TournamentRunner.startNewSimulation(FirstRealAgent, 50, 40, 1.5, 30)
+if __name__ == "__main__":
+    DebugHelper.disable()
+    TournamentRunner.startNewTournament(
+        agentClass=FirstRealAgent,
+        populationSize=40,
+        freeGenerationCount=5,
+        generationCount=50,
+        mutationRate=3,
+        gameCount=50,
+        cpuCount=4,  # multiprocessing.cpu_count(),
+        timeoutSeconds=30*60
+    )

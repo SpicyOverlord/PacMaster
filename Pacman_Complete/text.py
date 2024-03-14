@@ -1,3 +1,5 @@
+import os
+
 import pygame
 from Pacman_Complete.vector import Vector2
 from Pacman_Complete.constants import *
@@ -15,7 +17,7 @@ class Text(object):
         self.lifespan = time
         self.label = None
         self.destroy = False
-        self.setupFont("Pacman_Complete/PressStart2P-Regular.ttf")
+        self.setupFont(os.path.join("Pacman_Complete", "PressStart2P-Regular.ttf"))
         self.createLabel()
 
     def setupFont(self, fontpath):

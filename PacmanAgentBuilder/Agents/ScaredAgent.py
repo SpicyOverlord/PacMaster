@@ -1,22 +1,19 @@
 import pygame
 
-from PacMaster.Genetics.WeightContainer import WeightContainer
-from PacMaster.agents.Iagent import IAgent
-from PacMaster.utils.debugHelper import DebugHelper
-from PacMaster.utils.map import MapNode
-from PacMaster.utils.observation import Observation
+from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
+from PacmanAgentBuilder.Agents.Iagent import IAgent
+from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
+from PacmanAgentBuilder.Utils.Map import MapNode
+from PacmanAgentBuilder.Utils.observation import Observation
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Ghost
 
 
 class ScaredAgent(IAgent):
     def __init__(self, gameController, weightContainer: WeightContainer = None):
-        super().__init__(gameController)
+        super().__init__(gameController, weightContainer=weightContainer)
 
-    def calculateNextMove(self):
-        obs = Observation(self.gameController)
-        self.takeStats(obs)
-
+    def calculateNextMove(self, obs: Observation):
         pacmanPosition = obs.getPacmanPosition()
         mapPos = obs.map.createMapPosition(pacmanPosition)
 

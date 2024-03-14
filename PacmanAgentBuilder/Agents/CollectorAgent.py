@@ -3,33 +3,20 @@ import random
 import pygame
 from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
 
-from PacMaster.Genetics.WeightContainer import WeightContainer
-from PacMaster.agents.Iagent import IAgent
-from PacMaster.utils.debugHelper import DebugHelper
-from PacMaster.utils.map import MapNode
-from PacMaster.utils.observation import Observation
-from PacMaster.utils.utils import *
+from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
+from PacmanAgentBuilder.Agents.Iagent import IAgent
+from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
+from PacmanAgentBuilder.Utils.observation import Observation
+from PacmanAgentBuilder.Utils.utils import *
 from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
 
 
 class CollectorAgent(IAgent):
     def __init__(self, gameController, weightContainer: WeightContainer = None):
-        super().__init__(gameController)
+        super().__init__(gameController, weightContainer=weightContainer)
 
-    def calculateNextMove(self):
-        obs = Observation(self.gameController)
-        self.takeStats(obs)
-
-        key_pressed = pygame.key.get_pressed()
-        if key_pressed[K_UP]:
-            return UP
-        if key_pressed[K_DOWN]:
-            return DOWN
-        if key_pressed[K_LEFT]:
-            return LEFT
-        if key_pressed[K_RIGHT]:
-            return RIGHT
+    def calculateNextMove(self, obs: Observation):
 
         # DebugHelper.drawMap(obs)
         # DebugHelper.drawPelletLevels(obs)
@@ -64,7 +51,7 @@ class CollectorAgent(IAgent):
 
             pelletsInPath = obs.getPelletCountInPath(path)
 
-            pathPelletLevel = obs.calculatePelletLevel(endMapNode.position) * (pelletsInPath + 1)
+            pathPelletLevel = obs.calculatePelletLevel(endMapNode.position, self.weightContainer) * (pelletsInPath + 1)
             if pathPelletLevel > maxPelletLevel:
                 maxPelletLevel = pathPelletLevel
                 maxPelletDirection = neighborContainer.direction
