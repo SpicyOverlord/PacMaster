@@ -22,5 +22,5 @@ ssh -t root@192.168.1.50 'cd /root/PacMaster; git pull'
 
 ### Copy Tournament data to local machine
 ```shell
-scp -r root@192.168.1.50:/root/PacMaster/Tournaments /Users/frederik/Home/Python/PacMaster
+rsync -avz --progress root@192.168.1.50:/root/PacMaster/Tournaments/ /Users/frederik/Home/Python/PacMaster/Tournaments
 ```
