@@ -206,7 +206,7 @@ if __name__ == "__main__":
         populationSize=40,
         freeGenerationCount=5,
         generationCount=50,
-        savePercentage=0,
+        savePercentage=10,
         mutationRate=3,
         gameCount=50,
         cpuCount=4,  # multiprocessing.cpu_count(),
