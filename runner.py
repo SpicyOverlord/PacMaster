@@ -3,6 +3,7 @@ import os
 import numpy as np
 
 from PacmanAgentBuilder.Agents.CollectorAgent import CollectorAgent
+from PacmanAgentBuilder.Agents.CollectorAgent2 import CollectorAgent2
 from PacmanAgentBuilder.Agents.FinalAgent import FinalAgent
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
@@ -15,7 +16,8 @@ if __name__ == "__main__":
     # DebugHelper.disable()
 
     # agentClass = FirstRealAgent
-    agentClass = FinalAgent
+    # agentClass = FinalAgent
+    agentClass = CollectorAgent2
 
     stats = calculatePerformanceOverXGames(
         agentClass=agentClass,
@@ -27,10 +29,10 @@ if __name__ == "__main__":
         #      'ghostInDangerZoneMultiplier': 18.06, 'closestGhostMultiplier': 0.032, 'ghostIsCloserMultiplier': 0.124,
         #      'edgeMultiplier': 2.307}),
         gameCount=50,
-        gameSpeed=1,
+        gameSpeed=3,
         startLevel=0,
         startLives=3,
-        ghostsEnabled=True,
+        ghostsEnabled=False,
         freightEnabled=True,
         lockDeltaTime=False,
         logging=True

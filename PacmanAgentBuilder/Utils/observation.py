@@ -66,6 +66,7 @@ class Observation(object):
         """
         return [neighbor for neighbor in node.neighbors.values() if neighbor is not None]
 
+
     # ------------------ Pellet Functions ------------------
     def getPelletPositions(self) -> list[Vector2]:
         """
@@ -80,12 +81,13 @@ class Observation(object):
         return [powerPellet.position for powerPellet in self.pelletGroup.powerpellets]
 
     def getNearestPelletPosition(self) -> Vector2:
+        pacmanPosition = self.getPacmanPosition()
         nearestPelletPosition = min(self.getPelletPositions(),
-                                    key=lambda pellet: manhattanDistance(pellet, self.getPacmanPosition()),
+                                    key=lambda pellet: manhattanDistance(pellet, pacmanPosition),
                                     default=None)
         # in the rare case that the game hasn't registered that all pellets have been eaten.
         if nearestPelletPosition is None:
-            return self.getPacmanPosition()
+            return pacmanPosition
         return nearestPelletPosition
 
     def getNearestPowerPelletPosition(self) -> Vector2:

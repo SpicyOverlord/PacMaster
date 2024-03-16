@@ -45,9 +45,20 @@ class TournamentRunner:
         defaultWeightContainer = agentClass.getDefaultWeightContainer()
 
         # generate random population from the default weight container from the agent
+        prePopulation = []
+        prePopulation.append(WeightContainer({'fleeThreshold': 0.05, 'pelletLevelDistance': 15.939, 'wayTooCloseThreshold': 16.024, 'tooCloseThreshold': 71.731, 'tooFarAwayThreshold': 2069.434, 'wayTooCloseValue': 3089.918, 'tooCloseValue': 1456.791, 'dangerZoneMultiplier': 0.005, 'dangerZoneMiddleMapNodeMultiplier': 0.001, 'ghostInDangerZoneMultiplier': 5.431, 'closestGhostMultiplier': 0.144, 'ghostIsCloserMultiplier': 2.208, 'edgeMultiplier': 3.232}))
+        prePopulation.append(WeightContainer({'fleeThreshold': 0.168, 'pelletLevelDistance': 3.438, 'wayTooCloseThreshold': 70.268, 'tooCloseThreshold': 0.008, 'tooFarAwayThreshold': 2039.184, 'wayTooCloseValue': 394.23, 'tooCloseValue': 195.778, 'dangerZoneMultiplier': 1.123, 'dangerZoneMiddleMapNodeMultiplier': 0.757, 'ghostInDangerZoneMultiplier': 0.0, 'closestGhostMultiplier': 0.0, 'ghostIsCloserMultiplier': 5.169, 'edgeMultiplier': 4.045}))
+        prePopulation.append(WeightContainer({'fleeThreshold': 0.45, 'pelletLevelDistance': 312.675, 'wayTooCloseThreshold': 1.59, 'tooCloseThreshold': 72.969, 'tooFarAwayThreshold': 2956.632, 'wayTooCloseValue': 2410.48, 'tooCloseValue': 167.061, 'dangerZoneMultiplier': 3.798, 'dangerZoneMiddleMapNodeMultiplier': 1.073, 'ghostInDangerZoneMultiplier': 12.56, 'closestGhostMultiplier': 83.481, 'ghostIsCloserMultiplier': 10.784, 'edgeMultiplier': 0.048}))
+        prePopulation.append(WeightContainer({'fleeThreshold': 0.008, 'pelletLevelDistance': 0.702, 'wayTooCloseThreshold': 25.613, 'tooCloseThreshold': 0.003, 'tooFarAwayThreshold': 4857.633, 'wayTooCloseValue': 412.091, 'tooCloseValue': 250.258, 'dangerZoneMultiplier': 1.431, 'dangerZoneMiddleMapNodeMultiplier': 0.458, 'ghostInDangerZoneMultiplier': 0.0, 'closestGhostMultiplier': 0.0, 'ghostIsCloserMultiplier': 10.304, 'edgeMultiplier': 2.237}))
+        prePopulation.append(WeightContainer({'fleeThreshold': 2.16801, 'pelletLevelDistance': 198.84966, 'wayTooCloseThreshold': 0.88123, 'tooCloseThreshold': 13.33625, 'tooFarAwayThreshold': 3493.55815, 'wayTooCloseValue': 1097.04523, 'tooCloseValue': 125.08157, 'dangerZoneMultiplier': 0.48795, 'dangerZoneMiddleMapNodeMultiplier': 9.13484, 'ghostInDangerZoneMultiplier': 7.81239, 'closestGhostMultiplier': 2.74904, 'ghostIsCloserMultiplier': 1.95321, 'edgeMultiplier': 3.87434}))
+        prePopulation.append(WeightContainer({'fleeThreshold': 0.32246, 'pelletLevelDistance': 77.53889, 'wayTooCloseThreshold': 98.53012, 'tooCloseThreshold': 30.01019, 'tooFarAwayThreshold': 2070.39002, 'wayTooCloseValue': 579.86987, 'tooCloseValue': 415.81436, 'dangerZoneMultiplier': 4.13483, 'dangerZoneMiddleMapNodeMultiplier': 0.49617, 'ghostInDangerZoneMultiplier': 3.33331, 'closestGhostMultiplier': 2.33804, 'ghostIsCloserMultiplier': 1.69757, 'edgeMultiplier': 4.61846}))
+        prePopulation.append(WeightContainer({'fleeThreshold': 0.39279, 'pelletLevelDistance': 88.72579, 'wayTooCloseThreshold': 200.40252, 'tooCloseThreshold': 4022.7341, 'tooFarAwayThreshold': 1.38749, 'wayTooCloseValue': 1442.67563, 'tooCloseValue': 26916.95258, 'dangerZoneMultiplier': 11.50758, 'dangerZoneMiddleMapNodeMultiplier': 0.17607, 'ghostInDangerZoneMultiplier': 0.39696, 'closestGhostMultiplier': 10.04529, 'ghostIsCloserMultiplier': 0.26899, 'edgeMultiplier': 1.83389}))
+        prePopulation.append(defaultWeightContainer)
         population = []
+        population.extend(prePopulation)
+
         while len(population) < populationSize:
-            newWeightContainer = WeightModifier.mutateAll(defaultWeightContainer, 5)
+            newWeightContainer = WeightModifier.mutateAll(random.choice(prePopulation), 5)
             population.append(newWeightContainer)
 
         # print start population
@@ -204,7 +215,7 @@ if __name__ == "__main__":
     TournamentRunner.startNewTournament(
         agentClass=FirstRealAgent,
         populationSize=40,
-        freeGenerationCount=5,
+        freeGenerationCount=0,
         generationCount=50,
         savePercentage=10,
         mutationRate=3,
