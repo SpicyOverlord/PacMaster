@@ -15,24 +15,25 @@ from PacmanAgentBuilder.Utils.runnerFunctions import *
 if __name__ == "__main__":
     # DebugHelper.disable()
 
-    # agentClass = FirstRealAgent
+    agentClass = FirstRealAgent
     # agentClass = FinalAgent
-    agentClass = CollectorAgent2
+    # agentClass = CollectorAgent2
 
     stats = calculatePerformanceOverXGames(
         agentClass=agentClass,
-        weightContainer=agentClass.getDefaultWeightContainer(),
-        # weightContainer=WeightContainer(
-        #     {'fleeThreshold': 0.093, 'pelletLevelDistance': 31.92, 'wayTooCloseThreshold': 54.865,
-        #      'tooCloseThreshold': 0.006, 'tooFarAwayThreshold': 14.209, 'wayTooCloseValue': 9474.625,
-        #      'tooCloseValue': 46296.786, 'dangerZoneMultiplier': 0.021, 'dangerZoneMiddleMapNodeMultiplier': 0.0,
-        #      'ghostInDangerZoneMultiplier': 18.06, 'closestGhostMultiplier': 0.032, 'ghostIsCloserMultiplier': 0.124,
-        #      'edgeMultiplier': 2.307}),
-        gameCount=50,
-        gameSpeed=3,
+        # weightContainer=agentClass.getDefaultWeightContainer(),
+        weightContainer=WeightContainer(
+            {'fleeThreshold': 0.01119, 'pelletLevelDistance': 2.83253, 'wayTooCloseThreshold': 32.68235,
+             'tooCloseThreshold': 8e-05, 'tooFarAwayThreshold': 1219.81699, 'wayTooCloseValue': 352.64291,
+             'tooCloseValue': 87.99661, 'dangerZoneMultiplier': 8.68754, 'dangerZoneMiddleMapNodeMultiplier': 0.00206,
+             'ghostInDangerZoneMultiplier': 0.0, 'closestGhostMultiplier': 0.0, 'ghostIsCloserMultiplier': 3.11343,
+             'edgeMultiplier': 1.75577}
+        ),
+        gameCount=200,
+        gameSpeed=1,
         startLevel=0,
         startLives=3,
-        ghostsEnabled=False,
+        ghostsEnabled=True,
         freightEnabled=True,
         lockDeltaTime=False,
         logging=True
