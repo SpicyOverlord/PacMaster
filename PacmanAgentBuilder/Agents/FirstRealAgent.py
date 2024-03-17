@@ -1,4 +1,5 @@
 import random
+from time import sleep
 
 import pygame
 from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
@@ -20,6 +21,8 @@ class FirstRealAgent(IAgent):
 
     def calculateNextMove(self, obs: Observation):
         mapPos = obs.map.createMapPosition(obs.getPacmanPosition())
+
+        # sleep(0.03)
 
         if self.isInDanger(obs, mapPos):
             return self.flee(obs, mapPos)

@@ -29,12 +29,12 @@ if __name__ == "__main__":
              'ghostInDangerZoneMultiplier': 0.0, 'closestGhostMultiplier': 0.0, 'ghostIsCloserMultiplier': 3.11343,
              'edgeMultiplier': 1.75577}
         ),
-        gameCount=200,
+        gameCount=100,
         gameSpeed=1,
         startLevel=0,
         startLives=3,
         ghostsEnabled=True,
         freightEnabled=True,
-        lockDeltaTime=False,
+        lockDeltaTime=True,
         logging=True
     )

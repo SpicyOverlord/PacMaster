@@ -53,6 +53,7 @@ class TournamentRunner:
         prePopulation.append(WeightContainer({'fleeThreshold': 2.16801, 'pelletLevelDistance': 198.84966, 'wayTooCloseThreshold': 0.88123, 'tooCloseThreshold': 13.33625, 'tooFarAwayThreshold': 3493.55815, 'wayTooCloseValue': 1097.04523, 'tooCloseValue': 125.08157, 'dangerZoneMultiplier': 0.48795, 'dangerZoneMiddleMapNodeMultiplier': 9.13484, 'ghostInDangerZoneMultiplier': 7.81239, 'closestGhostMultiplier': 2.74904, 'ghostIsCloserMultiplier': 1.95321, 'edgeMultiplier': 3.87434}))
         prePopulation.append(WeightContainer({'fleeThreshold': 0.32246, 'pelletLevelDistance': 77.53889, 'wayTooCloseThreshold': 98.53012, 'tooCloseThreshold': 30.01019, 'tooFarAwayThreshold': 2070.39002, 'wayTooCloseValue': 579.86987, 'tooCloseValue': 415.81436, 'dangerZoneMultiplier': 4.13483, 'dangerZoneMiddleMapNodeMultiplier': 0.49617, 'ghostInDangerZoneMultiplier': 3.33331, 'closestGhostMultiplier': 2.33804, 'ghostIsCloserMultiplier': 1.69757, 'edgeMultiplier': 4.61846}))
         prePopulation.append(WeightContainer({'fleeThreshold': 0.39279, 'pelletLevelDistance': 88.72579, 'wayTooCloseThreshold': 200.40252, 'tooCloseThreshold': 4022.7341, 'tooFarAwayThreshold': 1.38749, 'wayTooCloseValue': 1442.67563, 'tooCloseValue': 26916.95258, 'dangerZoneMultiplier': 11.50758, 'dangerZoneMiddleMapNodeMultiplier': 0.17607, 'ghostInDangerZoneMultiplier': 0.39696, 'closestGhostMultiplier': 10.04529, 'ghostIsCloserMultiplier': 0.26899, 'edgeMultiplier': 1.83389}))
+        prePopulation.append(WeightContainer({'fleeThreshold': 0.01119, 'pelletLevelDistance': 2.83253, 'wayTooCloseThreshold': 32.68235, 'tooCloseThreshold': 8e-05, 'tooFarAwayThreshold': 1219.81699, 'wayTooCloseValue': 352.64291, 'tooCloseValue': 87.99661, 'dangerZoneMultiplier': 8.68754, 'dangerZoneMiddleMapNodeMultiplier': 0.00206, 'ghostInDangerZoneMultiplier': 0.0, 'closestGhostMultiplier': 0.0, 'ghostIsCloserMultiplier': 3.11343, 'edgeMultiplier': 1.75577}))
         prePopulation.append(defaultWeightContainer)
         population = []
         population.extend(prePopulation)
@@ -216,7 +217,7 @@ if __name__ == "__main__":
         agentClass=FirstRealAgent,
         populationSize=40,
         freeGenerationCount=0,
-        generationCount=50,
+        generationCount=30,
         savePercentage=10,
         mutationRate=3,
         gameCount=50,
