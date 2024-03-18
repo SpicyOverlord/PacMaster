@@ -24,59 +24,135 @@ class FinalAgent(IAgent):
         # sleep(0.03)
         # DebugHelper.drawMap(obs)
         # DebugHelper.drawDangerZone(mapPos.dangerZone)
-        self.findPelletIslands(obs)
 
+        # TODO remove this!
+        return self.flee(obs, mapPos)
+
+        # if in danger, flee
         if self.isInDanger(obs, mapPos):
             return self.flee(obs, mapPos)
 
-        elif self.isOnNode(mapPos):
-            return self.collect(obs)
-
-        # don't change direction
-        return STOP
-
-    def isOnNode(self, mapPos: MapPosition) -> bool:
-        return not mapPos.isBetweenMapNodes
+        # else, collect pellets
+        return self.collect(obs)
 
     def isInDanger(self, obs: Observation, mapPos: MapPosition) -> bool:
         dangerLevel = self.calculateDangerLevel(obs, mapPos, mapPos.mapNode1.position, self.weightContainer)
         if mapPos.isBetweenMapNodes:
-            dangerLevel = max(dangerLevel,
-                              self.calculateDangerLevel(obs, mapPos, mapPos.mapNode2.position,
-                                                        self.weightContainer))
+            dangerLevel = max(
+                dangerLevel,
+                self.calculateDangerLevel(obs, mapPos, mapPos.mapNode2.position, self.weightContainer)
+            )
 
         return dangerLevel > self.weightContainer.get('fleeThreshold')
 
-    def collect(self, obs: Observation) -> int:
-        startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
+    def collect(self, obs: Observation):
+        pacmanPosition = obs.getPacmanPosition()
 
-        maxPelletLevel = 0
-        maxPelletDirection = STOP
-        for neighborContainer in startMapNode.neighborContainers:
-            endMapNode, path, distance = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode,
-                                                                                     neighborContainer.direction)
+        nextPos = self.calculatePelletTargetPosition(obs)
+        nextPosMapPosition = obs.map.createMapPosition(nextPos)
+        DebugHelper.drawDot(nextPos, 3, DebugHelper.RED)
 
-            if obs.isGhostInPath(path):
+        paths = [
+            obs.map.calculateShortestPath(pacmanPosition, nextPosMapPosition.mapNode1.position),
+            obs.map.calculateShortestPath(pacmanPosition, nextPosMapPosition.mapNode2.position)
+            if nextPosMapPosition.isBetweenMapNodes else (None, float('inf'))
+        ]
+
+        # Prefer path that includes nextPos and has the shortest distance
+        preferred_path, preferred_distance = None, float('inf')
+
+        for path, distance in paths:
+            if path and obs.isVectorInPath(path, nextPos) and (preferred_path is None or distance < preferred_distance):
+                preferred_path, preferred_distance = path, distance
+
+        # If no path includes nextPos or if both paths have been calculated and neither includes nextPos,
+        # choose the shorter path
+        if preferred_path is None:
+            preferred_path, preferred_distance = min(paths, key=lambda x: x[1])
+
+        # Draw the preferred path and return direction of the second point
+        if preferred_path and len(preferred_path) > 1:
+            DebugHelper.drawPath(preferred_path, DebugHelper.YELLOW, 10)
+            return self.getDirection(obs, preferred_path[1])
+        else:
+            # If there is no path or the path doesn't have a second point, move towards nextPos directly
+            return self.getDirection(obs, nextPos)
+
+    def calculatePelletTargetPosition(self, obs: Observation):
+        pelletPositions = obs.getPelletPositions()
+        pelletIslandDistance = self.weightContainer.get('PelletIslandDistance')
+
+        colors = [DebugHelper.GREEN, DebugHelper.RED, DebugHelper.BLUE, DebugHelper.YELLOW,
+                  DebugHelper.PURPLE, DebugHelper.LIGHTBLUE]
+
+        visited = set()
+        islands = []
+        for pelletPosition in pelletPositions:
+            if pelletPosition.asTuple() in visited:
                 continue
 
-            pelletsInPath = obs.getPelletCountInPath(path)
+            island = []
+            queue = [pelletPosition.asTuple()]
+            while queue:
+                current = queue.pop(0)
 
-            pathPelletLevel = self.calculatePelletLevel(obs, endMapNode.position, self.weightContainer) * (
-                    pelletsInPath + 1)
+                if current in visited:
+                    continue
 
-            if pathPelletLevel > maxPelletLevel:
-                maxPelletLevel = pathPelletLevel
-                maxPelletDirection = neighborContainer.direction
+                currentPosition = Vector2(current[0], current[1])
 
-        if maxPelletLevel <= 1:
-            nearestPelletPosition = obs.getNearestPelletPosition()
-            nearestPelletMapNode = obs.map.getNearestMapNode(nearestPelletPosition, snapToGrid=False)
-            pelletPath, _ = obs.map.calculateShortestPath(startMapNode.position, nearestPelletMapNode.position)
+                visited.add(current)
+                island.append(currentPosition)
 
-            if len(pelletPath) >= 2:
-                maxPelletDirection = self.__getDirection__(obs, pelletPath[1])
+                for pelletPosition2 in pelletPositions:
+                    if (abs(currentPosition.x - pelletPosition2.x) < pelletIslandDistance and
+                            abs(currentPosition.y - pelletPosition2.y) < pelletIslandDistance):
+                        pelletTuple2 = pelletPosition2.asTuple()
+                        if pelletTuple2 in visited:
+                            continue
+                        queue.append(pelletTuple2)
 
-        return maxPelletDirection
+            islands.append(island)
+
+        # calculate the distance to each island
+        pacmanPosition = obs.getPacmanPosition()
+        islandDistances = []
+        closestIslandPositions = []
+        for i, island in enumerate(islands):
+            minDistance = 999999
+            minPosition = None
+            for position in island:
+                distance = manhattanDistance(pacmanPosition, position)
+                if distance < minDistance:
+                    minDistance = distance
+                    minPosition = position
+
+            islandDistances.append(minDistance)
+            closestIslandPositions.append(minPosition)
+
+        # find island with the highest value
+        bestIslandValue = 0
+        bestIslandIndex = 0
+        islandSizeMultiplier = self.weightContainer.get('IslandSizeMultiplier')
+        islandDistanceMultiplier = self.weightContainer.get('IslandDistanceMultiplier')
+        for i, island in enumerate(islands):
+            islandValue = (islandSizeMultiplier / len(island)) * (islandDistanceMultiplier / (islandDistances[i] + 1))
+
+            if islandValue > bestIslandValue:
+                bestIslandValue = islandValue
+                bestIslandIndex = i
+
+        # draw highlight for the best island
+        for position in islands[bestIslandIndex]:
+            DebugHelper.drawDot(position, 5, DebugHelper.WHITE)
+            pass
+        # draw all islands in different colors
+        for i, island in enumerate(islands):
+            for position in island:
+                DebugHelper.drawDot(position, 4, colors[i % 6])
+                pass
+
+        return closestIslandPositions[bestIslandIndex]
 
     def flee(self, obs: Observation, mapPos: MapPosition) -> int:
         startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
@@ -100,18 +176,6 @@ class FinalAgent(IAgent):
                 minDangerDirection = neighborContainer.direction
 
         return minDangerDirection
-
-    def calculatePelletLevel(self, obs: Observation, vector: Vector2, weights: WeightContainer) -> float:
-        for pellet in obs.pelletGroup.pelletList:
-            dist = manhattanDistance(pellet.position, vector)
-            if dist < weights.get('pelletLevelDistance'):
-                return 1.0
-        for powerPellet in obs.pelletGroup.powerpellets:
-            dist = manhattanDistance(powerPellet.position, vector)
-            if dist < weights.get('pelletLevelDistance'):
-                return 1.0
-
-        return 1.0 / 100000.0
 
     def calculateDangerLevel(self, obs: Observation, mapPos: MapPosition,
                              vector: Vector2, weights: WeightContainer) -> float:
@@ -213,7 +277,7 @@ class FinalAgent(IAgent):
         #     print("YES")
         return round(normalizedDanger, 5)
 
-    def __getDirection__(self, obs: Observation, vector: Vector2) -> int:
+    def getDirection(self, obs: Observation, vector: Vector2) -> int:
         pacmanPosition = obs.getPacmanPosition()
         if pacmanPosition.y == vector.y:
             if pacmanPosition.x < vector.x:
@@ -228,27 +292,32 @@ class FinalAgent(IAgent):
 
     @staticmethod
     def getBestWeightContainer() -> WeightContainer:
-        return WeightContainer({
-            'fleeThreshold': 5,
-            'pelletLevelDistance': 0.702,
-            'tooCloseThreshold': 25.613,
-            'tooCloseValue': 412.091,
-            'tooFarAwayThreshold': 4857.633,
-            'dangerZoneMultiplier': 1.431,
-            'dangerZoneMiddleMapNodeMultiplier': 0.458,
-            'ghostIsCloserMultiplier': 10.304,
-            'edgeMultiplier': 2.237,
-
-            'pelletLevelDistanceInDangerLevel': 60,
-            'pelletsInDangerLevelMultiplier': 1,
-            'distanceToPacManMultiplier': 1,
-
-            'ghostMultiplier': 10,
-            'blinky': 1,
-            'pinky': 1,
-            'inky': 1,
-            'clyde': 1,
-        })
+        return None
+        # return WeightContainer({
+        #     'fleeThreshold': 10,
+        #     'pelletLevelDistance': 0.702,
+        #     'tooCloseThreshold': 25.613,
+        #     'tooCloseValue': 412.091,
+        #     'tooFarAwayThreshold': 4857.633,
+        #     'dangerZoneMultiplier': 1.431,
+        #     'dangerZoneMiddleMapNodeMultiplier': 0.458,
+        #     'ghostIsCloserMultiplier': 10.304,
+        #     'edgeMultiplier': 2.237,
+        #
+        #     'pelletLevelDistanceInDangerLevel': 60,
+        #     'pelletsInDangerLevelMultiplier': 1,
+        #     'distanceToPacManMultiplier': 1,
+        #
+        #     'PelletIslandDistance': 30,
+        #     'IslandSizeMultiplier': 10,
+        #     'IslandDistanceMultiplier': 100,
+        #
+        #     'ghostMultiplier': 10,
+        #     'blinky': 1,
+        #     'pinky': 1,
+        #     'inky': 1,
+        #     'clyde': 1,
+        # })
 
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
@@ -266,6 +335,10 @@ class FinalAgent(IAgent):
             'pelletLevelDistanceInDangerLevel': 60,
             'pelletsInDangerLevelMultiplier': 1,
             'distanceToPacManMultiplier': 1,
+
+            'PelletIslandDistance': 30,
+            'IslandSizeMultiplier': 10,
+            'IslandDistanceMultiplier': 100,
 
             'ghostMultiplier': 10,
             'blinky': 5,

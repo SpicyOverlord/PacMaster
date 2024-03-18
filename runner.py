@@ -17,12 +17,12 @@ if __name__ == "__main__":
     # DebugHelper.disable()
 
     # agentClass = FirstRealAgent
-    # agentClass = FinalAgent
-    agentClass = CollectorAgent2
+    agentClass = FinalAgent
+    # agentClass = CollectorAgent2
 
     stats = calculatePerformanceOverXGames(
         agentClass=agentClass,
-        weightContainer=agentClass.getBestWeightContainer(),
+        weightContainer=agentClass.getDefaultWeightContainer(),
         # weightContainer=WeightContainer(
         #     {'fleeThreshold': 0.01012, 'pelletLevelDistance': 3.63027, 'wayTooCloseThreshold': 35.26691,
         #      'tooCloseThreshold': 0.003, 'tooFarAwayThreshold': 2496.83669, 'wayTooCloseValue': 597.86046,
@@ -31,10 +31,10 @@ if __name__ == "__main__":
         #      'edgeMultiplier': 2.25542}
         # ),
         gameCount=50,
-        gameSpeed=3,
+        gameSpeed=1,
         startLevel=0,
         startLives=1,
-        ghostsEnabled=False,
+        ghostsEnabled=True,
         freightEnabled=True,
         lockDeltaTime=False,
         logging=True

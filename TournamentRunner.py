@@ -60,7 +60,7 @@ class TournamentRunner:
         population.extend(prePopulation)
 
         while len(population) < populationSize:
-            newWeightContainer = WeightModifier.mutateAll(random.choice(prePopulation), 5)
+            newWeightContainer = WeightModifier.mutateAll(random.choice(prePopulation), 2)
             population.append(newWeightContainer)
 
         # print start population

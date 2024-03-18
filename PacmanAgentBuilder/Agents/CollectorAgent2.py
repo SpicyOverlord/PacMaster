@@ -31,6 +31,9 @@ class CollectorAgent2(IAgent):
         if key_pressed[K_RIGHT]:
             return RIGHT
 
+        return self.collect(obs)
+
+    def collect(self, obs: Observation):
         pacmanPosition = obs.getPacmanPosition()
 
         nextPos = self.calculateNearestIslandPosition(obs)
@@ -63,32 +66,6 @@ class CollectorAgent2(IAgent):
             # If there is no path or the path doesn't have a second point, move towards nextPos directly
             return self.getDirection(obs, nextPos)
 
-        # path, distance = obs.map.calculateShortestPath(pacmanPosition, nextPosMapPosition.mapNode1.position)
-        # nextPosIsInPath = obs.isVectorInPath(path, nextPos)
-        # paths = [(path, distance, nextPosIsInPath)]
-        # if nextPosMapPosition.isBetweenMapNodes:
-        #     path2, distance2 = obs.map.calculateShortestPath(pacmanPosition, nextPosMapPosition.mapNode2.position)
-        #     nextPosIsInPath = obs.isVectorInPath(path, nextPos)
-        #     paths.append((path2, distance2, nextPosIsInPath))
-        #
-        # bestPath = None
-        # minDistance = 99999
-        # pointInPath = False
-        # for path in paths:
-        #     if len(path[0]) < 2:
-        #         continue
-        #     if path[1] < minDistance and (not pointInPath or pointInPath and path[2]):
-        #         bestPath = path[0]
-        #         minDistance = path[1]
-        #         pointInPath = path[2]
-        #         continue
-        #
-        # if bestPath is None:
-        #     return self.getDirection(obs, nextPos)
-        #
-        # DebugHelper.drawPath(bestPath, DebugHelper.YELLOW, 10)
-        # return self.getDirection(obs, bestPath[1])
-
     def calculateNearestIslandPosition(self, obs: Observation):
         pelletPositions = obs.getPelletPositions()
 
@@ -115,8 +92,8 @@ class CollectorAgent2(IAgent):
                 island.append(currentPosition)
 
                 for pelletPosition2 in pelletPositions:
-                    if (abs(currentPosition.x - pelletPosition2.x) < self.weightContainer.get('maxIslandDistance') and
-                            abs(currentPosition.y - pelletPosition2.y) < self.weightContainer.get('maxIslandDistance')):
+                    if (abs(currentPosition.x - pelletPosition2.x) < 30 and
+                            abs(currentPosition.y - pelletPosition2.y) < 30):
                         pelletTuple2 = pelletPosition2.asTuple()
                         if pelletTuple2 in visited:
                             continue
