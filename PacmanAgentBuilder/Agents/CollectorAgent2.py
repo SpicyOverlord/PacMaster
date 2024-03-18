@@ -16,15 +16,10 @@ class CollectorAgent2(IAgent):
     def __init__(self, gameController, weightContainer: WeightContainer = None):
         super().__init__(gameController, weightContainer=weightContainer)
 
-        self.pelletTarget = None
-
     def calculateNextMove(self, obs: Observation):
 
         # DebugHelper.drawMap(obs)
         # DebugHelper.drawPelletLevels(obs)
-
-        nextPos = self.calculateNearestIslandPosition(obs)
-        DebugHelper.drawDot(nextPos, 3, DebugHelper.RED)
 
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_UP]:
@@ -37,40 +32,62 @@ class CollectorAgent2(IAgent):
             return RIGHT
 
         pacmanPosition = obs.getPacmanPosition()
-        # mapPos = obs.map.createMapPosition(pacmanPosition)
-        # if mapPos.isBetweenMapNodes:
-        #     return STOP
 
-        if self.pelletTarget is None:
-            nextPosMapPosition = obs.map.createMapPosition(nextPos)
-            path, distance = obs.map.calculateShortestPath(pacmanPosition, nextPosMapPosition.mapNode1.position)
+        nextPos = self.calculateNearestIslandPosition(obs)
+        nextPosMapPosition = obs.map.createMapPosition(nextPos)
+        DebugHelper.drawDot(nextPos, 3, DebugHelper.RED)
 
-            path2 = []
-            distance2 = 0
-            DebugHelper.drawDot(nextPosMapPosition.mapNode1.position, 4, DebugHelper.GREEN)
-            if nextPosMapPosition.isBetweenMapNodes:
-                path2, distance2 = obs.map.calculateShortestPath(pacmanPosition, nextPosMapPosition.mapNode2.position)
-                if distance2 > distance:
-                    path = path2
-                    # distance = distance2
+        paths = [
+            obs.map.calculateShortestPath(pacmanPosition, nextPosMapPosition.mapNode1.position),
+            obs.map.calculateShortestPath(pacmanPosition, nextPosMapPosition.mapNode2.position)
+            if nextPosMapPosition.isBetweenMapNodes else (None, float('inf'))
+        ]
 
-                DebugHelper.drawDot(nextPosMapPosition.mapNode2.position, 4, DebugHelper.GREEN)
-                DebugHelper.drawLine(nextPosMapPosition.mapNode1.position, nextPosMapPosition.mapNode2.position, DebugHelper.GREEN, 2)
+        # Prefer path that includes nextPos and has the shortest distance
+        preferred_path, preferred_distance = None, float('inf')
 
-            if len(path) < 3:
-                self.pelletTarget = nextPos
-                return self.getDirection(obs, nextPos)
+        for path, distance in paths:
+            if path and obs.isVectorInPath(path, nextPos) and (preferred_path is None or distance < preferred_distance):
+                preferred_path, preferred_distance = path, distance
 
-            DebugHelper.drawDashedPath(path, DebugHelper.YELLOW, 3, 10)
-            # DebugHelper.pauseGame()
-            self.pelletTarget = path[1]
-            return self.getDirection(obs, path[1])
+        # If no path includes nextPos or if both paths have been calculated and neither includes nextPos,
+        # choose the shorter path
+        if preferred_path is None:
+            preferred_path, preferred_distance = min(paths, key=lambda x: x[1])
 
-        DebugHelper.drawDashedCircle(self.pelletTarget, 10, DebugHelper.LIGHTBLUE, 5, 20)
-        if manhattanDistance(pacmanPosition, self.pelletTarget) < 10:
-            self.pelletTarget = None
-            return STOP
-        return self.getDirection(obs, self.pelletTarget)
+        # Draw the preferred path and return direction of the second point
+        if preferred_path and len(preferred_path) > 1:
+            DebugHelper.drawPath(preferred_path, DebugHelper.YELLOW, 10)
+            return self.getDirection(obs, preferred_path[1])
+        else:
+            # If there is no path or the path doesn't have a second point, move towards nextPos directly
+            return self.getDirection(obs, nextPos)
+
+        # path, distance = obs.map.calculateShortestPath(pacmanPosition, nextPosMapPosition.mapNode1.position)
+        # nextPosIsInPath = obs.isVectorInPath(path, nextPos)
+        # paths = [(path, distance, nextPosIsInPath)]
+        # if nextPosMapPosition.isBetweenMapNodes:
+        #     path2, distance2 = obs.map.calculateShortestPath(pacmanPosition, nextPosMapPosition.mapNode2.position)
+        #     nextPosIsInPath = obs.isVectorInPath(path, nextPos)
+        #     paths.append((path2, distance2, nextPosIsInPath))
+        #
+        # bestPath = None
+        # minDistance = 99999
+        # pointInPath = False
+        # for path in paths:
+        #     if len(path[0]) < 2:
+        #         continue
+        #     if path[1] < minDistance and (not pointInPath or pointInPath and path[2]):
+        #         bestPath = path[0]
+        #         minDistance = path[1]
+        #         pointInPath = path[2]
+        #         continue
+        #
+        # if bestPath is None:
+        #     return self.getDirection(obs, nextPos)
+        #
+        # DebugHelper.drawPath(bestPath, DebugHelper.YELLOW, 10)
+        # return self.getDirection(obs, bestPath[1])
 
     def calculateNearestIslandPosition(self, obs: Observation):
         pelletPositions = obs.getPelletPositions()
@@ -98,8 +115,8 @@ class CollectorAgent2(IAgent):
                 island.append(currentPosition)
 
                 for pelletPosition2 in pelletPositions:
-                    if (abs(currentPosition.x - pelletPosition2.x) < 60 and
-                            abs(currentPosition.y - pelletPosition2.y) < 60):
+                    if (abs(currentPosition.x - pelletPosition2.x) < self.weightContainer.get('maxIslandDistance') and
+                            abs(currentPosition.y - pelletPosition2.y) < self.weightContainer.get('maxIslandDistance')):
                         pelletTuple2 = pelletPosition2.asTuple()
                         if pelletTuple2 in visited:
                             continue
@@ -135,12 +152,12 @@ class CollectorAgent2(IAgent):
 
         # draw the highest island
         for position in islands[highestIslandIndex]:
-            # DebugHelper.drawDot(position, 10, DebugHelper.WHITE)
+            DebugHelper.drawDot(position, 5, DebugHelper.WHITE)
             pass
         # draw islands
         for i, island in enumerate(islands):
             for position in island:
-                # DebugHelper.drawDot(position, 5, colors[i % 6])
+                DebugHelper.drawDot(position, 4, colors[i % 6])
                 pass
 
         return closestIslandPositions[highestIslandIndex]

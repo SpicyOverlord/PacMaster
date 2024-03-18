@@ -16,13 +16,34 @@ class Observation(object):
     The Observation class contains all the necessary information that the agent will need to play the game:
     """
 
-    def __init__(self, gameController, weightContainer: WeightContainer = None):
+    def __init__(self, gameController):
         self.ghostGroup = gameController.ghosts
         self.pelletGroup = gameController.pellets
         self.pacman = gameController.pacman
         self.nodeGroup = gameController.nodes
 
         self.map = Map(self, gameController.nodes, self.getGhosts())
+
+    def isVectorBetweenVectors(self, vector1: Vector2, vector2: Vector2, middleVector: Vector2) -> bool:
+        if middleVector.x == vector1.x and middleVector.x == vector2.x and \
+                min(vector1.y, vector2.y) <= middleVector.y <= max(vector1.y, vector2.y) or \
+                middleVector.y == vector1.y and middleVector.y == vector2.y and \
+                min(vector1.x, vector2.x) <= middleVector.x <= max(vector1.x, vector2.x):
+            return True
+        return False
+
+    def isVectorInPath(self, path: list[Vector2], vector: Vector2) -> bool:
+        if len(path) < 2:
+            return False
+
+        for i in range(len(path) - 1):
+            startVector = path[i]
+            endVector = path[i + 1]
+
+            if self.isVectorBetweenVectors(startVector, endVector, vector):
+                return True
+
+        return False
 
     # ------------------ Pacman Functions ------------------
 
@@ -66,7 +87,6 @@ class Observation(object):
         """
         return [neighbor for neighbor in node.neighbors.values() if neighbor is not None]
 
-
     # ------------------ Pellet Functions ------------------
     def getPelletPositions(self) -> list[Vector2]:
         """
@@ -104,12 +124,14 @@ class Observation(object):
 
         pelletCount = 0
         for pelletPosition in self.getPelletPositions():
-            if pelletPosition.x == vector1.x and pelletPosition.x == vector2.x and \
-                    min(vector1.y, vector2.y) <= pelletPosition.y <= max(vector1.y, vector2.y):
+            if self.isVectorBetweenVectors(vector1, vector2, pelletPosition):
                 pelletCount += 1
-            elif pelletPosition.y == vector1.y and pelletPosition.y == vector2.y and \
-                    min(vector1.x, vector2.x) <= pelletPosition.x <= max(vector1.x, vector2.x):
-                pelletCount += 1
+            # if pelletPosition.x == vector1.x and pelletPosition.x == vector2.x and \
+            #         min(vector1.y, vector2.y) <= pelletPosition.y <= max(vector1.y, vector2.y):
+            #     pelletCount += 1
+            # elif pelletPosition.y == vector1.y and pelletPosition.y == vector2.y and \
+            #         min(vector1.x, vector2.x) <= pelletPosition.x <= max(vector1.x, vector2.x):
+            #     pelletCount += 1
 
         return pelletCount
 
@@ -125,22 +147,27 @@ class Observation(object):
             if ghost.mode.current in (FREIGHT, SPAWN):
                 continue
 
-            if ghost.position.x == vector1.x and ghost.position.x == vector2.x and \
-                    min(vector1.y, vector2.y) <= ghost.position.y <= max(vector1.y, vector2.y):
+            if self.isVectorBetweenVectors(vector1, vector2, ghost.position):
                 return ghost
-            if ghost.position.y == vector1.y and ghost.position.y == vector2.y and \
-                    min(vector1.x, vector2.x) <= ghost.position.x <= max(vector1.x, vector2.x):
-                return ghost
+            # if ghost.position.x == vector1.x and ghost.position.x == vector2.x and \
+            #         min(vector1.y, vector2.y) <= ghost.position.y <= max(vector1.y, vector2.y):
+            #     return ghost
+            # if ghost.position.y == vector1.y and ghost.position.y == vector2.y and \
+            #         min(vector1.x, vector2.x) <= ghost.position.x <= max(vector1.x, vector2.x):
+            #     return ghost
 
         return None
 
     def isGhostInPath(self, path: list[Vector2]) -> bool:
-        for i in range(len(path) - 1):
-            startVector = path[i]
-            endVector = path[i + 1]
-
-            if self.getGhostBetweenVectors(startVector, endVector) is not None:
+        for ghost in self.getGhosts():
+            if self.isVectorInPath(path, ghost.position):
                 return True
+        # for i in range(len(path) - 1):
+        #     startVector = path[i]
+        #     endVector = path[i + 1]
+        #
+        #     if self.getGhostBetweenVectors(startVector, endVector) is not None:
+        #         return True
 
         return False
 
