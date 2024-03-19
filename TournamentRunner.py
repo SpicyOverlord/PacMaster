@@ -216,7 +216,7 @@ class TournamentRunner:
 if __name__ == "__main__":
     DebugHelper.disable()
     TournamentRunner.startNewTournament(
-        agentClass=FirstRealAgent,
+        agentClass=FinalAgent,
         populationSize=40,
         freeGenerationCount=10,
         generationCount=40,
