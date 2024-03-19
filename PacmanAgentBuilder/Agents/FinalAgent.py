@@ -25,8 +25,8 @@ class FinalAgent(IAgent):
         # DebugHelper.drawMap(obs)
         # DebugHelper.drawDangerZone(mapPos.dangerZone)
 
-        # TODO remove this!
-        return self.flee(obs, mapPos)
+        # # TODO remove this!
+        # return self.flee(obs, mapPos)
 
         # if in danger, flee
         if self.isInDanger(obs, mapPos):
