@@ -14,7 +14,6 @@ from PacmanAgentBuilder.Utils.utils import *
 from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
 
-
 class FinalAgent(IAgent):
     def __init__(self, gameController, weightContainer: WeightContainer = None):
         super().__init__(gameController, weightContainer=weightContainer)

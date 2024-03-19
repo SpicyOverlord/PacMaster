@@ -14,7 +14,7 @@ from PacmanAgentBuilder.Utils.runnerFunctions import *
 
 
 if __name__ == "__main__":
-    # DebugHelper.disable()
+    DebugHelper.disable()
 
     # agentClass = FirstRealAgent
     agentClass = FinalAgent
@@ -30,12 +30,12 @@ if __name__ == "__main__":
         #      'ghostInDangerZoneMultiplier': 37.7879, 'closestGhostMultiplier': 0.0, 'ghostIsCloserMultiplier': 15.93602,
         #      'edgeMultiplier': 2.25542}
         # ),
-        gameCount=50,
+        gameCount=10,
         gameSpeed=1,
         startLevel=0,
         startLives=1,
         ghostsEnabled=True,
         freightEnabled=True,
-        lockDeltaTime=False,
+        lockDeltaTime=True,
         logging=True
     )
