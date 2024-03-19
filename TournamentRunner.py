@@ -216,13 +216,13 @@ class TournamentRunner:
 if __name__ == "__main__":
     DebugHelper.disable()
     TournamentRunner.startNewTournament(
-        agentClass=FinalAgent,
+        agentClass=FirstRealAgent,
         populationSize=40,
         freeGenerationCount=10,
         generationCount=40,
         savePercentage=10,
         mutationRate=3,
-        gameCount=50,
+        gameCount=3,
         cpuCount=4,  # multiprocessing.cpu_count(),
         timeoutSeconds=30*60
     )
