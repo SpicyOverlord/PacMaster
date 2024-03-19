@@ -61,7 +61,7 @@ class TournamentRunner:
         # population.extend(prePopulation)
 
         while len(population) < populationSize:
-            newWeightContainer = WeightModifier.mutateAll(defaultWeightContainer, 2)
+            newWeightContainer = WeightModifier.mutateAll(defaultWeightContainer, 5)
             population.append(newWeightContainer)
 
         # print start population
@@ -217,9 +217,9 @@ if __name__ == "__main__":
     DebugHelper.disable()
     TournamentRunner.startNewTournament(
         agentClass=FinalAgent,
-        populationSize=50,
-        freeGenerationCount=5,
-        generationCount=50,
+        populationSize=40,
+        freeGenerationCount=10,
+        generationCount=40,
         savePercentage=10,
         mutationRate=3,
         gameCount=50,
