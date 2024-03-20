@@ -25,6 +25,13 @@ class Observation(object):
         self.map = Map(self, gameController.nodes, self.getGhosts())
 
     def isVectorBetweenVectors(self, vector1: Vector2, vector2: Vector2, middleVector: Vector2) -> bool:
+        """
+        Checks if a vector is between two other vectors.
+        :param vector1: The first vector.
+        :param vector2: The second vector.
+        :param middleVector: The middle vector.
+        :return: True if the middle vector is between the two vectors, False otherwise.
+        """
         if middleVector.x == vector1.x and middleVector.x == vector2.x and \
                 min(vector1.y, vector2.y) <= middleVector.y <= max(vector1.y, vector2.y) or \
                 middleVector.y == vector1.y and middleVector.y == vector2.y and \
@@ -33,6 +40,11 @@ class Observation(object):
         return False
 
     def isVectorInPath(self, path: list[Vector2], vector: Vector2) -> bool:
+        """
+        :param path: The path.
+        :param vector: The vector.
+        :return: True if the vector is in the path, False otherwise.
+        """
         if len(path) < 2:
             return False
 
@@ -47,7 +59,6 @@ class Observation(object):
 
     # ------------------ Pacman Functions ------------------
 
-    # Returns Pac-Man's current position.
     def getPacmanPosition(self) -> Vector2:
         """
             :return: Pac-Man's current position.
@@ -119,6 +130,12 @@ class Observation(object):
         return sum(self.getPelletsBetweenVectors(path[i], path[i + 1]) for i in range(len(path) - 1))
 
     def getPelletsBetweenVectors(self, vector1: Vector2, vector2: Vector2) -> int:
+        """
+        :param vector1: The first vector.
+        :param vector2: The second vector.
+        :return: The number of pellets between the two vectors.
+        """
+        # if the path is a portal path, return 0
         if isPortalPath(vector1, vector2):
             return 0
 
@@ -126,48 +143,46 @@ class Observation(object):
         for pelletPosition in self.getPelletPositions():
             if self.isVectorBetweenVectors(vector1, vector2, pelletPosition):
                 pelletCount += 1
-            # if pelletPosition.x == vector1.x and pelletPosition.x == vector2.x and \
-            #         min(vector1.y, vector2.y) <= pelletPosition.y <= max(vector1.y, vector2.y):
-            #     pelletCount += 1
-            # elif pelletPosition.y == vector1.y and pelletPosition.y == vector2.y and \
-            #         min(vector1.x, vector2.x) <= pelletPosition.x <= max(vector1.x, vector2.x):
-            #     pelletCount += 1
 
         return pelletCount
 
     # ------------------ Ghost Functions ------------------
     def getGhostBetweenMapNodes(self, mapNode1: MapNode, mapNode2: MapNode) -> Ghost | None:
+        """
+        :param mapNode1: The first map node.
+        :param mapNode2: The second map node.
+        :return: a ghost if the ghost is between the two MapNodes, else None
+        """
         return self.getGhostBetweenVectors(mapNode1.position, mapNode2.position)
 
     def getGhostBetweenVectors(self, vector1: Vector2, vector2: Vector2) -> Ghost | None:
+        """
+        :param vector1: The first vector.
+        :param vector2: The second vector.
+        :return: a ghost if the ghost is between the two Vector2, else None
+        """
+        # skip if the path between the vectors is a portal path
         if isPortalPath(vector1, vector2):
             return None
 
         for ghost in self.getGhosts():
+            # skip if the ghost is in freight or spawn mode
             if ghost.mode.current in (FREIGHT, SPAWN):
                 continue
 
             if self.isVectorBetweenVectors(vector1, vector2, ghost.position):
                 return ghost
-            # if ghost.position.x == vector1.x and ghost.position.x == vector2.x and \
-            #         min(vector1.y, vector2.y) <= ghost.position.y <= max(vector1.y, vector2.y):
-            #     return ghost
-            # if ghost.position.y == vector1.y and ghost.position.y == vector2.y and \
-            #         min(vector1.x, vector2.x) <= ghost.position.x <= max(vector1.x, vector2.x):
-            #     return ghost
 
         return None
 
     def isGhostInPath(self, path: list[Vector2]) -> bool:
+        """
+        :param path: The path.
+        :return: True if a ghost is in the path, False otherwise.
+        """
         for ghost in self.getGhosts():
             if self.isVectorInPath(path, ghost.position):
                 return True
-        # for i in range(len(path) - 1):
-        #     startVector = path[i]
-        #     endVector = path[i + 1]
-        #
-        #     if self.getGhostBetweenVectors(startVector, endVector) is not None:
-        #         return True
 
         return False
 
@@ -196,17 +211,21 @@ class Observation(object):
         return [Vector2(round(ghost.position.x), round(ghost.position.y)) for ghost in self.getGhosts()]
 
     def getClosestGhost(self, vector: Vector2 = None) -> Ghost:
+        """
+        :param vector: The vector.
+        :return: Returns the closest ghost to the given vector.
+        """
         if vector is None:
             vector = self.getPacmanPosition()
 
-        # return the closest ghost to the given vector
         closestGhost = None
         closestGhostDistance = 9999999
         for ghost in self.getGhosts():
+            # ignore ghost if it is in the center area
             if isInCenterArea(ghost.position):
                 continue
 
-            ghostDistance = self.map.calculateGhostDistance(ghost, vector)
+            _, ghostDistance = self.map.calculateGhostPath(ghost, vector)
             if ghostDistance < closestGhostDistance:
                 closestGhost = ghost
                 closestGhostDistance = ghostDistance
@@ -252,93 +271,3 @@ class Observation(object):
             :return: Returns the Clyde object.
         """
         return self.ghostGroup.clyde
-
-    # ------------------ Custom Functions ------------------
-    # def calculatePelletLevel(self, vector: Vector2, weights: WeightContainer) -> float:
-    #     minDistance = 99999
-    #     totalDistance = 1.0
-    #
-    #     for pellet in self.pelletGroup.pelletList:
-    #         dist = manhattanDistance(pellet.position, vector)
-    #         if dist < weights.getWeight('pelletLevelDistance'):
-    #             totalDistance += dist
-    #             if dist < minDistance:
-    #                 minDistance = dist
-    #     for powerPellet in self.pelletGroup.powerpellets:
-    #         dist = manhattanDistance(powerPellet.position, vector)
-    #         if dist < weights.getWeight('pelletLevelDistance'):
-    #             totalDistance += dist
-    #             if dist < minDistance:
-    #                 minDistance = dist
-    #
-    #     # if totalDistance == 0:
-    #     #     return minDistance * 0.1
-    #     return totalDistance / (minDistance + 1)
-    #
-    # def calculateDangerLevel(self, vector: Vector2, weights: WeightContainer) -> float:
-    #     minDistance = 9999999
-    #     totalDistance = 0.0
-    #     numberOfCloseGhosts = 0
-    #     numberOfReallyCloseGhosts = 0
-    #
-    #     for ghost in self.getGhosts():
-    #         # ignore ghost if it is not dangerous
-    #         if ghost.mode.current in (FREIGHT, SPAWN) or isInCenterArea(ghost.position):
-    #             continue
-    #
-    #         path, dist = self.map.calculateGhostPath(ghost=ghost, endVector=vector)
-    #
-    #         # ignore ghost if it can't reach position (this normally only happens if the ghost is in the start area)
-    #         if len(path) == 0:
-    #             continue
-    #
-    #         minDistance = min(minDistance, dist)
-    #
-    #         # Threshold distance for a ghost to be considered 'too far away'
-    #         # it will be ignored
-    #         if dist > weights.getWeight('tooFarAwayThreshold'):
-    #             continue
-    #
-    #         totalDistance += dist
-    #
-    #         # Threshold distance for a ghost to be considered 'close'
-    #         if dist < weights.getWeight('wayTooCloseThreshold'):
-    #             numberOfReallyCloseGhosts += 1
-    #         # Threshold distance for a ghost to be considered 'close'
-    #         elif dist < weights.getWeight('tooCloseThreshold'):
-    #             numberOfCloseGhosts += 1
-    #
-    #     # Adjust danger level based on the closest ghost
-    #     closestGhostValue = (1 / (minDistance + 1)) * 1000 * (1 + weights.getWeight('closestGhostMultiplier'))
-    #     # Further adjust based on the number of close ghosts
-    #     closeGhostValue = numberOfCloseGhosts * weights.getWeight('tooCloseValue')
-    #     closeGhostValue += numberOfReallyCloseGhosts * weights.getWeight('wayTooCloseValue')
-    #     # Calculate danger level
-    #     dangerLevel = closestGhostValue + closeGhostValue
-    #
-    #     # Danger zone multipliers
-    #     # TODO: comment this and see if it actually makes the Agents better
-    #     mapPos = MapPosition(self.map, vector)
-    #     if mapPos.isInDangerZone:
-    #         dangerLevel *= 1 + weights.getWeight('dangerZoneMultiplier')
-    #
-    #         if mapPos.dangerZone.vectorIsMidMapNode(vector):
-    #             dangerLevel *= 1 + weights.getWeight('dangerZoneMiddleMapNodeMultiplier')
-    #
-    #         if mapPos.dangerZone.ghostInDangerZone:
-    #             dangerLevel *= 1 + weights.getWeight('ghostInDangerZoneMultiplier')
-    #
-    #     # a ghost is closer than pacman multiplier
-    #     if self.map.calculateDistance(self.getPacmanPosition(), vector) > minDistance:
-    #         dangerLevel *= 1 + weights.getWeight('ghostIsCloserMultiplier')
-    #
-    #     # close to edge multiplier
-    #     if distanceToNearestEdge(vector) < 40:
-    #         dangerLevel *= 1 + weights.getWeight('edgeMultiplier')
-    #
-    #     # Normalize based on total distance to avoid high values in less dangerous situations
-    #     normalizedDanger = dangerLevel / (totalDistance + 1)
-    #
-    #     # if normalizedDanger < 2:
-    #     #     print("YES")
-    #     return round(normalizedDanger, 5)
