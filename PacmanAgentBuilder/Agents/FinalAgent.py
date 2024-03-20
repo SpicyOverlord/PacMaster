@@ -136,12 +136,10 @@ class FinalAgent(IAgent):
         # draw highlight for the best island
         for position in islands[bestIslandIndex]:
             DebugHelper.drawDot(position, 5, DebugHelper.WHITE)
-            pass
         # draw all islands in different colors
         for i, island in enumerate(islands):
             for position in island:
                 DebugHelper.drawDot(position, 4, colors[i % 6])
-                pass
 
         return closestIslandPositions[bestIslandIndex]
 
