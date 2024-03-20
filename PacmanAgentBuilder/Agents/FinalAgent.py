@@ -1,4 +1,5 @@
 import random
+from collections import deque
 from time import sleep
 
 import pygame
@@ -13,6 +14,7 @@ from PacmanAgentBuilder.Utils.observation import Observation
 from PacmanAgentBuilder.Utils.utils import *
 from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
+
 
 class FinalAgent(IAgent):
     def __init__(self, gameController, weightContainer: WeightContainer = None):
@@ -87,29 +89,28 @@ class FinalAgent(IAgent):
         visited = set()
         islands = []
         for pelletPosition in pelletPositions:
-            if pelletPosition.asTuple() in visited:
+            if pelletPosition in visited:
                 continue
 
             island = []
-            queue = [pelletPosition.asTuple()]
+            queue = deque([pelletPosition])
             while queue:
-                current = queue.pop(0)
+                current = queue.popleft()
 
                 if current in visited:
                     continue
 
-                currentPosition = Vector2(current[0], current[1])
-
                 visited.add(current)
-                island.append(currentPosition)
+                island.append(current)
 
                 for pelletPosition2 in pelletPositions:
-                    if (abs(currentPosition.x - pelletPosition2.x) < pelletIslandDistance and
-                            abs(currentPosition.y - pelletPosition2.y) < pelletIslandDistance):
-                        pelletTuple2 = pelletPosition2.asTuple()
-                        if pelletTuple2 in visited:
+                    if (abs(current.x - pelletPosition2.x) < pelletIslandDistance and
+                            abs(current.y - pelletPosition2.y) < pelletIslandDistance):
+
+                        if pelletPosition2 in visited:
                             continue
-                        queue.append(pelletTuple2)
+
+                        queue.append(pelletPosition2)
 
             islands.append(island)
 
@@ -135,7 +136,7 @@ class FinalAgent(IAgent):
         islandSizeMultiplier = self.weightContainer.get('IslandSizeMultiplier')
         islandDistanceMultiplier = self.weightContainer.get('IslandDistanceMultiplier')
         for i, island in enumerate(islands):
-            islandValue = (islandSizeMultiplier / len(island)) * (islandDistanceMultiplier / (islandDistances[i] + 1))
+            islandValue = (islandSizeMultiplier / (len(island) + 1)) * (islandDistanceMultiplier / (islandDistances[i] + 1))
 
             if islandValue > bestIslandValue:
                 bestIslandValue = islandValue

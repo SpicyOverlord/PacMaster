@@ -61,7 +61,7 @@ class TournamentRunner:
         # population.extend(prePopulation)
 
         while len(population) < populationSize:
-            newWeightContainer = WeightModifier.mutateAll(defaultWeightContainer, 5)
+            newWeightContainer = WeightModifier.mutateAll(defaultWeightContainer, 3)
             population.append(newWeightContainer)
 
         # print start population
@@ -221,7 +221,7 @@ if __name__ == "__main__":
         freeGenerationCount=10,
         generationCount=50,
         savePercentage=10,
-        mutationRate=3,
+        mutationRate=2,
         gameCount=50,
         cpuCount=6,  # multiprocessing.cpu_count(),
         timeoutSeconds=30*60
