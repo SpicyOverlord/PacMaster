@@ -1,9 +1,10 @@
 from __future__ import annotations
 import heapq
+from collections import deque
 from typing import List
 
-from PacmanAgentBuilder.Utils.utils import manhattanDistance, distanceSquared, isPortalPath, getOppositeDirection, roundVector, \
-    directionToString, distanceToNearestEdge, isInCenterArea
+from PacmanAgentBuilder.Utils.utils import manhattanDistance, squaredDistance, isPortalPath, getOppositeDirection, \
+    roundVector, distanceToNearestEdge, isInCenterArea
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Ghost
 from Pacman_Complete.nodes import NodeGroup, Node
@@ -12,6 +13,10 @@ from Pacman_Complete.vector import Vector2
 
 
 class MapNode(object):
+    """
+    A MapNode represents a node on the map.
+    """
+
     def __init__(self, node: Node):
         self.node = node
 
@@ -20,6 +25,49 @@ class MapNode(object):
         self.y = self.position.y
 
         self.neighborContainers: List[NeighborContainer] = list()
+
+    def addNeighbor(self, mapNode: 'MapNode', direction: int, distance: int):
+        """
+        Add a neighbor to the MapNode.
+        :param mapNode: The neighbor MapNode
+        :param direction: The direction to the neighbor
+        :param distance: The distance to the neighbor
+        :return: None
+        """
+        neighbor = NeighborContainer(mapNode, direction, distance)
+        self.neighborContainers.append(neighbor)
+
+    def hasNeighbor(self, mapNode: 'MapNode') -> bool:
+        """
+        Check if the MapNode has a specific neighbor.
+        :param mapNode: The neighbor MapNode
+        :return: True if the MapNode has the neighbor, else False
+        """
+        return mapNode in [neighbor.mapNode for neighbor in self.neighborContainers]
+
+    def getNeighbor(self, mapNode: 'MapNode') -> NeighborContainer | None:
+        """
+        Get the NeighborContainer for a specific neighbor.
+        :param mapNode: The neighbor MapNode
+        :return: The NeighborContainer if the MapNode has the neighbor, else None
+        """
+        for neighborContainer in self.neighborContainers:
+            if neighborContainer.mapNode == mapNode:
+                return neighborContainer
+
+        return None
+
+    def getNeighborInDirection(self, direction: int) -> NeighborContainer | None:
+        """
+        Get the NeighborContainer in a specific direction.
+        :param direction: The direction to the neighbor
+        :return: The NeighborContainer if the MapNode has the neighbor in the direction, else None
+        """
+        for neighborContainer in self.neighborContainers:
+            if neighborContainer.direction == direction:
+                return neighborContainer
+
+        return None
 
     def __str__(self):
         return f"MapNode{self.position}"
@@ -37,29 +85,13 @@ class MapNode(object):
     def __hash__(self):
         return int(self.x * 10000 + self.y)
 
-    def addNeighbor(self, mapNode: 'MapNode', direction: int, distance: int):
-        neighbor = NeighborContainer(mapNode, direction, distance)
-        self.neighborContainers.append(neighbor)
-
-    def hasNeighbor(self, mapNode: 'MapNode') -> bool:
-        return mapNode in [neighbor.mapNode for neighbor in self.neighborContainers]
-
-    def getNeighbor(self, mapNode: 'MapNode') -> NeighborContainer | None:
-        for neighborContainer in self.neighborContainers:
-            if neighborContainer.mapNode == mapNode:
-                return neighborContainer
-
-        return None
-
-    def getNeighborInDirection(self, direction: int) -> NeighborContainer | None:
-        for neighborContainer in self.neighborContainers:
-            if neighborContainer.direction == direction:
-                return neighborContainer
-
-        return None
-
 
 class NeighborContainer(object):
+    """
+    A NeighborContainer represents a neighbor to a MapNode.
+    It contains the neighbor MapNode, the direction and the distance to the neighbor.
+    """
+
     def __init__(self, mapNode: 'MapNode', direction: int, distance: int):
         self.mapNode = mapNode
         self.direction = direction
@@ -67,33 +99,36 @@ class NeighborContainer(object):
 
 
 class DangerZone(object):
+    """
+    A DangerZone represents a zone on the map where the pacman is in danger.
+    TODO: add explanation
+    """
+
     def __init__(self, map: Map, mapPosition: MapPosition):
         self.position = mapPosition.position
         self.midMapNodes = self.__collectMidMapNodes__(mapPosition)
-        self.edgeMapNodes = self.__collectEdgeMapNodes()
+        self.edgeMapNodes = self.__collectEdgeMapNodes__()
         self.mapNodes = self.__straightenMapNodes__()
-
-        self.isDangerous, self.dangerousEdgeIndex = self.__isDangerous__(map)
-
-        # if dangerous, find the safer edgeMapNode
-        # self.escapeEdgeMapNode = None
-        # if self.isDangerous:
-        #     for i in range(len(self.edgeMapNodes)):
-        #         if i == self.dangerousEdgeIndex:
-        #             continue
-        #
-        #         self.escapeEdgeMapNode = self.edgeMapNodes[i]
-        #         break
 
         self.ghostInDangerZone = self.__isGhostInDangerZone__(map)
 
     def vectorIsEdgeMapNode(self, vector: Vector2) -> bool:
+        """
+        Check if a vector is an edge MapNode (edge of the DangerZone).
+        :param vector: The vector to check
+        :return: True if the vector is an edge MapNode, else False
+        """
         for edgeMapNode in self.edgeMapNodes:
             if edgeMapNode.position == vector:
                 return True
         return False
 
     def vectorIsMidMapNode(self, vector: Vector2) -> bool:
+        """
+        Check if a vector is a mid MapNode (not edge of the DangerZone).
+        :param vector: The vector to check
+        :return: True if the vector is a mid MapNode, else False
+        """
         for midMapNode in self.midMapNodes:
             if midMapNode.position == vector:
                 return True
@@ -101,13 +136,17 @@ class DangerZone(object):
 
     def __str__(self):
         return (
-            f"DangerZone(mapNodes={[str(node) for node in self.mapNodes]}, "
-            f"isDangerous={self.isDangerous}")
+            f"DangerZone(mapNodes={[str(node) for node in self.mapNodes]})")
 
     def __collectMidMapNodes__(self, mapPosition: MapPosition) -> list[MapNode]:
+        """
+        Collect the mid MapNodes of the DangerZone.
+        :param mapPosition: The MapPosition of pacman
+        :return: A list of mid MapNodes
+        """
         visited = set()
         dangerZoneMapNodes = []
-        queue = []
+        queue = deque([])
 
         if len(mapPosition.mapNode1.neighborContainers) <= 2:
             queue.append(mapPosition.mapNode1)
@@ -122,7 +161,7 @@ class DangerZone(object):
 
         # flood fill danger zone
         while queue:
-            currentMapNode = queue.pop(0)
+            currentMapNode = queue.popleft()
 
             for neighbor in currentMapNode.neighborContainers:
                 if (len(neighbor.mapNode.neighborContainers) <= 2 and
@@ -134,7 +173,11 @@ class DangerZone(object):
 
         return dangerZoneMapNodes
 
-    def __collectEdgeMapNodes(self) -> list[MapNode]:
+    def __collectEdgeMapNodes__(self) -> list[MapNode]:
+        """
+        Collect the edge MapNodes of the DangerZone.
+        :return: A list of the edge MapNodes
+        """
         edgeMapNodes = []
 
         for mapNode in self.midMapNodes:
@@ -145,6 +188,10 @@ class DangerZone(object):
         return edgeMapNodes
 
     def __straightenMapNodes__(self) -> list[MapNode]:
+        """
+        makes the order of the list of mapNodes match the order of the DangerZone (the 2 edges at each end of the list)
+        :return: A straightened list of MapNodes
+        """
         straightenedMapNodes = [self.edgeMapNodes[0]]
 
         finalArrayLength = len(self.edgeMapNodes) + len(self.midMapNodes) - 1
@@ -158,28 +205,12 @@ class DangerZone(object):
 
         return straightenedMapNodes
 
-    def __isDangerous__(self, map: Map) -> (bool, int):
-        for i in range(len(self.edgeMapNodes)):
-            edgeMapNode = self.edgeMapNodes[i]
-            pacmanDistance = map.calculateDistance(self.position, edgeMapNode.position)
-
-            minGhostDistance = 99999
-            for ghost in map.ghosts:
-                if ghost.mode.current == FREIGHT:
-                    continue
-
-                ghostDistance = map.calculateGhostDistance(ghost, edgeMapNode.position)
-
-                if ghostDistance == 0:
-                    continue
-
-                minGhostDistance = min(minGhostDistance, ghostDistance)
-
-            if pacmanDistance > minGhostDistance:
-                return True, i
-        return False, -1
-
     def __isGhostInDangerZone__(self, map: Map) -> bool:
+        """
+        Check if a ghost is in the DangerZone.
+        :param map: The Map object of the current level
+        :return: True if a ghost is in the DangerZone, else False
+        """
         previousMapNode = None
         for mapNode in self.mapNodes:
             if previousMapNode is not None:
@@ -192,6 +223,12 @@ class DangerZone(object):
 
 
 class MapPosition(object):
+    """
+    A MapPosition represents a position on the map.
+    It contains information about the position and how the position relates to the map.
+    Stuff like if the position is between 2 MapNode or is on a MapNode, if it is in a DangerZone
+    """
+
     def __init__(self, map: Map, vector: Vector2):
         self.position = vector
 
@@ -210,6 +247,10 @@ class MapPosition(object):
             self.dangerZone = None
 
     def __isInDangerZone__(self) -> bool:
+        """
+        Check if the MapPosition is in a DangerZone.
+        :return: True if the MapPosition is in a DangerZone, else False
+        """
         if len(self.mapNode1.neighborContainers) <= 2:
             return True
         if self.isBetweenMapNodes:
@@ -219,10 +260,14 @@ class MapPosition(object):
 
 
 class Map(object):
+    """
+    A Map represents the graph of the current level.
+    It is created from the NodeGroup and the Ghosts of the game.
+    """
+
     def __init__(self, obs, nodeGroup: NodeGroup, ghosts: list[Ghost]):
         self.obs = obs
 
-        # self.mapNodes = [MapNode(node) for node in nodeGroup.nodesLUT.values()]
         self.mapNodes = []
         for node in nodeGroup.nodesLUT.values():
             if isInCenterArea(node.position):
@@ -234,23 +279,29 @@ class Map(object):
 
         self.__setNodeNeighbors__()
 
-        # remove unwanted mapNode at (270,280) from graph
+        # remove unwanted mapNode at (270,280)
+        # TODO why did I do this?
+        unwantedVector = Vector2(270, 280)
         for currentMapNode in self.mapNodes:
-            if currentMapNode.position == Vector2(270, 280):
+            if currentMapNode.position == unwantedVector:
                 self.mapNodes.remove(currentMapNode)
                 break
 
             for neighborContainer in currentMapNode.neighborContainers:
-                if neighborContainer.mapNode.position == Vector2(270, 280):
-                    nextNeighborContainer = neighborContainer.mapNode.getNeighborInDirection(neighborContainer.direction)
+                if neighborContainer.mapNode.position == unwantedVector:
+                    nextNeighborContainer = neighborContainer.mapNode.getNeighborInDirection(
+                        neighborContainer.direction)
                     if nextNeighborContainer is not None:
                         totalDistance = neighborContainer.distance + nextNeighborContainer.distance
 
                         neighborContainer.distance = totalDistance
                         neighborContainer.mapNode = nextNeighborContainer.mapNode
 
-
     def __setNodeNeighbors__(self):
+        """
+        Connect the MapNodes by setting the neighbors of the MapNodes.
+        :return: None
+        """
         for currentMapNode in self.mapNodes:
             for neighborDirection, neighborNode in currentMapNode.node.neighbors.items():
                 if neighborNode is None:
@@ -277,9 +328,20 @@ class Map(object):
                 currentMapNode.addNeighbor(neighborMapNode, direction, distance)
 
     def getMapNode(self, vector: Vector2) -> MapNode:
+        """
+        Get the MapNode at a specific vector.
+        :param vector: The vector to get the MapNode from
+        :return: The MapNode if it exists, else None
+        """
         return self.mapNodeDict.get((vector.x, vector.y), None)
 
     def getNearestMapNode(self, vector: Vector2, snapToGrid: bool = True) -> MapNode:
+        """
+        Get the nearest MapNode to a specific vector.
+        :param vector: The vector to get the nearest MapNode from
+        :param snapToGrid: If True, the nearest MapNode has to be in line with the specified vector.
+        :return: The nearest MapNode if it exists, else None
+        """
         mapNode = self.getMapNode(vector)
         if mapNode is not None:
             return mapNode
@@ -289,7 +351,7 @@ class Map(object):
             manhattanDistance(node.position, vector) if node.position.x == vector.x or node.position.y == vector.y
             else 99999, default=None)
 
-        return min(self.mapNodes, key=lambda node: distanceSquared(node.position, vector), default=None)
+        return min(self.mapNodes, key=lambda node: squaredDistance(node.position, vector), default=None)
 
     def getBetweenMapNodes(self, vector: Vector2) -> tuple[MapNode, MapNode, bool] | tuple[None, None, bool]:
         for mapNode in self.mapNodes:
@@ -301,6 +363,13 @@ class Map(object):
         return None, None, False
 
     def isBetweenMapNodes(self, mapNode1: MapNode, betweenVector: Vector2, mapNode2: MapNode) -> bool:
+        """
+        Check if a vector is between two MapNodes.
+        :param mapNode1: The first MapNode
+        :param betweenVector: The vector to check
+        :param mapNode2: The second MapNode
+        :return: True if the vector is between the MapNodes, else False
+        """
         # skip if it is a portal
         if isPortalPath(mapNode1.position, mapNode2.position):
             return False
@@ -316,6 +385,12 @@ class Map(object):
 
     def getPathToEndOfDangerZoneInDirection(self, mapNode: MapNode, startDirection: int) -> (MapNode, list, int) | (
             None, None, None):
+        """
+        Get the path to the end of a DangerZone in a specific direction.
+        :param mapNode: The MapNode to start from
+        :param startDirection: The direction to go
+        :return: The end MapNode, the path and the distance if a path is found, else None, None, None
+        """
         endNeighborContainer = mapNode.getNeighborInDirection(startDirection)
 
         if endNeighborContainer is None:
@@ -324,6 +399,7 @@ class Map(object):
         path = [mapNode.position]
         distance = manhattanDistance(mapNode.position, endNeighborContainer.mapNode.position)
 
+        # traverse the danger zone to the end in the start direction
         while True:
             path.append(endNeighborContainer.mapNode.position)
 
@@ -345,11 +421,18 @@ class Map(object):
         return endNeighborContainer.mapNode, path, distance
 
     def getEndOfDangerZoneInDirection(self, mapNode: MapNode, startDirection: int) -> MapNode | None:
+        """
+        Get the end MapNode of a DangerZone in a specific direction.
+        :param mapNode: The MapNode to start from
+        :param startDirection: The direction to go
+        :return: The end MapNode if found, else None
+        """
         endNeighborContainer = mapNode.getNeighborInDirection(startDirection)
 
         if endNeighborContainer is None:
             return mapNode
 
+        # traverse the danger zone to the end in the start direction
         while len(endNeighborContainer.mapNode.neighborContainers) == 2:
             endMapNode = endNeighborContainer.mapNode
 
@@ -363,6 +446,13 @@ class Map(object):
 
     def getOrCreateCustomMapNodeOnVector(self, vector: Vector2,
                                          ghost: Ghost = None) -> (MapNode, bool):
+        """
+        Get MapNode vector is on, else create a new custom MapNode on a specific vector.
+        The custom MapNode with have neighbors to the nearest MapNodes in the map/graph.
+        :param vector: The vector to get the MapNode from
+        :param ghost: If the MapNode is for a ghost, else None
+        :return: The MapNode and a boolean if the MapNode is custom
+        """
         isGhost = ghost is not None
 
         vector = roundVector(vector)
@@ -378,11 +468,6 @@ class Map(object):
                 neighborContainer = mapNode.getNeighborInDirection(ghost.direction)
 
                 if neighborContainer is not None:
-                    # print(vector, ghost.position, ghost.direction, neighborContainer)
-                    # for neighborContainer in mapNode.neighborContainers:
-                    #     print("Neighbor:", neighborContainer.direction, neighborContainer.mapNode.position)
-                    # raise Exception("No neighbor found in direction: " + directionToString(ghost.direction))
-
                     customMapNode.addNeighbor(neighborContainer.mapNode, ghost.direction,
                                               manhattanDistance(customMapNode.position,
                                                                 neighborContainer.mapNode.position))
@@ -410,6 +495,14 @@ class Map(object):
 
     def calculateShortestPath(self, startVector: Vector2, endVector: Vector2,
                               ghost: Ghost = None) -> (list[Vector2], int) | (None, None):
+        """
+        Calculate the shortest path between two vectors on the map.
+        It uses Dijkstra's algorithm with ghost accurate path finding (ghosts can't reverse or go 180)
+        :param startVector: The start vector
+        :param endVector: The end vector
+        :param ghost: if the path is for a ghost, else None
+        :return: The shortest path and the distance if a path is found, else None, None
+        """
         isGhost = ghost is not None
 
         if isGhost and isInCenterArea(startVector):
@@ -417,7 +510,7 @@ class Map(object):
 
         startMapNode, startIsCustom = self.getOrCreateCustomMapNodeOnVector(startVector, ghost)
 
-        # fix bug when target is at the corners of the map, when the ghosts are in SCATTER mode
+        # fix bug when ghosts' target is at the corners of the map, when the ghosts are in SCATTER mode
         if isGhost and (endVector.x == 0 and endVector.y == 0 or
                         endVector.x == 560 and endVector.y == 0 or
                         endVector.x == 560 and endVector.y == 720 or
@@ -427,8 +520,8 @@ class Map(object):
         else:
             endMapNode, endIsCustom = self.getOrCreateCustomMapNodeOnVector(endVector)
 
-        # aStarHeuristic = manhattanDistance(startMapNode.position, endVector) * 2
-        startMapNodeDistance = manhattanDistance(startMapNode.position, startVector) #+ aStarHeuristic
+        # calculate the distance to the start and end MapNodes.
+        startMapNodeDistance = manhattanDistance(startMapNode.position, startVector)  # + aStarHeuristic
         endMapNodeDistance = manhattanDistance(endMapNode.position, endVector)
 
         oppositeDirection = STOP
@@ -461,8 +554,7 @@ class Map(object):
                 if isGhost and neighborContainer.direction == oppositeDirection:
                     continue
 
-                # aStarHeuristic = manhattanDistance(neighborContainer.mapNode.position, endMapNode.position) * 2
-                distance = currentDistance + neighborContainer.distance #+ aStarHeuristic
+                distance = currentDistance + neighborContainer.distance
                 if neighborContainer.mapNode not in distances or distance < distances[neighborContainer.mapNode]:
                     previousNodes[neighborContainer.mapNode] = currentNode
 
@@ -482,41 +574,51 @@ class Map(object):
 
                     heapq.heappush(priorityQueue, (distance, endMapNode))
 
+        # return empty path and 0 distance if no path is found
         if endMapNode not in previousNodes.keys():
             return [], 0
-            # raise Exception("No path found between:" +
-            #                 " startVector: " + str(startVector) + " startNode: " + str(startMapNode) +
-            #                 " endVector: " + str(endVector) + " endNode: " + str(endMapNode))
 
-        # Reconstruct the shortest path
+        # reconstruct path
         path = []
         currentNode = endMapNode
-
         while currentNode:
             path.insert(0, currentNode.position)
             currentNode = previousNodes[currentNode]
 
-        if path[0] == startMapNode:
-            return path, int(distances[endMapNode])
-        else:
-            raise Exception("No path found between " + str(startVector) + " and " + str(endVector))
+        return path, int(distances[endMapNode])
+        # TODO remove this if it works without
+        # if path[0] == startMapNode:
+        #     return path, int(distances[endMapNode])
+        # else:
+        #     raise Exception("No path found between " + str(startVector) + " and " + str(endVector))
 
     def calculateGhostPath(self, ghost: Ghost, endVector: Vector2) -> (list[Vector2], int) | (None, None):
+        """
+        Calculate the path for a ghost to a specific vector.
+        :param ghost: The ghost to calculate the path for
+        :param endVector: The vector to calculate the path to
+        :return: The path and the distance if a path is found, else None, None
+        """
         ghostPosition = ghost.position
         if ghost.overshotTarget():
             ghostPosition = ghost.target.position
 
         return self.calculateShortestPath(ghostPosition, endVector, ghost)
 
-    def calculateGhostDistance(self, ghost: Ghost, endVector: Vector2) -> (list[Vector2], int) | (None, None):
-        ghostPosition = ghost.position
-        if ghost.overshotTarget():
-            ghostPosition = ghost.target.position
-
-        return self.calculateShortestPath(ghostPosition, endVector, ghost)[1]
-
     def calculateDistance(self, startVector: Vector2, endVector: Vector2) -> int:
+        """
+        Calculate the distance between two vectors on the map.
+        :param startVector: The starting vector
+        :param endVector: The ending vector
+        :return: The distance between the vectors
+        """
         return self.calculateShortestPath(startVector, endVector)[1]
 
     def createMapPosition(self, vector: Vector2) -> MapPosition:
+        """
+        Create a MapPosition object for a specific vector.
+        This is just to hide the MapPosition constructor.
+        :param vector: The vector to create the MapPosition from
+        :return: The MapPosition object
+        """
         return MapPosition(self, vector)

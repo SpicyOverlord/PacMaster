@@ -1,8 +1,5 @@
-import pygame
-
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
-from PacmanAgentBuilder.Agents.Iagent import IAgent
-from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
+from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
 from PacmanAgentBuilder.Utils.Map import MapNode
 from PacmanAgentBuilder.Utils.observation import Observation
 from Pacman_Complete.constants import *

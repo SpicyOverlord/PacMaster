@@ -1,13 +1,6 @@
-import random
-
-import pygame
-from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
-
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
-from PacmanAgentBuilder.Agents.Iagent import IAgent
-from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
+from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
 from PacmanAgentBuilder.Utils.observation import Observation
-from PacmanAgentBuilder.Utils.utils import *
 from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
 

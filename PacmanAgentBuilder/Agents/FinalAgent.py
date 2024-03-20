@@ -1,15 +1,9 @@
-import random
 from collections import deque
-from time import sleep
 
-import pygame
-from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
-
-from PacmanAgentBuilder.Genetics.WeightModifier import WeightModifier
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
-from PacmanAgentBuilder.Agents.Iagent import IAgent
+from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
 from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
-from PacmanAgentBuilder.Utils.Map import MapNode, MapPosition
+from PacmanAgentBuilder.Utils.Map import MapPosition
 from PacmanAgentBuilder.Utils.observation import Observation
 from PacmanAgentBuilder.Utils.utils import *
 from Pacman_Complete.constants import *
@@ -25,9 +19,6 @@ class FinalAgent(IAgent):
         # sleep(0.03)
         # DebugHelper.drawMap(obs)
         # DebugHelper.drawDangerZone(mapPos.dangerZone)
-
-        # # TODO remove this!
-        # return self.flee(obs, mapPos)
 
         # if in danger, flee
         if self.isInDanger(obs, mapPos):
@@ -49,7 +40,7 @@ class FinalAgent(IAgent):
     def collect(self, obs: Observation):
         pacmanPosition = obs.getPacmanPosition()
 
-        nextPos = self.calculatePelletTargetPosition(obs)
+        nextPos = self.calculateTargetPelletPosition(obs)
         nextPosMapPosition = obs.map.createMapPosition(nextPos)
         DebugHelper.drawDot(nextPos, 3, DebugHelper.RED)
 
@@ -79,7 +70,7 @@ class FinalAgent(IAgent):
             # If there is no path or the path doesn't have a second point, move towards nextPos directly
             return self.getDirection(obs, nextPos)
 
-    def calculatePelletTargetPosition(self, obs: Observation):
+    def calculateTargetPelletPosition(self, obs: Observation):
         pelletPositions = obs.getPelletPositions()
         pelletIslandDistance = self.weightContainer.get('PelletIslandDistance')
 

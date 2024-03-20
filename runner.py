@@ -1,43 +1,22 @@
 import os
 
-import numpy as np
-
-from PacmanAgentBuilder.Agents.CollectorAgent import CollectorAgent
-from PacmanAgentBuilder.Agents.CollectorAgent2 import CollectorAgent2
 from PacmanAgentBuilder.Agents.FinalAgent import FinalAgent
+from PacmanAgentBuilder.Utils.runnerFunctions import *
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
-from PacmanAgentBuilder.Agents.FirstRealAgent import FirstRealAgent
-from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
-from PacmanAgentBuilder.Utils.runnerFunctions import *
-
 if __name__ == "__main__":
-    DebugHelper.disable()
-
-    # agentClass = FirstRealAgent
     agentClass = FinalAgent
-    # agentClass = CollectorAgent2
 
+    # this will run the agent in 50 games and print the average performance over the 50 games
     stats = calculatePerformanceOverXGames(
-        agentClass=agentClass,
-        # weightContainer=agentClass.getDefaultWeightContainer(),
-        weightContainer=WeightContainer(
-            {'fleeThreshold': 14.0415, 'pelletLevelDistance': 26866.3008, 'tooCloseThreshold': 36.72778,
-             'tooCloseValue': 45851.42127, 'tooFarAwayThreshold': 754.99757, 'dangerZoneMultiplier': 9.83667,
-             'dangerZoneMiddleMapNodeMultiplier': 2.26291, 'ghostIsCloserMultiplier': 0.26211,
-             'edgeMultiplier': 0.07031, 'pelletLevelDistanceInDangerLevel': 31289.31605,
-             'pelletsInDangerLevelMultiplier': 33.29812, 'distanceToPacManMultiplier': 42.11629,
-             'PelletIslandDistance': 1518.14981, 'IslandSizeMultiplier': 206.53291,
-             'IslandDistanceMultiplier': 1086.47174, 'ghostMultiplier': 309.08014, 'blinky': 287.69802,
-             'pinky': 16.02381, 'inky': 84.06536, 'clyde': 362.14643}
-        ),
-        gameCount=5,
-        gameSpeed=1,
-        startLevel=0,
-        startLives=1,
-        ghostsEnabled=True,
-        freightEnabled=True,
-        lockDeltaTime=True,
-        logging=True
+        agentClass=agentClass,  # Specify the agent to be evaluated.
+        gameCount=50,  # Number of games the agent will play.
+        gameSpeed=1,  # Sets the speed of the game from 0.1 (slow) to 15 (fast).
+        startLevel=0,  # Choose the starting level for the agent (0 for level one, 1 for level two, and so on).
+        startLives=1,  # Choose the number of lives the agent will start with.
+        ghostsEnabled=True,  # Toggle ghosts on or off.
+        freightEnabled=True,  # Toggle if the effect of power pellets should be ignored.
+        lockDeltaTime=True,  # When enabled, the game will run at the highest possible speed.
+        logging=True  # Toggle the logging of game-related information to the console while the agent is playing.
     )

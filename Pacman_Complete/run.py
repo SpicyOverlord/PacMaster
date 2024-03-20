@@ -1,6 +1,5 @@
 import os.path
 import subprocess
-import sys
 
 import pygame
 from pygame.locals import *
@@ -16,7 +15,7 @@ from Pacman_Complete.pauser import Pause
 from Pacman_Complete.text import TextGroup
 from Pacman_Complete.sprites import LifeSprites, MazeSprites
 from Pacman_Complete.mazedata import MazeData
-from PacmanAgentBuilder.Agents.Iagent import IAgent
+from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
 
 
 class GameController(object):

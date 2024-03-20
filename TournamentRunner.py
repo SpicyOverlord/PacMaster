@@ -1,77 +1,66 @@
-import random
-import sys
 import time
-from datetime import datetime
 import multiprocessing
 import os
-from multiprocessing import TimeoutError
-
-import numpy as np
 
 from PacmanAgentBuilder.Agents.FinalAgent import FinalAgent
 from PacmanAgentBuilder.Utils.GameStats import GameStats
 
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
-
-from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Genetics.WeightModifier import WeightModifier
-from PacmanAgentBuilder.Agents.FirstRealAgent import FirstRealAgent
-from PacmanAgentBuilder.Agents.HumanAgent import HumanAgent
-from PacmanAgentBuilder.Agents.Iagent import IAgent
+from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
 from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
 from PacmanAgentBuilder.Utils.runnerFunctions import calculatePerformanceOverXGames
 from PacmanAgentBuilder.Utils.utils import secondsToTime, getCurrentTimestamp
 
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+
 
 class TournamentRunner:
+    """
+    This class is used to run a genetic algorithm tournament for a specified agent.
+    It is used to find the (hopefully) optimal weights for the agent.
+    """
+
     @staticmethod
     def startNewTournament(agentClass: type[IAgent], populationSize: int, generationCount: int,
                            freeGenerationCount: int, savePercentage: int, mutationRate: float,
                            gameCount: int, cpuCount: int, timeoutSeconds: int):
+        """
+        This method starts a new genetic algorithm tournament for the specified agent.
+        :param agentClass: The specified agent.
+        :param populationSize: The size of the population.
+        :param generationCount: The number of generations.
+        :param freeGenerationCount: The number of generations to skip before save top x% and starting to decrease the mutation rate.
+        :param savePercentage: The top percentile of the population to save each generation.
+        :param mutationRate: The start mutation rate.
+        :param gameCount: The number of games each agent will play each generation to calculate its fitness.
+        :param cpuCount: The number of CPU cores to use for parallel fitness evaluation.
+        :param timeoutSeconds: The number of seconds to wait for each agent to finish its game before timing out.
+        :return: None
+        """
+
+        # set parameters that is used in the tournament
         tournamentStartTime = time.time()
-
         logFileName = f"Tournaments/{getCurrentTimestamp()}_{agentClass.__name__}.txt"
-
         allMembers = []
-
-        totalGameCount = populationSize * generationCount * gameCount
-
         bestOfEachGenerations = []
+        generationTestingTime = []
+        totalGameCount = populationSize * generationCount * gameCount
+        poolSize = max(int(populationSize * 0.1), 2)  # 10% of the population size, but minimum 2
+        constArgs = (agentClass, gameCount)
 
-        poolSize = max(int(populationSize * 0.2), 2)
+        # calculate the mutation rate multiplier
+        # this is done to decrease the mutation rate each generation so the last generations mutation rate is 0.1
         currentMutationRate = mutationRate
         mutationRateMultiplier = (10 ** (-1 / (generationCount - freeGenerationCount))) * (1 / mutationRate) ** (
                 1 / (generationCount - freeGenerationCount))
 
+        # generate start population
         defaultWeightContainer = agentClass.getDefaultWeightContainer()
-
-        # generate random population from the default weight container from the agent
-        # prePopulation = []
-        # prePopulation.append(WeightContainer({'fleeThreshold': 0.05, 'pelletLevelDistance': 15.939, 'wayTooCloseThreshold': 16.024, 'tooCloseThreshold': 71.731, 'tooFarAwayThreshold': 2069.434, 'wayTooCloseValue': 3089.918, 'tooCloseValue': 1456.791, 'dangerZoneMultiplier': 0.005, 'dangerZoneMiddleMapNodeMultiplier': 0.001, 'ghostInDangerZoneMultiplier': 5.431, 'closestGhostMultiplier': 0.144, 'ghostIsCloserMultiplier': 2.208, 'edgeMultiplier': 3.232}))
-        # prePopulation.append(WeightContainer({'fleeThreshold': 0.168, 'pelletLevelDistance': 3.438, 'wayTooCloseThreshold': 70.268, 'tooCloseThreshold': 0.008, 'tooFarAwayThreshold': 2039.184, 'wayTooCloseValue': 394.23, 'tooCloseValue': 195.778, 'dangerZoneMultiplier': 1.123, 'dangerZoneMiddleMapNodeMultiplier': 0.757, 'ghostInDangerZoneMultiplier': 0.0, 'closestGhostMultiplier': 0.0, 'ghostIsCloserMultiplier': 5.169, 'edgeMultiplier': 4.045}))
-        # prePopulation.append(WeightContainer({'fleeThreshold': 0.45, 'pelletLevelDistance': 312.675, 'wayTooCloseThreshold': 1.59, 'tooCloseThreshold': 72.969, 'tooFarAwayThreshold': 2956.632, 'wayTooCloseValue': 2410.48, 'tooCloseValue': 167.061, 'dangerZoneMultiplier': 3.798, 'dangerZoneMiddleMapNodeMultiplier': 1.073, 'ghostInDangerZoneMultiplier': 12.56, 'closestGhostMultiplier': 83.481, 'ghostIsCloserMultiplier': 10.784, 'edgeMultiplier': 0.048}))
-        # prePopulation.append(WeightContainer({'fleeThreshold': 0.008, 'pelletLevelDistance': 0.702, 'wayTooCloseThreshold': 25.613, 'tooCloseThreshold': 0.003, 'tooFarAwayThreshold': 4857.633, 'wayTooCloseValue': 412.091, 'tooCloseValue': 250.258, 'dangerZoneMultiplier': 1.431, 'dangerZoneMiddleMapNodeMultiplier': 0.458, 'ghostInDangerZoneMultiplier': 0.0, 'closestGhostMultiplier': 0.0, 'ghostIsCloserMultiplier': 10.304, 'edgeMultiplier': 2.237}))
-        # prePopulation.append(WeightContainer({'fleeThreshold': 2.16801, 'pelletLevelDistance': 198.84966, 'wayTooCloseThreshold': 0.88123, 'tooCloseThreshold': 13.33625, 'tooFarAwayThreshold': 3493.55815, 'wayTooCloseValue': 1097.04523, 'tooCloseValue': 125.08157, 'dangerZoneMultiplier': 0.48795, 'dangerZoneMiddleMapNodeMultiplier': 9.13484, 'ghostInDangerZoneMultiplier': 7.81239, 'closestGhostMultiplier': 2.74904, 'ghostIsCloserMultiplier': 1.95321, 'edgeMultiplier': 3.87434}))
-        # prePopulation.append(WeightContainer({'fleeThreshold': 0.32246, 'pelletLevelDistance': 77.53889, 'wayTooCloseThreshold': 98.53012, 'tooCloseThreshold': 30.01019, 'tooFarAwayThreshold': 2070.39002, 'wayTooCloseValue': 579.86987, 'tooCloseValue': 415.81436, 'dangerZoneMultiplier': 4.13483, 'dangerZoneMiddleMapNodeMultiplier': 0.49617, 'ghostInDangerZoneMultiplier': 3.33331, 'closestGhostMultiplier': 2.33804, 'ghostIsCloserMultiplier': 1.69757, 'edgeMultiplier': 4.61846}))
-        # prePopulation.append(WeightContainer({'fleeThreshold': 0.39279, 'pelletLevelDistance': 88.72579, 'wayTooCloseThreshold': 200.40252, 'tooCloseThreshold': 4022.7341, 'tooFarAwayThreshold': 1.38749, 'wayTooCloseValue': 1442.67563, 'tooCloseValue': 26916.95258, 'dangerZoneMultiplier': 11.50758, 'dangerZoneMiddleMapNodeMultiplier': 0.17607, 'ghostInDangerZoneMultiplier': 0.39696, 'closestGhostMultiplier': 10.04529, 'ghostIsCloserMultiplier': 0.26899, 'edgeMultiplier': 1.83389}))
-        # prePopulation.append(WeightContainer({'fleeThreshold': 0.01119, 'pelletLevelDistance': 2.83253, 'wayTooCloseThreshold': 32.68235, 'tooCloseThreshold': 8e-05, 'tooFarAwayThreshold': 1219.81699, 'wayTooCloseValue': 352.64291, 'tooCloseValue': 87.99661, 'dangerZoneMultiplier': 8.68754, 'dangerZoneMiddleMapNodeMultiplier': 0.00206, 'ghostInDangerZoneMultiplier': 0.0, 'closestGhostMultiplier': 0.0, 'ghostIsCloserMultiplier': 3.11343, 'edgeMultiplier': 1.75577}))
-        # prePopulation.append(WeightContainer({'fleeThreshold': 0.01012, 'pelletLevelDistance': 3.40838, 'wayTooCloseThreshold': 38.31477, 'tooCloseThreshold': 0.003, 'tooFarAwayThreshold': 2043.80368, 'wayTooCloseValue': 597.86046, 'tooCloseValue': 654.69161, 'dangerZoneMultiplier': 9.37635, 'dangerZoneMiddleMapNodeMultiplier': 0.00193, 'ghostInDangerZoneMultiplier': 34.82505, 'closestGhostMultiplier': 0.0, 'ghostIsCloserMultiplier': 15.93602, 'edgeMultiplier': 1.9445}))
-        # prePopulation.append(defaultWeightContainer)
         population = []
-        # population.extend(prePopulation)
-
+        # each member of the population is a mutated version of the default weight container
         while len(population) < populationSize:
-            newWeightContainer = WeightModifier.mutateAll(defaultWeightContainer, 3)
+            newWeightContainer = WeightModifier.mutateRandom(defaultWeightContainer, 3)
             population.append(newWeightContainer)
-
-        # print start population
-        #   for pop in population:
-        #        print(pop)
-        #  exit()
-
-        generationTestingTime = []
-
-        constArgs = (agentClass, gameCount)
 
         print("\n\n------------- Starting new genetic tournament -------------")
         print(f"Starting at: {getCurrentTimestamp()}")
@@ -85,20 +74,16 @@ class TournamentRunner:
             print(f"Started at: {getCurrentTimestamp()}")
             print(f"Mutation rate: {currentMutationRate}")
 
-            # don't remove thjs line!
-            stats = []
-
             start_time = time.time()
-            # with multiprocessing.Pool(processes=cpuCount) as pool:
-            #     stats = pool.starmap(TournamentRunner.fitnessFunctionWrapper,
-            #                          [(member, constArgs) for member in population])
+            # calculate fitness of population
             stats = TournamentRunner.parallelFitnessEvaluation(population, constArgs, timeoutSeconds, cpuCount)
 
             end_time = time.time()
 
+            # add the calculated fitness to population
             for j in range(populationSize):
+                # if the agent timed out, set its fitness to 0
                 if stats[j] is None:
-                    # print(f"Agent {j + 1} of {populationSize} timed out!")
                     population[j].addFitness(0)
                     continue
 
@@ -110,15 +95,18 @@ class TournamentRunner:
             population = list(population)
             stats = list(stats)
 
-            # print stats
+            # calculate the time taken to calculate the fitness of the generation
             generationTimeTaken = end_time - start_time
             generationTestingTime.append(generationTimeTaken)
+            # keep track of the last 5 generations time taken
             if len(generationTestingTime) > 5:
                 generationTestingTime.pop(0)
 
+            # calculate the estimated time left based on the last 5 generations
             averageGenerationTimeTaken = sum(generationTestingTime) / len(generationTestingTime)
             estimatedSecondsLeft = (generationCount - generation) * averageGenerationTimeTaken
 
+            # print the stats of the generation
             print("\nAgent      Fitness  Avg Lvl Comp  Survived")
             for i in range(populationSize):
                 print("{:<10} {:<8} {:<13} {:<8}".format(
@@ -132,8 +120,9 @@ class TournamentRunner:
             print(f"Current runtime:     {secondsToTime(time.time() - tournamentStartTime)}")
             print(f"Progress:            {round(generation / (generationCount / 100), 1)}%")
 
+            # save the best of the generation
             bestOfEachGenerations.append(population[0])
-
+            # print the best of the generation
             print("\nBest of each generations:")
             print("Generation Fitness Survived")
             for j in range(len(bestOfEachGenerations)):
@@ -143,13 +132,10 @@ class TournamentRunner:
                     bestOfEachGenerations[j].getGenerationsSurvived()
                 ))
 
-            # add all members of population to all members
+            # write all evaluated members to a log file.
             allMembers += population
-            # remove duplicates
             allMembers = list(set(allMembers))
-            # sort all members by fitness
             allMembers.sort(key=lambda x: x.getFitness(), reverse=True)
-
             with open(logFileName, 'w') as file:
                 file.write("{:<8} {:<13} {:<200}\n".format('Fitness', 'Gen Survived', 'Weights'))
 
@@ -160,7 +146,7 @@ class TournamentRunner:
                         str(allMembers[i])
                     ))
 
-            # generate new population
+            # generate the new population for the next generation
             newPopulation = WeightModifier.generateNewPopulation(
                 population=population,
                 populationSize=populationSize,
@@ -173,7 +159,7 @@ class TournamentRunner:
             population = newPopulation
 
             # decrease mutation rate each generation
-            # skip first 5 generations
+            # skip first x generations
             if generation < freeGenerationCount:
                 continue
             currentMutationRate *= mutationRateMultiplier
@@ -183,10 +169,21 @@ class TournamentRunner:
 
     @staticmethod
     def parallelFitnessEvaluation(population, constArgs, timeoutSeconds, cpuCount):
+        """
+        This method is used to evaluate the fitness of the population in parallel.
+        :param population: The population to evaluate.
+        :param constArgs: The constant arguments to pass to the fitness function (agentClass, gameCount).
+        :param timeoutSeconds: The number of seconds to wait for each agent to finish its game before timing out.
+        :param cpuCount: The number of CPU cores to use for parallel fitness evaluation.
+        :return: A list of the calculated fitness of the population.
+        """
+        # create a pool of workers
         with multiprocessing.Pool(processes=cpuCount) as pool:
-            results = [pool.apply_async(TournamentRunner.fitnessFunctionWrapper, (member, constArgs)) for member in population]
+            results = [pool.apply_async(TournamentRunner.fitnessFunctionWrapper, (member, constArgs)) for member in
+                       population]
             finished_stats = []
 
+            # get the population's calculated fitness from the pool.
             for i in range(len(results)):
                 try:
                     finished_stats.append(results[i].get(timeout=timeoutSeconds))
@@ -198,11 +195,18 @@ class TournamentRunner:
 
     @staticmethod
     def fitnessFunctionWrapper(member, args):
+        """
+        This method is used to wrap the fitness function, so it can be used in the multiprocessing pool.
+        :param member: The member to evaluate.
+        :param args: The constant arguments to pass to the fitness function (agentClass, gameCount).
+        :return: The calculated fitness of the member.
+        """
+        # disable the DebugHelper, so it doesn't low down the fitness evaluation
         DebugHelper.disable()
 
+        # calculate the fitness of the member
         agentClass = args[0]
         gameCount = args[1]
-
         stats = calculatePerformanceOverXGames(
             agentClass=agentClass,
             weightContainer=member,
@@ -215,14 +219,16 @@ class TournamentRunner:
 
 if __name__ == "__main__":
     DebugHelper.disable()
+
+    # start a new tournament
     TournamentRunner.startNewTournament(
-        agentClass=FinalAgent,
-        populationSize=40,
-        freeGenerationCount=10,
-        generationCount=50,
-        savePercentage=10,
-        mutationRate=2,
-        gameCount=50,
+        agentClass=FinalAgent,  # Specify the agent to be evaluated.
+        populationSize=40,  # The size of the population.
+        freeGenerationCount=10,  # generations to skip before save top x% and starting to decrease the mutation rate.
+        generationCount=50,  # The number of generations.
+        savePercentage=10,  # The top percentile of the population to save each generation.
+        mutationRate=2,  # The start mutation rate.
+        gameCount=50,  # The number of games each agent will play each generation to calculate its fitness.
         cpuCount=6,  # multiprocessing.cpu_count(),
-        timeoutSeconds=30*60
+        timeoutSeconds=30 * 60  # The number of seconds to wait for each agent to finish its game before timing out.
     )

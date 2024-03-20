@@ -1,8 +1,7 @@
 import pygame
 from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
 
-from PacmanAgentBuilder.Agents.Iagent import IAgent
-from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
+from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
 from PacmanAgentBuilder.Utils.observation import Observation
 from Pacman_Complete.constants import *
 

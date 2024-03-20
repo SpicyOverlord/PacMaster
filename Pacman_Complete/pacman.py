@@ -1,6 +1,4 @@
-import pygame
-from pygame.locals import *
-from PacmanAgentBuilder.Agents.Iagent import IAgent
+from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
 from PacmanAgentBuilder.Utils.observation import Observation
 from Pacman_Complete.constants import *
 from Pacman_Complete.entity import Entity

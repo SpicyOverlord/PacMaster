@@ -1,8 +1,11 @@
-from PacmanAgentBuilder.Agents.Iagent import IAgent
+from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
 from Pacman_Complete.run import GameController
 
 
 class GameStats(object):
+    """
+    This class is used to store the statistics of a game.
+    """
     def __init__(self, game: GameController, agent: IAgent):
         self.actionsTaken = agent.actionsTaken
         self.score = game.score
@@ -10,16 +13,14 @@ class GameStats(object):
         self.totalPelletsEaten = game.level * 240 + agent.pelletsEatenThisLevel
         self.efficiency = self.totalPelletsEaten * 10 / agent.actionsTaken / 2
 
-    def getScore(self):
-        maxPelletsPerLevel = 240
-        normalizedPelletScores = self.totalPelletsEaten / maxPelletsPerLevel
-        return normalizedPelletScores * (1 + self.levelsCompleted * 0.5)
-
     def __str__(self):
         return f"GameStats(score={self.score}, efficiency={round(self.efficiency, 3)}, totalPelletsEaten={self.totalPelletsEaten}, actionsTaken={self.actionsTaken}, levelsCompleted={self.levelsCompleted})"
 
     @staticmethod
     def getEmpty():
+        """
+        :return: Returns an empty GameStats object.
+        """
         return {
             "combinedScore": 0,
             "averageLevelsCompleted": 0,
@@ -33,6 +34,11 @@ class GameStats(object):
 
     @staticmethod
     def calculatePerformance(gameStats: list['GameStats']):
+        """
+        Calculates the performance of the agent over a number of games.
+        :param gameStats: A list of the GameStats from the games.
+        :return: A dictionary containing different numbers that describe the performance of the agent.
+        """
         weights = {'score': 0.4, 'pellets': 1, 'efficiency': 0.3}
 
         baseScores = [game.score for game in gameStats]
@@ -89,6 +95,12 @@ class GameStats(object):
 
     @staticmethod
     def calculateTruncatedMean(scores, truncationPercent):
+        """
+        Calculates the mean of a list of scores after removing a certain percentage of the best and worst games.
+        :param scores: The list of scores to calculate the mean of.
+        :param truncationPercent: The percentage of scores to remove from both ends.
+        :return: The mean of the truncated list of scores.
+        """
         # Sort the list of scores
         sortedScores = sorted(scores)
 

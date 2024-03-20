@@ -6,7 +6,7 @@ from pygame import Surface
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Utils.Map import DangerZone
 from PacmanAgentBuilder.Utils.observation import Observation
-from PacmanAgentBuilder.Utils.utils import isPortalPath
+from PacmanAgentBuilder.Utils.utils import isPortalPath, isInCenterArea
 from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
 
@@ -107,23 +107,30 @@ class DebugHelper(object):
         DebugHelper.__addDrawObject__("dot", [center.asInt(), radius, color])
 
     @staticmethod
-    def drawDashedCircle(center: Vector2, radius: float, color: tuple[int, int, int], width=1, dash_length=10):
+    def drawDashedCircle(center: Vector2, radius: float, color: tuple[int, int, int], width=1, dashLength=10):
         """
             Draws a dashed circle around a vector.
             :param center: The center of the dashed circle.
             :param radius: The radius of the dashed circle.
             :param color: The color of the dashed circle.
             :param width: The width of the dashes.
-            :param dash_length: The length of the dashes.
+            :param dashLength: The length of the dashes.
         """
         if not DebugHelper._enabled:
             return
 
         DebugHelper.__addDrawObject__("dashedCircle",
-                                      [center.asInt(), radius, color, width, dash_length])
+                                      [center.asInt(), radius, color, width, dashLength])
 
     @staticmethod
     def drawPath(path: list[Vector2], color: tuple[int, int, int], width: int = 5):
+        """
+        Draws a path between a list of vectors.
+        :param path: The path to be drawn.
+        :param color: The color of the drawn path.
+        :param width: The width of the drawn path.
+        :return: None
+        """
         if not DebugHelper._enabled:
             return
 
@@ -134,6 +141,14 @@ class DebugHelper(object):
 
     @staticmethod
     def drawDashedPath(path: list[Vector2], color: tuple[int, int, int], width: int = 5, dashLength: int = 10):
+        """
+        Draws a dashed path between a list of vectors.
+        :param path: The path to be drawn.
+        :param color: The color of the drawn path.
+        :param width: The width of the drawn path.
+        :param dashLength: The length of the dashes in the path.
+        :return: None
+        """
         if not DebugHelper._enabled:
             return
 
@@ -145,6 +160,11 @@ class DebugHelper(object):
 
     @staticmethod
     def drawGhostPaths(obs: Observation):
+        """
+        Draws the path of each ghost.
+        :param obs: The current observation.
+        :return: None
+        """
         if not DebugHelper._enabled:
             return
 
@@ -153,14 +173,22 @@ class DebugHelper(object):
 
     @staticmethod
     def drawGhostPath(obs: Observation, ghostInt: int = BLINKY):
+        """
+        Draws the path of a specific ghost.
+        :param obs: The current observation.
+        :param ghostInt: The ghost to draw the path of.
+        :return: None
+        """
         if not DebugHelper._enabled:
             return
 
         ghost = obs.getGhost(ghostInt)
 
-        if ghost.mode.current == FREIGHT:
+        # ignore ghost if it is not dangerous
+        if ghost.mode.current in [FREIGHT, SPAWN] or isInCenterArea(ghost.position):
             return
 
+        # set line color and width based on ghost, to make it easier to tell which ghost path is which
         lineColor = (255, 255, 255)
         width = 5
         if ghostInt == BLINKY:
@@ -175,17 +203,24 @@ class DebugHelper(object):
         elif ghostInt == CLYDE:
             lineColor = ORANGE
             width = 4
+        # calculate the ghost path
+        path, _ = obs.map.calculateGhostPath(ghost=ghost, endVector=ghost.goal)
 
-        path, _ = obs.map.calculateShortestPath(startVector=ghost.position, endVector=ghost.goal, ghost=ghost)
-
+        # if the ghost can reach the goal, draw the path
         if len(path) != 0:
             DebugHelper.drawDashedPath(path, lineColor, width)
 
     @staticmethod
     def drawDangerZone(dangerZone: DangerZone):
+        """
+        Draws a danger zone.
+        :param dangerZone: The danger zone to draw.
+        :return: None
+        """
         if not DebugHelper._enabled:
             return
 
+        # just to prevent errors.
         if dangerZone is None:
             return
 
@@ -201,6 +236,11 @@ class DebugHelper(object):
 
     @staticmethod
     def drawMap(obs: Observation):
+        """
+        Draws the map/graph of the current level
+        :param obs: The current Observation.
+        :return: None
+        """
         if not DebugHelper._enabled:
             return
 
@@ -211,9 +251,16 @@ class DebugHelper(object):
 
     @staticmethod
     def drawDangerLevel(dangerLevel: float, vector: Vector2):
+        """
+        Draws a danger level at a vector.
+        :param dangerLevel: The danger level.
+        :param vector: The vector to draw the danger level at.
+        :return: None
+        """
         if not DebugHelper._enabled:
             return
 
+        # draw a dot with the size and color corresponding to how dangerous the position is.
         if 0.05 <= dangerLevel <= 1:
             DebugHelper.drawDot(vector, 5, DebugHelper.WHITE)
         elif dangerLevel < 2:
@@ -227,32 +274,18 @@ class DebugHelper(object):
 
     @staticmethod
     def drawDangerLevels(obs: Observation, dangerFunction: callable):
+        """
+        Draws the danger levels of each MapNode of the map.
+        :param obs: The current Observation.
+        :param dangerFunction: The function to calculate the danger level.
+        :return: None
+        """
         if not DebugHelper._enabled:
             return
 
         for mapNode in obs.map.mapNodes:
             dangerLevel = dangerFunction(obs, mapNode.position)
             DebugHelper.drawDangerLevel(dangerLevel, mapNode.position)
-
-    @staticmethod
-    def drawPelletLevel(obs: Observation, vector: Vector2, weights: WeightContainer):
-        if not DebugHelper._enabled:
-            return
-
-        pelletLevel = obs.calculatePelletLevel(vector, weights)
-        if pelletLevel > 10:
-            DebugHelper.drawDot(vector, 10, DebugHelper.GREEN)
-            return
-
-        DebugHelper.drawDot(vector, pelletLevel, DebugHelper.WHITE)
-
-    @staticmethod
-    def drawPelletLevels(obs: Observation):
-        if not DebugHelper._enabled:
-            return
-
-        for mapNode in obs.map.mapNodes:
-            DebugHelper.drawPelletLevel(obs, mapNode.position)
 
     @staticmethod
     def __drawDashedLine__(startVector: Vector2, endVector: Vector2,
@@ -286,6 +319,12 @@ class DebugHelper(object):
 
     @staticmethod
     def __addDrawObject__(drawObjectType: str, drawObject: list):
+        """
+        Adds a shape to the draw list.
+        :param drawObjectType: The type of shape to draw.
+        :param drawObject: The shape to draw.
+        :return: None
+        """
         if not DebugHelper._enabled:
             return
 
@@ -293,12 +332,16 @@ class DebugHelper(object):
 
     @staticmethod
     def drawShapes():
+        """
+        Draws all shapes that have been added to the draw list.
+        :return: None
+        """
         if not DebugHelper._enabled:
             return
 
         for drawObjectType in DebugHelper._shapesToDraw.keys():
             for drawObject in DebugHelper._shapesToDraw[drawObjectType]:
-                # skip portal path
+                # skip portal paths
                 if drawObjectType in ["line", "dashedLine"] and \
                         isPortalPath(Vector2(drawObject[0][0], drawObject[0][1]),
                                      Vector2(drawObject[1][0], drawObject[1][1])):

@@ -2,6 +2,13 @@ import random
 
 
 class WeightContainer:
+    """
+    This class is a container for weights. It is used to store the weights of the agents,
+    as well as the fitness that is used in the genetic algorithm.
+
+    It is basically just a dictionary with some extra functionality.
+    """
+
     def __init__(self, weightDict: dict[str, float] = None):
         self.__weightDict__ = weightDict if weightDict is not None else {}
         self.__fitness__ = []
@@ -43,8 +50,6 @@ class WeightContainer:
         return self.__weightDict__.keys()
 
     def __str__(self):
-        # if len(self.__fitness__) != 0:
-        #     return f"Fitness:{self.getFitness()} Survived:{len(self.__fitness__)} Weights:{str(self.__weightDict__)}"
         return str(self.__weightDict__)
 
     def __eq__(self, other):
