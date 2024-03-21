@@ -43,7 +43,6 @@ class TournamentRunner:
         logFileName = f"Tournaments/{getCurrentTimestamp()}_{agentClass.__name__}.txt"
         allMembers = []
         bestOfEachGenerations = []
-        generationTestingTime = []
         totalGameCount = populationSize * generationCount * gameCount
         poolSize = max(int(populationSize * 0.1), 2)  # 10% of the population size, but minimum 2
         constArgs = (agentClass, gameCount)
@@ -96,15 +95,10 @@ class TournamentRunner:
             stats = list(stats)
 
             # calculate the time taken to calculate the fitness of the generation
+            currentRuntime = time.time() - tournamentStartTime
+            progress = generation / (generationCount / 100)
+            estimatedSecondsLeft = ((100 - progress) / 100) * currentRuntime
             generationTimeTaken = end_time - start_time
-            generationTestingTime.append(generationTimeTaken)
-            # keep track of the last 5 generations time taken
-            if len(generationTestingTime) > 5:
-                generationTestingTime.pop(0)
-
-            # calculate the estimated time left based on the last 5 generations
-            averageGenerationTimeTaken = sum(generationTestingTime) / len(generationTestingTime)
-            estimatedSecondsLeft = (generationCount - generation) * averageGenerationTimeTaken
 
             # print the stats of the generation
             print("\nAgent      Fitness  Avg Lvl Comp  Survived")
@@ -117,8 +111,8 @@ class TournamentRunner:
                 ))
             print(f"Generation took:     {secondsToTime(generationTimeTaken)}")
             print(f"Estimated time left: {secondsToTime(estimatedSecondsLeft)}")
-            print(f"Current runtime:     {secondsToTime(time.time() - tournamentStartTime)}")
-            print(f"Progress:            {round(generation / (generationCount / 100), 1)}%")
+            print(f"Current runtime:     {secondsToTime(currentRuntime)}")
+            print(f"Progress:            {round(progress, 1)}%")
 
             # save the best of the generation
             bestOfEachGenerations.append(population[0])
@@ -232,7 +226,7 @@ if __name__ == "__main__":
         generationCount=50,  # The number of generations.
         savePercentage=10,  # The top percentile of the population to save each generation.
         mutationRate=2,  # The start mutation rate.
-        gameCount=50,  # The number of games each agent will play each generation to calculate its fitness.
+        gameCount=1,  # The number of games each agent will play each generation to calculate its fitness.
         cpuCount=6,  # multiprocessing.cpu_count(),
         timeoutSeconds=30 * 60  # The number of seconds to wait for each agent to finish its game before timing out.
     )
