@@ -56,7 +56,7 @@ class TournamentRunner:
 
         # generate start population
         defaultWeightContainer = agentClass.getDefaultWeightContainer()
-        population = []
+        population = [agentClass.getBestWeightContainer()]
         # each member of the population is a mutated version of the default weight container
         while len(population) < populationSize:
             newWeightContainer = WeightModifier.mutateRandom(defaultWeightContainer, 3)

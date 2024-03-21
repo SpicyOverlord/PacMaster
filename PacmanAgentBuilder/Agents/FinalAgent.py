@@ -151,7 +151,7 @@ class FinalAgent(IAgent):
         islandDistanceMultiplier = self.weightContainer.get('IslandDistanceMultiplier')
         for i, island in enumerate(islands):
             islandValue = (islandSizeMultiplier / (len(island) + 1)) * (
-                        islandDistanceMultiplier / (islandDistances[i] + 1))
+                    islandDistanceMultiplier / (islandDistances[i] + 1))
 
             if islandValue > bestIslandValue:
                 bestIslandValue = islandValue
@@ -225,7 +225,8 @@ class FinalAgent(IAgent):
                 totalPelletDistance += pelletDistance
                 if pelletDistance < minPelletDistance:
                     minPelletDistance = pelletDistance
-        pelletLevel = totalPelletDistance / (minPelletDistance + 1) * 0.001 * weights.get('pelletsInDangerLevelMultiplier')
+        pelletLevel = totalPelletDistance / (minPelletDistance + 1) * 0.001 * weights.get(
+            'pelletsInDangerLevelMultiplier')
 
         # distance to pacman
         distanceToPacman = manhattanDistance(vector, obs.getPacmanPosition()) * 0.001 * weights.get(
@@ -289,32 +290,28 @@ class FinalAgent(IAgent):
         """
         :return: The best known weight container for this agent
         """
-        return None
-        # return WeightContainer({
-        #     'fleeThreshold': 10,
-        #     'pelletLevelDistance': 0.702,
-        #     'tooCloseThreshold': 25.613,
-        #     'tooCloseValue': 412.091,
-        #     'tooFarAwayThreshold': 4857.633,
-        #     'dangerZoneMultiplier': 1.431,
-        #     'dangerZoneMiddleMapNodeMultiplier': 0.458,
-        #     'ghostIsCloserMultiplier': 10.304,
-        #     'edgeMultiplier': 2.237,
-        #
-        #     'pelletLevelDistanceInDangerLevel': 60,
-        #     'pelletsInDangerLevelMultiplier': 1,
-        #     'distanceToPacManMultiplier': 1,
-        #
-        #     'PelletIslandDistance': 30,
-        #     'IslandSizeMultiplier': 10,
-        #     'IslandDistanceMultiplier': 100,
-        #
-        #     'ghostMultiplier': 10,
-        #     'blinky': 1,
-        #     'pinky': 1,
-        #     'inky': 1,
-        #     'clyde': 1,
-        # })
+        return WeightContainer({
+            'fleeThreshold': 0.0053,
+            'pelletLevelDistance': 0.86214,
+            'tooCloseThreshold': 5.41053,
+            'tooCloseValue': 680.17615,
+            'tooFarAwayThreshold': 27.61354,
+            'dangerZoneMultiplier': 0.0012,
+            'dangerZoneMiddleMapNodeMultiplier': 0.01893,
+            'ghostIsCloserMultiplier': 0.00016,
+            'edgeMultiplier': 0.08522,
+            'pelletLevelDistanceInDangerLevel': 3.16686,
+            'pelletsInDangerLevelMultiplier': 8.45353,
+            'distanceToPacManMultiplier': 0.00736,
+            'PelletIslandDistance': 47.47015,
+            'IslandSizeMultiplier': 0.00173,
+            'IslandDistanceMultiplier': 10176.32694,
+            'ghostMultiplier': 0.00286,
+            'blinky': 0.08615,
+            'pinky': 4e-05,
+            'inky': 5.45433,
+            'clyde': 9.29069}
+        )
 
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
