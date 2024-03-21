@@ -207,12 +207,16 @@ class TournamentRunner:
         # calculate the fitness of the member
         agentClass = args[0]
         gameCount = args[1]
-        stats = calculatePerformanceOverXGames(
-            agentClass=agentClass,
-            weightContainer=member,
-            gameCount=gameCount,
-            lockDeltaTime=True
-        )
+        try:
+            stats = calculatePerformanceOverXGames(
+                agentClass=agentClass,
+                weightContainer=member,
+                gameCount=gameCount,
+                lockDeltaTime=True
+            )
+        except Exception as e:
+            print(f"An error occurred during fitness evaluation: {e}")
+            stats = GameStats.getEmpty()
 
         return stats
 

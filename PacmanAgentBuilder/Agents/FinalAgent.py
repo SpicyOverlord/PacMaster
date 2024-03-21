@@ -37,12 +37,35 @@ class FinalAgent(IAgent):
 
         return dangerLevel > self.weightContainer.get('fleeThreshold')
 
+    def flee(self, obs: Observation, mapPos: MapPosition) -> int:
+        startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
+
+        minDangerLevel = 99999
+        minDangerDirection = STOP
+        for neighborContainer in startMapNode.neighborContainers:
+            endMapNode, path, distance = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode,
+                                                                                     neighborContainer.direction)
+
+            if obs.isGhostInPath(path):
+                # DebugHelper.drawPath(path, DebugHelper.RED, 5)
+                continue
+            # DebugHelper.drawPath(path, DebugHelper.GREEN, 5)
+
+            dangerLevel = self.calculateDangerLevel(obs, mapPos, endMapNode.position, self.weightContainer)
+            # DebugHelper.drawDangerLevel(dangerLevel, endMapNode.position)
+
+            if dangerLevel < minDangerLevel:
+                minDangerLevel = dangerLevel
+                minDangerDirection = neighborContainer.direction
+
+        return minDangerDirection
+
     def collect(self, obs: Observation):
         pacmanPosition = obs.getPacmanPosition()
 
         nextPos = self.calculateTargetPelletPosition(obs)
         nextPosMapPosition = obs.map.createMapPosition(nextPos)
-        DebugHelper.drawDot(nextPos, 3, DebugHelper.RED)
+        # DebugHelper.drawDot(nextPos, 3, DebugHelper.RED)
 
         paths = [
             obs.map.calculateShortestPath(pacmanPosition, nextPosMapPosition.mapNode1.position),
@@ -64,7 +87,7 @@ class FinalAgent(IAgent):
 
         # Draw the preferred path and return direction of the second point
         if preferred_path and len(preferred_path) > 1:
-            DebugHelper.drawPath(preferred_path, DebugHelper.YELLOW, 10)
+            # DebugHelper.drawPath(preferred_path, DebugHelper.YELLOW, 10)
             return self.getDirection(obs, preferred_path[1])
         else:
             # If there is no path or the path doesn't have a second point, move towards nextPos directly
@@ -74,8 +97,8 @@ class FinalAgent(IAgent):
         pelletPositions = obs.getPelletPositions()
         pelletIslandDistance = self.weightContainer.get('PelletIslandDistance')
 
-        colors = [DebugHelper.GREEN, DebugHelper.RED, DebugHelper.BLUE, DebugHelper.YELLOW,
-                  DebugHelper.PURPLE, DebugHelper.LIGHTBLUE]
+        # colors = [DebugHelper.GREEN, DebugHelper.RED, DebugHelper.BLUE, DebugHelper.YELLOW,
+        #           DebugHelper.PURPLE, DebugHelper.LIGHTBLUE]
 
         visited = set()
         islands = []
@@ -127,50 +150,28 @@ class FinalAgent(IAgent):
         islandSizeMultiplier = self.weightContainer.get('IslandSizeMultiplier')
         islandDistanceMultiplier = self.weightContainer.get('IslandDistanceMultiplier')
         for i, island in enumerate(islands):
-            islandValue = (islandSizeMultiplier / (len(island) + 1)) * (islandDistanceMultiplier / (islandDistances[i] + 1))
+            islandValue = (islandSizeMultiplier / (len(island) + 1)) * (
+                        islandDistanceMultiplier / (islandDistances[i] + 1))
 
             if islandValue > bestIslandValue:
                 bestIslandValue = islandValue
                 bestIslandIndex = i
 
-        # draw highlight for the best island
-        for position in islands[bestIslandIndex]:
-            DebugHelper.drawDot(position, 5, DebugHelper.WHITE)
-        # draw all islands in different colors
-        for i, island in enumerate(islands):
-            for position in island:
-                DebugHelper.drawDot(position, 4, colors[i % 6])
+        # # draw highlight for the best island
+        # for position in islands[bestIslandIndex]:
+        #     DebugHelper.drawDot(position, 5, DebugHelper.WHITE)
+        # # draw all islands in different colors
+        # for i, island in enumerate(islands):
+        #     for position in island:
+        #         DebugHelper.drawDot(position, 4, colors[i % 6])
 
         return closestIslandPositions[bestIslandIndex]
-
-    def flee(self, obs: Observation, mapPos: MapPosition) -> int:
-        startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
-
-        minDangerLevel = 99999
-        minDangerDirection = STOP
-        for neighborContainer in startMapNode.neighborContainers:
-            endMapNode, path, distance = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode,
-                                                                                     neighborContainer.direction)
-
-            if obs.isGhostInPath(path):
-                DebugHelper.drawPath(path, DebugHelper.RED, 5)
-                continue
-            DebugHelper.drawPath(path, DebugHelper.GREEN, 5)
-
-            dangerLevel = self.calculateDangerLevel(obs, mapPos, endMapNode.position, self.weightContainer)
-            DebugHelper.drawDangerLevel(dangerLevel, endMapNode.position)
-
-            if dangerLevel < minDangerLevel:
-                minDangerLevel = dangerLevel
-                minDangerDirection = neighborContainer.direction
-
-        return minDangerDirection
 
     def calculateDangerLevel(self, obs: Observation, mapPos: MapPosition,
                              vector: Vector2, weights: WeightContainer) -> float:
 
-        minDistance = 9999999
-        totalDistance = 0.0
+        minGhostDistance = 9999999
+        totalGhostDistance = 0.0
         ghostsDangerValue = 0.0
         numberOfCloseGhosts = 0
 
@@ -179,24 +180,25 @@ class FinalAgent(IAgent):
             if ghost.mode.current in (FREIGHT, SPAWN) or isInCenterArea(ghost.position):
                 continue
 
-            path, dist = obs.map.calculateGhostPath(ghost=ghost, endVector=vector)
+            ghostPath, ghostDistance = obs.map.calculateGhostPath(ghost=ghost, endVector=vector)
 
             # ignore ghost if it can't reach position (this normally only happens if the ghost is in the start area)
-            if len(path) == 0:
+            if len(ghostPath) == 0:
                 continue
 
-            minDistance = min(minDistance, dist)
+            minGhostDistance = min(minGhostDistance, ghostDistance)
 
-            # Threshold distance for a ghost to be considered 'too far away'. it will be ignored
-            if dist > weights.get('tooFarAwayThreshold'):
+            # Threshold distance for a ghost to be considered 'too far away' to be considered
+            if ghostDistance > weights.get('tooFarAwayThreshold'):
                 continue
 
-            totalDistance += dist
+            totalGhostDistance += ghostDistance
 
             # Threshold distance for a ghost to be considered 'close'
-            if dist < weights.get('tooCloseThreshold'):
+            if ghostDistance < weights.get('tooCloseThreshold'):
                 numberOfCloseGhosts += 1
 
+            # for each ghost, calculate the 'ghost danger value' for that ghost based on its distance and weight
             ghostWeight = 0
             if ghost.name == BLINKY:
                 ghostWeight = weights.get('blinky')
@@ -206,35 +208,34 @@ class FinalAgent(IAgent):
                 ghostWeight = weights.get('inky')
             elif ghost.name == CLYDE:
                 ghostWeight = weights.get('clyde')
-            ghostsDangerValue += ((1 + ghostWeight) * weights.get('ghostMultiplier')) / (1 + dist)
+            ghostsDangerValue += ((1 + ghostWeight) * weights.get('ghostMultiplier')) / (1 + ghostDistance)
 
-        # Adjust danger level based on the closest ghost
-        closestGhostValue = (1 / (minDistance + 1)) * 1000
-        # Further adjust based on the number of close ghosts
-        closeGhostValue = numberOfCloseGhosts * weights.get('tooCloseValue')
-
-        # Calculate pellet level
-        minDistance = 99999
-        totalDistance = 1.0
+        # Calculate pellet level (basically how many pellets are around the position)
+        minPelletDistance = 99999
+        totalPelletDistance = 1.0
         for pelletPosition in obs.getPelletPositions():
-            dist = manhattanDistance(pelletPosition, vector)
-            if dist < weights.get('pelletLevelDistanceInDangerLevel'):
-                totalDistance += dist
-                if dist < minDistance:
-                    minDistance = dist
+            pelletDistance = manhattanDistance(pelletPosition, vector)
+            if pelletDistance < weights.get('pelletLevelDistanceInDangerLevel'):
+                totalPelletDistance += pelletDistance
+                if pelletDistance < minPelletDistance:
+                    minPelletDistance = pelletDistance
         for powerPelletPosition in obs.getPowerPelletPositions():
-            dist = manhattanDistance(powerPelletPosition, vector)
-            if dist < weights.get('pelletLevelDistanceInDangerLevel'):
-                totalDistance += dist
-                if dist < minDistance:
-                    minDistance = dist
-        pelletLevel = totalDistance / (minDistance + 1) * 0.001 * weights.get('pelletsInDangerLevelMultiplier')
+            pelletDistance = manhattanDistance(powerPelletPosition, vector)
+            if pelletDistance < weights.get('pelletLevelDistanceInDangerLevel'):
+                totalPelletDistance += pelletDistance
+                if pelletDistance < minPelletDistance:
+                    minPelletDistance = pelletDistance
+        pelletLevel = totalPelletDistance / (minPelletDistance + 1) * 0.001 * weights.get('pelletsInDangerLevelMultiplier')
 
         # distance to pacman
         distanceToPacman = manhattanDistance(vector, obs.getPacmanPosition()) * 0.001 * weights.get(
             'distanceToPacManMultiplier')
+        # Adjust danger level based on the closest ghost
+        closestGhostValue = (1 / (minGhostDistance + 1)) * 1000
+        # Further adjust based on the number of close ghosts
+        closeGhostValue = numberOfCloseGhosts * weights.get('tooCloseValue')
 
-        # Calculate danger level
+        # Calculate danger level (minus pellet level to make pacman flee towards pellets)
         dangerLevel = closestGhostValue + closeGhostValue + ghostsDangerValue + distanceToPacman - pelletLevel
         # print(
         #     f"danger: {dangerLevel}, "
@@ -248,25 +249,29 @@ class FinalAgent(IAgent):
         # Danger zone multipliers
         if mapPos.isInDangerZone:
             dangerLevel *= 1 + weights.get('dangerZoneMultiplier')
-
             if mapPos.dangerZone.vectorIsMidMapNode(vector):
                 dangerLevel *= 1 + weights.get('dangerZoneMiddleMapNodeMultiplier')
 
         # a ghost is closer than pacman multiplier
-        if obs.map.calculateDistance(obs.getPacmanPosition(), vector) > minDistance:
+        if obs.map.calculateDistance(obs.getPacmanPosition(), vector) > minGhostDistance:
             dangerLevel *= 1 + weights.get('ghostIsCloserMultiplier')
 
         # close to edge multiplier
         if distanceToNearestEdge(vector) < 40:
             dangerLevel *= 1 + weights.get('edgeMultiplier')
-        # Normalize based on total distance to avoid high values in less dangerous situations
-        normalizedDanger = dangerLevel / (totalDistance + 1)
 
-        # if normalizedDanger < 2:
-        #     print("YES")
+        # Normalize based on total distance to avoid high values in less dangerous situations
+        normalizedDanger = dangerLevel / (totalGhostDistance + 1)
+
         return round(normalizedDanger, 5)
 
     def getDirection(self, obs: Observation, vector: Vector2) -> int:
+        """
+        Get the direction from pacman to a vector
+        :param obs: The current observation
+        :param vector: The vector to get the direction to
+        :return: The direction to the vector
+        """
         pacmanPosition = obs.getPacmanPosition()
         if pacmanPosition.y == vector.y:
             if pacmanPosition.x < vector.x:
@@ -281,6 +286,9 @@ class FinalAgent(IAgent):
 
     @staticmethod
     def getBestWeightContainer() -> WeightContainer:
+        """
+        :return: The best known weight container for this agent
+        """
         return None
         # return WeightContainer({
         #     'fleeThreshold': 10,
@@ -310,6 +318,9 @@ class FinalAgent(IAgent):
 
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
+        """
+        :return: The default weight container for this agent (used in the genetic algorithm to create start population)
+        """
         return WeightContainer({
             'fleeThreshold': 0.5,
             'pelletLevelDistance': 60,
