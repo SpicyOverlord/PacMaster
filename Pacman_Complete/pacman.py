@@ -53,11 +53,11 @@ class Pacman(Entity):
 
     def getValidKey(self):
         self.agent.takeStats()
-        try:
-            answer = self.agent.calculateNextMove(Observation(self.agent.gameController))
-        except Exception as e:
-            print(e)
-            answer = STOP
+        # try:
+        answer = self.agent.calculateNextMove(Observation(self.agent.gameController))
+        # except Exception as e:
+        #     print(e)
+        #     answer = STOP
         if answer is None or answer not in [UP, DOWN, LEFT, RIGHT, STOP]:
             raise Exception(f"Agent did not return a valid direction. returned '{answer}'")
         return answer

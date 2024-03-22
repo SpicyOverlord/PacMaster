@@ -64,6 +64,10 @@ class FinalAgent(IAgent):
         pacmanPosition = obs.getPacmanPosition()
 
         nextPos = self.calculateTargetPelletPosition(obs)
+        # in the rare case that there are no pellets left and the game still asks for a move, return STOP
+        if nextPos is None:
+            return STOP
+
         nextPosMapPosition = obs.map.createMapPosition(nextPos)
         # DebugHelper.drawDot(nextPos, 3, DebugHelper.RED)
 
@@ -165,6 +169,8 @@ class FinalAgent(IAgent):
         #     for position in island:
         #         DebugHelper.drawDot(position, 4, colors[i % 6])
 
+        if len(closestIslandPositions) == 0:
+            return None
         return closestIslandPositions[bestIslandIndex]
 
     def calculateDangerLevel(self, obs: Observation, mapPos: MapPosition,
