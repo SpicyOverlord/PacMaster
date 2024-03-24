@@ -58,9 +58,8 @@ class TournamentRunner:
         population = []
         # each member of the population is a very mutated version of the default weight container
         while len(population) < populationSize:
-            newWeightContainer = (WeightModifier
-                                  .mutateRandom(defaultWeightContainer, 2)
-                                  .mutateRandom(defaultWeightContainer, 2))
+            newWeightContainer = WeightModifier.mutateRandom(defaultWeightContainer, 2)
+            newWeightContainer = WeightModifier.mutateRandom(newWeightContainer, 2)
             population.append(newWeightContainer)
 
         print("\n\n------------- Starting new genetic tournament -------------")

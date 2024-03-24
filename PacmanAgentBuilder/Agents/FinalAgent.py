@@ -333,9 +333,9 @@ class FinalAgent(IAgent):
             'IslandSizeMultiplier': 10,
             'IslandDistanceMultiplier': 100,
 
-            'ghostMultiplier': 10,
-            'blinky': 5,
-            'pinky': 5,
-            'inky': 5,
-            'clyde': 5
+            'ghostMultiplier': 1,
+            'blinky': 1,
+            'pinky': 1,
+            'inky': 1,
+            'clyde': 1
         })
