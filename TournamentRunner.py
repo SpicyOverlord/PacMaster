@@ -55,10 +55,12 @@ class TournamentRunner:
 
         # generate start population
         defaultWeightContainer = agentClass.getDefaultWeightContainer()
-        population = [agentClass.getBestWeightContainer()]
-        # each member of the population is a mutated version of the default weight container
+        population = []
+        # each member of the population is a very mutated version of the default weight container
         while len(population) < populationSize:
-            newWeightContainer = WeightModifier.mutateRandom(defaultWeightContainer, 3)
+            newWeightContainer = (WeightModifier
+                                  .mutateRandom(defaultWeightContainer, 2)
+                                  .mutateRandom(defaultWeightContainer, 2))
             population.append(newWeightContainer)
 
         print("\n\n------------- Starting new genetic tournament -------------")
@@ -73,13 +75,12 @@ class TournamentRunner:
             print(f"Started at: {getCurrentTimestamp()}")
             print(f"Mutation rate: {currentMutationRate}")
 
-            start_time = time.time()
             # calculate fitness of population
+            start_time = time.time()
             stats = TournamentRunner.parallelFitnessEvaluation(population, constArgs, timeoutSeconds, cpuCount)
-
             end_time = time.time()
 
-            # add the calculated fitness to population
+            # add the calculated fitness to each member of the population
             for j in range(populationSize):
                 # if the agent timed out, set its fitness to 0
                 if stats[j] is None:
