@@ -97,7 +97,8 @@ class TournamentRunner:
             # calculate the time taken to calculate the fitness of the generation
             currentRuntime = time.time() - tournamentStartTime
             progress = generation / (generationCount / 100)
-            estimatedSecondsLeft = ((100 - progress) / 100) * currentRuntime
+            # estimatedSecondsLeft = ((100 - progress) / 100) * currentRuntime
+            estimatedSecondsLeft = currentRuntime / progress * (100 - progress)
             generationTimeTaken = end_time - start_time
 
             # print the stats of the generation

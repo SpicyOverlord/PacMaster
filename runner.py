@@ -21,7 +21,7 @@ if __name__ == "__main__":
     # agentClass = ShowGraph
     # agentClass = ShowPathfinding
     # agentClass = ShowFlee
-    # agentClass = IslandCollectorAgent
+    agentClass = IslandCollectorAgent
 
     # agentClass = FinalAgent
 
