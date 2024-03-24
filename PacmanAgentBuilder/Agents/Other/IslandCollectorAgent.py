@@ -10,7 +10,7 @@ from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
 
 
-class CollectorAgent2(IAgent):
+class IslandCollectorAgent(IAgent):
     def __init__(self, gameController, weightContainer: WeightContainer = None):
         super().__init__(gameController, weightContainer=weightContainer)
 
@@ -18,6 +18,8 @@ class CollectorAgent2(IAgent):
 
         # DebugHelper.drawMap(obs)
         # DebugHelper.drawPelletLevels(obs)
+
+        move = self.collect(obs)
 
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_UP]:
@@ -29,7 +31,7 @@ class CollectorAgent2(IAgent):
         if key_pressed[K_RIGHT]:
             return RIGHT
 
-        return self.collect(obs)
+        return move
 
     def collect(self, obs: Observation):
         pacmanPosition = obs.getPacmanPosition()

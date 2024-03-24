@@ -227,12 +227,12 @@ class DebugHelper(object):
         previousMapNode = None
         for mapNode in dangerZone.mapNodes:
             if previousMapNode is not None:
-                DebugHelper.drawDashedLine(startVector=previousMapNode.position, endVector=mapNode.position,
-                                           color=DebugHelper.YELLOW, width=3, dashLength=5)
+                DebugHelper.drawLine(startVector=previousMapNode.position, endVector=mapNode.position,
+                                           color=DebugHelper.YELLOW, width=4)
             previousMapNode = mapNode
 
         for edgeMapNode in dangerZone.edgeMapNodes:
-            DebugHelper.drawDot(edgeMapNode.position, 5, DebugHelper.GREEN)
+            DebugHelper.drawDot(edgeMapNode.position, 6, DebugHelper.GREEN)
 
     @staticmethod
     def drawMap(obs: Observation):
@@ -260,17 +260,16 @@ class DebugHelper(object):
         if not DebugHelper._enabled:
             return
 
+        dotSize = dangerLevel * 0.5
         # draw a dot with the size and color corresponding to how dangerous the position is.
-        if 0.05 <= dangerLevel <= 1:
-            DebugHelper.drawDot(vector, 5, DebugHelper.WHITE)
-        elif dangerLevel < 2:
-            DebugHelper.drawDot(vector, dangerLevel, DebugHelper.WHITE)
-        elif dangerLevel > 30:
-            DebugHelper.drawDot(vector, 10, DebugHelper.RED)
+        if .01 < dotSize < 3:
+            DebugHelper.drawDot(vector, 3, DebugHelper.YELLOW)
+        if dangerLevel < 10:
+            DebugHelper.drawDot(vector, dotSize, DebugHelper.YELLOW)
+        elif dangerLevel < 20:
+            DebugHelper.drawDot(vector, dotSize, DebugHelper.YELLOW)
         else:
-            if dangerLevel > 10:
-                dangerLevel = 10
-            DebugHelper.drawDot(vector, dangerLevel, DebugHelper.YELLOW)
+            DebugHelper.drawDot(vector, 10, DebugHelper.RED)
 
     @staticmethod
     def drawDangerLevels(obs: Observation, dangerFunction: callable):

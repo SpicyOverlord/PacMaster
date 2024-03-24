@@ -100,7 +100,7 @@ class NeighborContainer(object):
 
 class DangerZone(object):
     """
-    A DangerZone represents a zone on the map where the pacman is in danger.
+    A ShowIsInDanger represents a zone on the map where the pacman is in danger.
     TODO: add explanation
     """
 
@@ -114,7 +114,7 @@ class DangerZone(object):
 
     def vectorIsEdgeMapNode(self, vector: Vector2) -> bool:
         """
-        Check if a vector is an edge MapNode (edge of the DangerZone).
+        Check if a vector is an edge MapNode (edge of the ShowIsInDanger).
         :param vector: The vector to check
         :return: True if the vector is an edge MapNode, else False
         """
@@ -125,7 +125,7 @@ class DangerZone(object):
 
     def vectorIsMidMapNode(self, vector: Vector2) -> bool:
         """
-        Check if a vector is a mid MapNode (not edge of the DangerZone).
+        Check if a vector is a mid MapNode (not edge of the ShowIsInDanger).
         :param vector: The vector to check
         :return: True if the vector is a mid MapNode, else False
         """
@@ -136,11 +136,11 @@ class DangerZone(object):
 
     def __str__(self):
         return (
-            f"DangerZone(mapNodes={[str(node) for node in self.mapNodes]})")
+            f"ShowIsInDanger(mapNodes={[str(node) for node in self.mapNodes]})")
 
     def __collectMidMapNodes__(self, mapPosition: MapPosition) -> list[MapNode]:
         """
-        Collect the mid MapNodes of the DangerZone.
+        Collect the mid MapNodes of the ShowIsInDanger.
         :param mapPosition: The MapPosition of pacman
         :return: A list of mid MapNodes
         """
@@ -175,7 +175,7 @@ class DangerZone(object):
 
     def __collectEdgeMapNodes__(self) -> list[MapNode]:
         """
-        Collect the edge MapNodes of the DangerZone.
+        Collect the edge MapNodes of the ShowIsInDanger.
         :return: A list of the edge MapNodes
         """
         edgeMapNodes = []
@@ -189,7 +189,7 @@ class DangerZone(object):
 
     def __straightenMapNodes__(self) -> list[MapNode]:
         """
-        makes the order of the list of mapNodes match the order of the DangerZone (the 2 edges at each end of the list)
+        makes the order of the list of mapNodes match the order of the ShowIsInDanger (the 2 edges at each end of the list)
         :return: A straightened list of MapNodes
         """
         straightenedMapNodes = [self.edgeMapNodes[0]]
@@ -207,9 +207,9 @@ class DangerZone(object):
 
     def __isGhostInDangerZone__(self, map: Map) -> bool:
         """
-        Check if a ghost is in the DangerZone.
+        Check if a ghost is in the ShowIsInDanger.
         :param map: The Map object of the current level
-        :return: True if a ghost is in the DangerZone, else False
+        :return: True if a ghost is in the ShowIsInDanger, else False
         """
         previousMapNode = None
         for mapNode in self.mapNodes:
@@ -226,7 +226,7 @@ class MapPosition(object):
     """
     A MapPosition represents a position on the map.
     It contains information about the position and how the position relates to the map.
-    Stuff like if the position is between 2 MapNode or is on a MapNode, if it is in a DangerZone
+    Stuff like if the position is between 2 MapNode or is on a MapNode, if it is in a ShowIsInDanger
     """
 
     def __init__(self, map: Map, vector: Vector2):
@@ -248,8 +248,8 @@ class MapPosition(object):
 
     def __isInDangerZone__(self) -> bool:
         """
-        Check if the MapPosition is in a DangerZone.
-        :return: True if the MapPosition is in a DangerZone, else False
+        Check if the MapPosition is in a ShowIsInDanger.
+        :return: True if the MapPosition is in a ShowIsInDanger, else False
         """
         if len(self.mapNode1.neighborContainers) <= 2:
             return True
@@ -386,7 +386,7 @@ class Map(object):
     def getPathToEndOfDangerZoneInDirection(self, mapNode: MapNode, startDirection: int) -> (MapNode, list, int) | (
             None, None, None):
         """
-        Get the path to the end of a DangerZone in a specific direction.
+        Get the path to the end of a ShowIsInDanger in a specific direction.
         :param mapNode: The MapNode to start from
         :param startDirection: The direction to go
         :return: The end MapNode, the path and the distance if a path is found, else None, None, None
@@ -422,7 +422,7 @@ class Map(object):
 
     def getEndOfDangerZoneInDirection(self, mapNode: MapNode, startDirection: int) -> MapNode | None:
         """
-        Get the end MapNode of a DangerZone in a specific direction.
+        Get the end MapNode of a ShowIsInDanger in a specific direction.
         :param mapNode: The MapNode to start from
         :param startDirection: The direction to go
         :return: The end MapNode if found, else None

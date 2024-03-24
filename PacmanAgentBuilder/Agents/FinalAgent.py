@@ -17,8 +17,6 @@ class FinalAgent(IAgent):
     def calculateNextMove(self, obs: Observation):
         mapPos = obs.map.createMapPosition(obs.getPacmanPosition())
         # sleep(0.03)
-        # DebugHelper.drawMap(obs)
-        # DebugHelper.drawDangerZone(mapPos.dangerZone)
 
         # if in danger, flee
         if self.isInDanger(obs, mapPos):
@@ -36,6 +34,97 @@ class FinalAgent(IAgent):
             )
 
         return dangerLevel > self.weightContainer.get('fleeThreshold')
+
+    def calculateDangerLevel(self, obs: Observation, mapPos: MapPosition,
+                             vector: Vector2, weights: WeightContainer) -> float:
+
+        minGhostDistance = 9999999
+        totalGhostDistance = 0.0
+        ghostsDangerValue = 0.0
+        numberOfCloseGhosts = 0
+
+        for ghost in obs.getGhosts():
+            # ignore ghost if it is not dangerous
+            if ghost.mode.current in (FREIGHT, SPAWN) or isInCenterArea(ghost.position):
+                continue
+
+            ghostPath, ghostDistance = obs.map.calculateGhostPath(ghost=ghost, endVector=vector)
+
+            # ignore ghost if it can't reach position (this normally only happens if the ghost is in the start area)
+            if len(ghostPath) == 0:
+                continue
+
+            minGhostDistance = min(minGhostDistance, ghostDistance)
+
+            # Threshold distance for a ghost to be considered 'too far away' to be considered
+            if ghostDistance > weights.get('tooFarAwayThreshold'):
+                continue
+
+            totalGhostDistance += ghostDistance
+
+            # Threshold distance for a ghost to be considered 'close'
+            if ghostDistance < weights.get('tooCloseThreshold'):
+                numberOfCloseGhosts += 1
+
+            # for each ghost, calculate the 'ghost danger value' for that ghost based on its distance and weight
+            ghostWeight = 0
+            if ghost.name == BLINKY:
+                ghostWeight = weights.get('blinky')
+            elif ghost.name == PINKY:
+                ghostWeight = weights.get('pinky')
+            elif ghost.name == INKY:
+                ghostWeight = weights.get('inky')
+            elif ghost.name == CLYDE:
+                ghostWeight = weights.get('clyde')
+            ghostsDangerValue += ((1 + ghostWeight) * weights.get('ghostMultiplier')) / (1 + ghostDistance)
+
+        # Calculate pellet level (basically how many pellets are around the position)
+        minPelletDistance = 99999
+        totalPelletDistance = 1.0
+        for pelletPosition in obs.getPelletPositions():
+            pelletDistance = manhattanDistance(pelletPosition, vector)
+            if pelletDistance < weights.get('pelletLevelDistanceInDangerLevel'):
+                totalPelletDistance += pelletDistance
+                if pelletDistance < minPelletDistance:
+                    minPelletDistance = pelletDistance
+        for powerPelletPosition in obs.getPowerPelletPositions():
+            pelletDistance = manhattanDistance(powerPelletPosition, vector)
+            if pelletDistance < weights.get('pelletLevelDistanceInDangerLevel'):
+                totalPelletDistance += pelletDistance
+                if pelletDistance < minPelletDistance:
+                    minPelletDistance = pelletDistance
+        pelletLevel = totalPelletDistance / (minPelletDistance + 1) * 0.001 * weights.get(
+            'pelletsInDangerLevelMultiplier')
+
+        # distance to pacman
+        distanceToPacman = manhattanDistance(vector, obs.getPacmanPosition()) * 0.001 * weights.get(
+            'distanceToPacManMultiplier')
+        # Adjust danger level based on the closest ghost
+        closestGhostValue = (1 / (minGhostDistance + 1)) * 1000
+        # Further adjust based on the number of close ghosts
+        closeGhostValue = numberOfCloseGhosts * weights.get('tooCloseValue')
+
+        # Calculate danger level (minus pellet level to make pacman flee towards pellets)
+        dangerLevel = closestGhostValue + closeGhostValue + ghostsDangerValue + distanceToPacman - pelletLevel
+
+        # Danger zone multipliers
+        if mapPos.isInDangerZone:
+            dangerLevel *= 1 + weights.get('dangerZoneMultiplier')
+            if mapPos.dangerZone.vectorIsMidMapNode(vector):
+                dangerLevel *= 1 + weights.get('dangerZoneMiddleMapNodeMultiplier')
+
+        # a ghost is closer than pacman multiplier
+        if obs.map.calculateDistance(obs.getPacmanPosition(), vector) > minGhostDistance:
+            dangerLevel *= 1 + weights.get('ghostIsCloserMultiplier')
+
+        # close to edge multiplier
+        if distanceToNearestEdge(vector) < 40:
+            dangerLevel *= 1 + weights.get('edgeMultiplier')
+
+        # Normalize based on total distance to avoid high values in less dangerous situations
+        normalizedDanger = dangerLevel / (totalGhostDistance + 1)
+
+        return round(normalizedDanger, 5)
 
     def flee(self, obs: Observation, mapPos: MapPosition) -> int:
         startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
@@ -173,105 +262,6 @@ class FinalAgent(IAgent):
             return None
         return closestIslandPositions[bestIslandIndex]
 
-    def calculateDangerLevel(self, obs: Observation, mapPos: MapPosition,
-                             vector: Vector2, weights: WeightContainer) -> float:
-
-        minGhostDistance = 9999999
-        totalGhostDistance = 0.0
-        ghostsDangerValue = 0.0
-        numberOfCloseGhosts = 0
-
-        for ghost in obs.getGhosts():
-            # ignore ghost if it is not dangerous
-            if ghost.mode.current in (FREIGHT, SPAWN) or isInCenterArea(ghost.position):
-                continue
-
-            ghostPath, ghostDistance = obs.map.calculateGhostPath(ghost=ghost, endVector=vector)
-
-            # ignore ghost if it can't reach position (this normally only happens if the ghost is in the start area)
-            if len(ghostPath) == 0:
-                continue
-
-            minGhostDistance = min(minGhostDistance, ghostDistance)
-
-            # Threshold distance for a ghost to be considered 'too far away' to be considered
-            if ghostDistance > weights.get('tooFarAwayThreshold'):
-                continue
-
-            totalGhostDistance += ghostDistance
-
-            # Threshold distance for a ghost to be considered 'close'
-            if ghostDistance < weights.get('tooCloseThreshold'):
-                numberOfCloseGhosts += 1
-
-            # for each ghost, calculate the 'ghost danger value' for that ghost based on its distance and weight
-            ghostWeight = 0
-            if ghost.name == BLINKY:
-                ghostWeight = weights.get('blinky')
-            elif ghost.name == PINKY:
-                ghostWeight = weights.get('pinky')
-            elif ghost.name == INKY:
-                ghostWeight = weights.get('inky')
-            elif ghost.name == CLYDE:
-                ghostWeight = weights.get('clyde')
-            ghostsDangerValue += ((1 + ghostWeight) * weights.get('ghostMultiplier')) / (1 + ghostDistance)
-
-        # Calculate pellet level (basically how many pellets are around the position)
-        minPelletDistance = 99999
-        totalPelletDistance = 1.0
-        for pelletPosition in obs.getPelletPositions():
-            pelletDistance = manhattanDistance(pelletPosition, vector)
-            if pelletDistance < weights.get('pelletLevelDistanceInDangerLevel'):
-                totalPelletDistance += pelletDistance
-                if pelletDistance < minPelletDistance:
-                    minPelletDistance = pelletDistance
-        for powerPelletPosition in obs.getPowerPelletPositions():
-            pelletDistance = manhattanDistance(powerPelletPosition, vector)
-            if pelletDistance < weights.get('pelletLevelDistanceInDangerLevel'):
-                totalPelletDistance += pelletDistance
-                if pelletDistance < minPelletDistance:
-                    minPelletDistance = pelletDistance
-        pelletLevel = totalPelletDistance / (minPelletDistance + 1) * 0.001 * weights.get(
-            'pelletsInDangerLevelMultiplier')
-
-        # distance to pacman
-        distanceToPacman = manhattanDistance(vector, obs.getPacmanPosition()) * 0.001 * weights.get(
-            'distanceToPacManMultiplier')
-        # Adjust danger level based on the closest ghost
-        closestGhostValue = (1 / (minGhostDistance + 1)) * 1000
-        # Further adjust based on the number of close ghosts
-        closeGhostValue = numberOfCloseGhosts * weights.get('tooCloseValue')
-
-        # Calculate danger level (minus pellet level to make pacman flee towards pellets)
-        dangerLevel = closestGhostValue + closeGhostValue + ghostsDangerValue + distanceToPacman - pelletLevel
-        # print(
-        #     f"danger: {dangerLevel}, "
-        #     f"Closest ghost value: {closestGhostValue}, "
-        #     f"close ghost value: {closeGhostValue}, "
-        #     f"ghost danger value: {ghostsDangerValue}, "
-        #     f"distance to pacman: {distanceToPacman}, "
-        #     f"pellet level: {pelletLevel}"
-        # )
-
-        # Danger zone multipliers
-        if mapPos.isInDangerZone:
-            dangerLevel *= 1 + weights.get('dangerZoneMultiplier')
-            if mapPos.dangerZone.vectorIsMidMapNode(vector):
-                dangerLevel *= 1 + weights.get('dangerZoneMiddleMapNodeMultiplier')
-
-        # a ghost is closer than pacman multiplier
-        if obs.map.calculateDistance(obs.getPacmanPosition(), vector) > minGhostDistance:
-            dangerLevel *= 1 + weights.get('ghostIsCloserMultiplier')
-
-        # close to edge multiplier
-        if distanceToNearestEdge(vector) < 40:
-            dangerLevel *= 1 + weights.get('edgeMultiplier')
-
-        # Normalize based on total distance to avoid high values in less dangerous situations
-        normalizedDanger = dangerLevel / (totalGhostDistance + 1)
-
-        return round(normalizedDanger, 5)
-
     def getDirection(self, obs: Observation, vector: Vector2) -> int:
         """
         Get the direction from pacman to a vector
@@ -297,27 +287,27 @@ class FinalAgent(IAgent):
         :return: The best known weight container for this agent
         """
         return WeightContainer({
-            'fleeThreshold': 0.0053,
-            'pelletLevelDistance': 0.86214,
-            'tooCloseThreshold': 5.41053,
-            'tooCloseValue': 680.17615,
-            'tooFarAwayThreshold': 27.61354,
-            'dangerZoneMultiplier': 0.0012,
-            'dangerZoneMiddleMapNodeMultiplier': 0.01893,
-            'ghostIsCloserMultiplier': 0.00016,
-            'edgeMultiplier': 0.08522,
-            'pelletLevelDistanceInDangerLevel': 3.16686,
-            'pelletsInDangerLevelMultiplier': 8.45353,
-            'distanceToPacManMultiplier': 0.00736,
-            'PelletIslandDistance': 47.47015,
-            'IslandSizeMultiplier': 0.00173,
-            'IslandDistanceMultiplier': 10176.32694,
-            'ghostMultiplier': 0.00286,
-            'blinky': 0.08615,
-            'pinky': 4e-05,
-            'inky': 5.45433,
-            'clyde': 9.29069}
-        )
+            'fleeThreshold': 10.3649,
+            'pelletLevelDistance': 171.04447,
+            'tooCloseThreshold': 0.55431,
+            'tooCloseValue': 2.22647,
+            'tooFarAwayThreshold': 0.00324,
+            'dangerZoneMultiplier': 0.054,
+            'dangerZoneMiddleMapNodeMultiplier': 0.00022,
+            'ghostIsCloserMultiplier': 0.00322,
+            'edgeMultiplier': 1.49241,
+            'pelletLevelDistanceInDangerLevel': 619.93584,
+            'pelletsInDangerLevelMultiplier': 0.18195,
+            'distanceToPacManMultiplier': 0.0,
+            'PelletIslandDistance': 0.0,
+            'IslandSizeMultiplier': 9.89987,
+            'IslandDistanceMultiplier': 1501.86886,
+            'ghostMultiplier': 0.00022,
+            'blinky': 0.00017,
+            'pinky': 0.18026,
+            'inky': 1e-05,
+            'clyde': 0.0222
+        })
 
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:

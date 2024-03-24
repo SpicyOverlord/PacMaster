@@ -181,6 +181,8 @@ class Observation(object):
         :return: True if a ghost is in the path, False otherwise.
         """
         for ghost in self.getGhosts():
+            if ghost.mode.current in (FREIGHT, SPAWN) or isInCenterArea(ghost.position):
+                continue
             if self.isVectorInPath(path, ghost.position):
                 return True
 
