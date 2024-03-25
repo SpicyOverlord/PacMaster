@@ -43,6 +43,7 @@ def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: We
         Calculates the performance of the specified agent over a number of games.
 
         :param agentClass: Specify the agent to be evaluated.
+        :param weightContainer: The container with all the weights/variables for the agent.
         :param gameCount: Number of games the agent will play.
         :param gameSpeed: Sets the speed of the game from 0.1 (slow) to 5 (fast). Note: For a higher speed, enable lockDeltaTime.
         :param startLevel: Choose the starting level for the agent (0 for level one, 1 for level two, and so on).
