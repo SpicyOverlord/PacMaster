@@ -1,3 +1,4 @@
+import random
 import time
 import multiprocessing
 import os
@@ -56,7 +57,7 @@ class TournamentRunner:
 
         # generate start population
         defaultWeightContainer = agentClass.getDefaultWeightContainer()
-        population = [
+        prepopulation = [
             WeightContainer({'fleeThreshold': 7.60937, 'pelletLevelDistance': 0.10431, 'tooCloseThreshold': 86.32886,
                              'tooCloseValue': 192355.37865, 'tooFarAwayThreshold': 0.00287,
                              'dangerZoneMultiplier': 5e-05, 'dangerZoneMiddleMapNodeMultiplier': 1.31001,
@@ -126,9 +127,11 @@ class TournamentRunner:
                              'IslandDistanceMultiplier': 40.00913, 'ghostMultiplier': 1.01938, 'blinky': 0.01684,
                              'pinky': 0.03808, 'inky': 2.67903, 'clyde': 0.34154})
         ]
+        population = []
+        population += prepopulation
         # each member of the population is a very mutated version of the default weight container
         while len(population) < populationSize:
-            newWeightContainer = WeightModifier.mutateRandom(defaultWeightContainer, 2)
+            newWeightContainer = WeightModifier.mutateRandom(random.choice(prepopulation), 2)
             newWeightContainer = WeightModifier.mutateRandom(newWeightContainer, 2)
             population.append(newWeightContainer)
 
