@@ -7,7 +7,7 @@ from Pacman_Complete.run import GameController
 
 def runGameWithAgent(agentClass: type[IAgent], weightContainer: WeightContainer = None,
                      gameSpeed=3, startLives=3, startLevel: int = 0,
-                     ghostsEnabled: bool = True, freightEnabled: bool = True, lockDeltaTime=False) -> GameStats:
+                     ghostsEnabled: bool = True, freightEnabled: bool = True, lockDeltaTime=True) -> GameStats:
     """
         Runs a single game with the specified agent.
 
@@ -38,7 +38,7 @@ def runGameWithAgent(agentClass: type[IAgent], weightContainer: WeightContainer 
 def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: WeightContainer = None,
                                    gameCount: int = 50, gameSpeed=1, startLevel: int = 0, startLives=1,
                                    ghostsEnabled: bool = True, freightEnabled: bool = True,
-                                   logging=False, lockDeltaTime=False):
+                                   logging=False):
     """
         Calculates the performance of the specified agent over a number of games.
 
@@ -50,12 +50,9 @@ def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: We
         :param startLives: Choose the number of lives the agent will start with.
         :param ghostsEnabled: Toggle ghosts on or off.
         :param freightEnabled: Toggle if the effect of power pellets should be ignored (ghosts turning blue and stops chasing).
-        :param lockDeltaTime: When enabled, the game will run at the highest possible speed regardless of the gameSpeed setting. This provides a stable test environment as the game speed is bottlenecked by your hardware, and can therefore not go faster than your hardware can handle.
         :param logging: Toggle the logging of game-related information to the console while the agent is playing.
         :return: Performance object containing the performance of the agent over the specified number of games.
         """
-    if lockDeltaTime:
-        DebugHelper.disable()
 
     gameStats = []
     for i in range(gameCount):
@@ -64,8 +61,7 @@ def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: We
 
         gameStats.append(runGameWithAgent(agentClass, weightContainer=weightContainer, gameSpeed=gameSpeed,
                                           startLives=startLives, startLevel=startLevel,
-                                          ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled,
-                                          lockDeltaTime=lockDeltaTime))
+                                          ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled))
 
         if logging:
             print(f"Game {i + 1} result: {gameStats[i]}")

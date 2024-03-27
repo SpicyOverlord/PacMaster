@@ -1,5 +1,6 @@
 import os.path
 import subprocess
+from time import sleep
 
 import pygame
 from pygame.locals import *
@@ -97,8 +98,8 @@ class GameController(object):
 
     def update(self):
         if self.lockDeltaTime:
-            # dt = 0.034
             dt = 0.04
+            sleep(0.03)
         else:
             dt = self.clock.tick(30 * self.gameSpeed) / (1000.0 / self.gameSpeed)
 
@@ -288,5 +289,5 @@ if __name__ == '__main__':
     os.chdir(dir_path)
 
     # Run fileA.py using Python
-    subprocess.run(['python', fileA_path])
+    subprocess.run(['python3', fileA_path])
 

@@ -1,4 +1,23 @@
-# Connect
+# To run my agent execute the following command:
+```shell
+python3 runner.py
+```
+# Paths to code:
+### My agent code
+> /PacmanAgentBuilder/Agents/FinalAgent.py
+### Pathfinding algorithm
+> /PacmanAgentBuilder/Utils/Map.py - (the calculateShortestPath() function)
+### Genetic algorithm
+> /TournamentRunner.py
+
+> /PacmanAgentBuilder/Genetics/WeightModifier.py
+
+
+---
+
+# Server commands
+
+## Connect
 ### Connect to Server
 ```shell
 ssh root@192.168.1.50
@@ -13,7 +32,7 @@ ssh -t root@192.168.1.50 'tmux attach -t pacmantour'
 ssh -t root@192.168.1.50 'tmux attach -t pacmantest'
 ```
 
-# Sync
+## Sync
 ### Push to Linux server
 ```shell
 git add --all && git commit -m "update" && git push

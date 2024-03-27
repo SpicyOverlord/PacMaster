@@ -16,7 +16,6 @@ class FinalAgent(IAgent):
 
     def calculateNextMove(self, obs: Observation):
         mapPos = obs.map.createMapPosition(obs.getPacmanPosition())
-        # sleep(0.03)
 
         # if in danger, flee
         if self.isInDanger(obs, mapPos):
@@ -37,7 +36,6 @@ class FinalAgent(IAgent):
 
     def calculateDangerLevel(self, obs: Observation, mapPos: MapPosition,
                              vector: Vector2, weights: WeightContainer) -> float:
-
         minGhostDistance = 9999999
         totalGhostDistance = 0.0
         ghostsDangerValue = 0.0
@@ -93,12 +91,13 @@ class FinalAgent(IAgent):
                 totalPelletDistance += pelletDistance
                 if pelletDistance < minPelletDistance:
                     minPelletDistance = pelletDistance
-        pelletLevel = totalPelletDistance / (minPelletDistance + 1) * 0.001 * weights.get(
-            'pelletsInDangerLevelMultiplier')
+        pelletLevel = totalPelletDistance / (minPelletDistance + 1) * 0.001
+        pelletLevel *= weights.get('pelletsInDangerLevelMultiplier')
 
         # distance to pacman
-        distanceToPacman = manhattanDistance(vector, obs.getPacmanPosition()) * 0.001 * weights.get(
-            'distanceToPacManMultiplier')
+        distanceToPacman = manhattanDistance(vector, obs.getPacmanPosition()) * 0.001
+        distanceToPacman *= weights.get('distanceToPacManMultiplier')
+
         # Adjust danger level based on the closest ghost
         closestGhostValue = (1 / (minGhostDistance + 1)) * 1000
         # Further adjust based on the number of close ghosts
@@ -136,12 +135,12 @@ class FinalAgent(IAgent):
                                                                                      neighborContainer.direction)
 
             if obs.isGhostInPath(path):
-                # DebugHelper.drawPath(path, DebugHelper.RED, 5)
+                DebugHelper.drawPath(path, DebugHelper.RED, 5)
                 continue
-            # DebugHelper.drawPath(path, DebugHelper.GREEN, 5)
+            DebugHelper.drawPath(path, DebugHelper.GREEN, 5)
 
             dangerLevel = self.calculateDangerLevel(obs, mapPos, endMapNode.position, self.weightContainer)
-            # DebugHelper.drawDangerLevel(dangerLevel, endMapNode.position)
+            DebugHelper.drawDangerLevel(dangerLevel, endMapNode.position)
 
             if dangerLevel < minDangerLevel:
                 minDangerLevel = dangerLevel
@@ -158,7 +157,7 @@ class FinalAgent(IAgent):
             return STOP
 
         nextPosMapPosition = obs.map.createMapPosition(nextPos)
-        # DebugHelper.drawDot(nextPos, 3, DebugHelper.RED)
+        DebugHelper.drawDot(nextPos, 3, DebugHelper.RED)
 
         paths = [
             obs.map.calculateShortestPath(pacmanPosition, nextPosMapPosition.mapNode1.position),
@@ -180,7 +179,7 @@ class FinalAgent(IAgent):
 
         # Draw the preferred path and return direction of the second point
         if preferred_path and len(preferred_path) > 1:
-            # DebugHelper.drawPath(preferred_path, DebugHelper.YELLOW, 10)
+            DebugHelper.drawPath(preferred_path, DebugHelper.YELLOW, 10)
             return self.getDirection(obs, preferred_path[1])
         else:
             # If there is no path or the path doesn't have a second point, move towards nextPos directly
@@ -190,8 +189,8 @@ class FinalAgent(IAgent):
         pelletPositions = obs.getPelletPositions()
         pelletIslandDistance = self.weightContainer.get('PelletIslandDistance')
 
-        # colors = [DebugHelper.GREEN, DebugHelper.RED, DebugHelper.BLUE, DebugHelper.YELLOW,
-        #           DebugHelper.PURPLE, DebugHelper.LIGHTBLUE]
+        colors = [DebugHelper.GREEN, DebugHelper.RED, DebugHelper.BLUE, DebugHelper.YELLOW,
+                  DebugHelper.PURPLE, DebugHelper.LIGHTBLUE]
 
         visited = set()
         islands = []
@@ -250,13 +249,13 @@ class FinalAgent(IAgent):
                 bestIslandValue = islandValue
                 bestIslandIndex = i
 
-        # # draw highlight for the best island
-        # for position in islands[bestIslandIndex]:
-        #     DebugHelper.drawDot(position, 5, DebugHelper.WHITE)
-        # # draw all islands in different colors
-        # for i, island in enumerate(islands):
-        #     for position in island:
-        #         DebugHelper.drawDot(position, 4, colors[i % 6])
+        # draw highlight for the best island
+        for position in islands[bestIslandIndex]:
+            DebugHelper.drawDot(position, 5, DebugHelper.WHITE)
+        # draw all islands in different colors
+        for i, island in enumerate(islands):
+            for position in island:
+                DebugHelper.drawDot(position, 4, colors[i % 6])
 
         if len(closestIslandPositions) == 0:
             return None
@@ -312,7 +311,7 @@ class FinalAgent(IAgent):
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
         """
-        :return: The default weight container for this agent (used in the genetic algorithm to create start population)
+        :return: The default weight container for this agent (used in the genetic algorithm to create the start population)
         """
         return WeightContainer({
             'fleeThreshold': 0.5,
