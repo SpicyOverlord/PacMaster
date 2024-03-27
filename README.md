@@ -1,12 +1,22 @@
-# To run my agent execute the following command:
+# Frederik B. (frbb@itu.dk)
+
+---
+
+# 5 Minute presentation:
+> https://drive.google.com/file/d/1Q-ctIKGCo6JXhtWkjPEUfm6CXZywABmc/view?usp=sharing
+
+For better quality, watch the mp4 file in the folder.
+# To run my agent run the following command:
 ```shell
 python3 runner.py
 ```
+You can also run the normal run.py file in the Pacman_Complete folder, but it might not work.
+
 # Paths to code:
 ### My agent code
 > /PacmanAgentBuilder/Agents/FinalAgent.py
 ### Pathfinding algorithm
-> /PacmanAgentBuilder/Utils/Map.py - (the calculateShortestPath() function)
+> /PacmanAgentBuilder/Utils/Map.py (the calculateShortestPath() function)
 ### Genetic algorithm
 > /TournamentRunner.py
 

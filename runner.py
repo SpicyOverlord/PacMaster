@@ -17,6 +17,7 @@ if __name__ == "__main__":
     DebugHelper.disable()
 
     # --- USED IN THE PRESENTATION ---
+    # enable the DebugHelper to show the drawings of the algorithms
     # agentClass = ShowIsInDanger
     # agentClass = ShowDangerLevels
     # agentClass = ShowDangerZone
@@ -30,7 +31,7 @@ if __name__ == "__main__":
     # this will run the agent in 10 games and print the average performance over the 10 games
     stats = calculatePerformanceOverXGames(
         agentClass=agentClass,  # Specify the agent to be evaluated.
-        gameCount=10,  # Number of games the agent will play.
+        gameCount=50,  # Number of games the agent will play.
         startLevel=0,  # Choose the starting level for the agent (0 for level one, 1 for level two, and so on).
         startLives=3,  # Choose the number of lives the agent will start with.
         ghostsEnabled=True,  # Toggle ghosts on or off.
