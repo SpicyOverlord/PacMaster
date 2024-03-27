@@ -315,8 +315,8 @@ class FinalAgent(IAgent):
         :return: The default weight container for this agent (used in the genetic algorithm to create start population)
         """
         return WeightContainer({
-            'fleeThreshold': 0.5,
-            'pelletLevelDistance': 60,
+            'fleeThreshold': 5,
+            'pelletLevelDistance': 100,
             'tooCloseThreshold': 300,
             'tooCloseValue': 100,
             'tooFarAwayThreshold': 1000,
@@ -329,11 +329,11 @@ class FinalAgent(IAgent):
             'pelletsInDangerLevelMultiplier': 1,
             'distanceToPacManMultiplier': 1,
 
-            'PelletIslandDistance': 30,
+            'PelletIslandDistance': 60,
             'IslandSizeMultiplier': 10,
             'IslandDistanceMultiplier': 100,
 
-            'ghostMultiplier': 1,
+            'ghostMultiplier': 2,
             'blinky': 1,
             'pinky': 1,
             'inky': 1,

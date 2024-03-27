@@ -57,93 +57,20 @@ class TournamentRunner:
 
         # generate start population
         defaultWeightContainer = agentClass.getDefaultWeightContainer()
-
-        prePopulation = [
-            WeightContainer(
-                {'fleeThreshold': 7.60937, 'pelletLevelDistance': 0.10431, 'tooCloseThreshold': 86.32886,
-                 'tooCloseValue': 192355.37865, 'tooFarAwayThreshold': 0.00287, 'dangerZoneMultiplier': 5e-05,
-                 'dangerZoneMiddleMapNodeMultiplier': 1.31001, 'ghostIsCloserMultiplier': 0.46973,
-                 'edgeMultiplier': 0.17925, 'pelletLevelDistanceInDangerLevel': 212.96985,
-                 'pelletsInDangerLevelMultiplier': 0.11793, 'distanceToPacManMultiplier': 0.16287,
-                 'PelletIslandDistance': 0.11847, 'IslandSizeMultiplier': 0.00949, 'IslandDistanceMultiplier': 45.60294,
-                 'ghostMultiplier': 0.11594, 'blinky': 0.09273, 'pinky': 1142.2821, 'inky': 0.02258, 'clyde': 0.27173}),
-            WeightContainer(
-                {'fleeThreshold': 7.56977, 'pelletLevelDistance': 0.07855, 'tooCloseThreshold': 223.7031,
-                 'tooCloseValue': 360948.88277, 'tooFarAwayThreshold': 0.00077,
-                 'dangerZoneMultiplier': 0.0001, 'dangerZoneMiddleMapNodeMultiplier': 1.11383,
-                 'ghostIsCloserMultiplier': 0.04785, 'edgeMultiplier': 0.21505,
-                 'pelletLevelDistanceInDangerLevel': 178.28374, 'pelletsInDangerLevelMultiplier': 0.11514,
-                 'distanceToPacManMultiplier': 0.01946, 'PelletIslandDistance': 0.13236,
-                 'IslandSizeMultiplier': 0.00995, 'IslandDistanceMultiplier': 46.83615,
-                 'ghostMultiplier': 0.20619, 'blinky': 0.14664, 'pinky': 1590.88478, 'inky': 0.01836,
-                 'clyde': 0.26981}),
-            WeightContainer(
-                {'fleeThreshold': 10.3649, 'pelletLevelDistance': 171.04447, 'tooCloseThreshold': 0.55431,
-                 'tooCloseValue': 2.22647, 'tooFarAwayThreshold': 0.00324, 'dangerZoneMultiplier': 0.054,
-                 'dangerZoneMiddleMapNodeMultiplier': 0.00022, 'ghostIsCloserMultiplier': 0.00322,
-                 'edgeMultiplier': 1.49241, 'pelletLevelDistanceInDangerLevel': 619.93584,
-                 'pelletsInDangerLevelMultiplier': 0.18195, 'distanceToPacManMultiplier': 0.0,
-                 'PelletIslandDistance': 0.0, 'IslandSizeMultiplier': 9.89987,
-                 'IslandDistanceMultiplier': 1501.86886, 'ghostMultiplier': 0.00022, 'blinky': 0.00017,
-                 'pinky': 0.18026, 'inky': 1e-05, 'clyde': 0.0222}),
-            WeightContainer(
-                {'fleeThreshold': 5.44416, 'pelletLevelDistance': 65.626, 'tooCloseThreshold': 227.15288,
-                 'tooCloseValue': 2.49974, 'tooFarAwayThreshold': 0.37857, 'dangerZoneMultiplier': 0.1006,
-                 'dangerZoneMiddleMapNodeMultiplier': 0.00139, 'ghostIsCloserMultiplier': 0.20954,
-                 'edgeMultiplier': 0.18078, 'pelletLevelDistanceInDangerLevel': 142.74317,
-                 'pelletsInDangerLevelMultiplier': 1.16608, 'distanceToPacManMultiplier': 0.00031,
-                 'PelletIslandDistance': 19.37922, 'IslandSizeMultiplier': 19.36952,
-                 'IslandDistanceMultiplier': 209.07605, 'ghostMultiplier': 0.04522, 'blinky': 0.01463,
-                 'pinky': 0.09518, 'inky': 2.58483, 'clyde': 0.00542}),
-            WeightContainer({
-                'fleeThreshold': 10.50887, 'pelletLevelDistance': 258.61358,
-                'tooCloseThreshold': 17.88223, 'tooCloseValue': 3694.69894,
-                'tooFarAwayThreshold': 0.0233, 'dangerZoneMultiplier': 0.06301,
-                'dangerZoneMiddleMapNodeMultiplier': 0.8647,
-                'ghostIsCloserMultiplier': 1.09873, 'edgeMultiplier': 0.01347,
-                'pelletLevelDistanceInDangerLevel': 3.44943,
-                'pelletsInDangerLevelMultiplier': 1.34617,
-                'distanceToPacManMultiplier': 8e-05, 'PelletIslandDistance': 0.01153,
-                'IslandSizeMultiplier': 123.48025, 'IslandDistanceMultiplier': 4.11255,
-                'ghostMultiplier': 4.08185, 'blinky': 0.01855, 'pinky': 0.01967,
-                'inky': 1.26083, 'clyde': 1.53354}),
-            WeightContainer(
-                {'fleeThreshold': 0.00463, 'pelletLevelDistance': 520.37405, 'tooCloseThreshold': 66.61675,
-                 'tooCloseValue': 39.60558, 'tooFarAwayThreshold': 1846.65423,
-                 'dangerZoneMultiplier': 0.79823, 'dangerZoneMiddleMapNodeMultiplier': 5.6567,
-                 'ghostIsCloserMultiplier': 0.63348, 'edgeMultiplier': 0.95136,
-                 'pelletLevelDistanceInDangerLevel': 445.49403, 'pelletsInDangerLevelMultiplier': 1.26128,
-                 'distanceToPacManMultiplier': 0.91522, 'PelletIslandDistance': 12.71718,
-                 'IslandSizeMultiplier': 1.60958, 'IslandDistanceMultiplier': 379.03204,
-                 'ghostMultiplier': 1.904, 'blinky': 48.20524, 'pinky': 11.39158, 'inky': 2.53767,
-                 'clyde': 44.10417}),
-            WeightContainer(
-                {'fleeThreshold': 0.20279, 'pelletLevelDistance': 12.96206, 'tooCloseThreshold': 0.0029,
-                 'tooCloseValue': 42.43723, 'tooFarAwayThreshold': 1.11535, 'dangerZoneMultiplier': 7e-05,
-                 'dangerZoneMiddleMapNodeMultiplier': 0.00025, 'ghostIsCloserMultiplier': 0.09,
-                 'edgeMultiplier': 0.1508, 'pelletLevelDistanceInDangerLevel': 231.8367,
-                 'pelletsInDangerLevelMultiplier': 1.51862, 'distanceToPacManMultiplier': 0.00017,
-                 'PelletIslandDistance': 2.02816, 'IslandSizeMultiplier': 0.00465,
-                 'IslandDistanceMultiplier': 0.28114, 'ghostMultiplier': 0.00462, 'blinky': 0.01564,
-                 'pinky': 0.00228, 'inky': 0.09382, 'clyde': 0.15579}),
-            WeightContainer(
-                {'fleeThreshold': 0.64834, 'pelletLevelDistance': 6.80099, 'tooCloseThreshold': 1.65777,
-                 'tooCloseValue': 374.82911, 'tooFarAwayThreshold': 0.2217,
-                 'dangerZoneMultiplier': 0.00551, 'dangerZoneMiddleMapNodeMultiplier': 0.01326,
-                 'ghostIsCloserMultiplier': 0.00387, 'edgeMultiplier': 2.96274,
-                 'pelletLevelDistanceInDangerLevel': 1434.80925, 'pelletsInDangerLevelMultiplier': 0.02618,
-                 'distanceToPacManMultiplier': 0.10388, 'PelletIslandDistance': 17.12896,
-                 'IslandSizeMultiplier': 1.80522, 'IslandDistanceMultiplier': 40.00913,
-                 'ghostMultiplier': 1.01938, 'blinky': 0.01684, 'pinky': 0.03808, 'inky': 2.67903,
-                 'clyde': 0.34154})
-        ]
         population = []
-        population += prePopulation
         # each member of the population is a very mutated version of the default weight container
         while len(population) < populationSize:
-            newWeightContainer = WeightModifier.mutateRandom(random.choice(prePopulation), 2)
+            newWeightContainer = WeightModifier.mutateRandom(defaultWeightContainer, 2)
+            newWeightContainer = WeightModifier.mutateRandom(newWeightContainer, 2)
+            newWeightContainer = WeightModifier.mutateRandom(newWeightContainer, 2)
+            newWeightContainer = WeightModifier.mutateRandom(newWeightContainer, 2)
+            newWeightContainer = WeightModifier.mutateRandom(newWeightContainer, 2)
             population.append(newWeightContainer)
 
+        for pop in population:
+            print(pop)
+
+        exit()
         print("\n\n------------- Starting new genetic tournament -------------")
         print(f"Starting at: {getCurrentTimestamp()}")
         print(f"Agent: {agentClass.__name__}")
@@ -303,12 +230,12 @@ if __name__ == "__main__":
     # start a new tournament
     TournamentRunner.startNewTournament(
         agentClass=FinalAgent,  # Specify the agent to be evaluated.
-        populationSize=24,  # The size of the population.
-        freeGenerationCount=0,  # generations to skip before save top x% and starting to decrease the mutation rate.
-        generationCount=40,  # The number of generations.
-        savePercentage=20,  # The top percentile of the population to save each generation.
-        mutationRate=1,  # The start mutation rate.
-        gameCount=50,  # The number of games each agent will play each generation to calculate its fitness.
+        populationSize=30,  # The size of the population.
+        freeGenerationCount=30,  # generations to skip before save top x% and starting to decrease the mutation rate.
+        generationCount=100,  # The number of generations.
+        savePercentage=10,  # The top percentile of the population to save each generation.
+        mutationRate=1.5,  # The start mutation rate.
+        gameCount=10,  # The number of games each agent will play each generation to calculate its fitness.
         cpuCount=6,  # multiprocessing.cpu_count(),
         timeoutSeconds=30 * 60  # The number of seconds to wait for each agent to finish its game before timing out.
     )
