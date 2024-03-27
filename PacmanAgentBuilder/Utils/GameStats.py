@@ -14,7 +14,7 @@ class GameStats(object):
         self.efficiency = self.totalPelletsEaten * 10 / agent.actionsTaken / 2
 
     def __str__(self):
-        return f"GameStats(score={self.score}, efficiency={round(self.efficiency, 3)}, totalPelletsEaten={self.totalPelletsEaten}, actionsTaken={self.actionsTaken}, levelsCompleted={self.levelsCompleted})"
+        return f"GameStats(score={self.score}, levelsCompleted={self.levelsCompleted}, totalPelletsEaten={self.totalPelletsEaten}, actionsTaken={self.actionsTaken}, efficiency={round(self.efficiency, 3)})"
 
     @staticmethod
     def getEmpty():
