@@ -65,6 +65,7 @@ class TournamentRunner:
             newWeightContainer = WeightModifier.mutateRandom(newWeightContainer, 2)
             newWeightContainer = WeightModifier.mutateRandom(newWeightContainer, 2)
             newWeightContainer = WeightModifier.mutateRandom(newWeightContainer, 2)
+            newWeightContainer = WeightModifier.mutateRandom(newWeightContainer, 2)
             population.append(newWeightContainer)
 
         for pop in population:
@@ -234,8 +235,8 @@ if __name__ == "__main__":
         freeGenerationCount=30,  # generations to skip before save top x% and starting to decrease the mutation rate.
         generationCount=100,  # The number of generations.
         savePercentage=10,  # The top percentile of the population to save each generation.
-        mutationRate=1.5,  # The start mutation rate.
-        gameCount=10,  # The number of games each agent will play each generation to calculate its fitness.
+        mutationRate=1,  # The start mutation rate.
+        gameCount=50,  # The number of games each agent will play each generation to calculate its fitness.
         cpuCount=6,  # multiprocessing.cpu_count(),
         timeoutSeconds=30 * 60  # The number of seconds to wait for each agent to finish its game before timing out.
     )
