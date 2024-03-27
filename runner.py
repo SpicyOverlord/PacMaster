@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     agentClass = FinalAgent
 
-    # this will run the agent in 50 games and print the average performance over the 50 games
+    # this will run the agent in 10 games and print the average performance over the 10 games
     stats = calculatePerformanceOverXGames(
         agentClass=agentClass,  # Specify the agent to be evaluated.
         gameCount=10,  # Number of games the agent will play.
