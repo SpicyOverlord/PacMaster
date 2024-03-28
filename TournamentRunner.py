@@ -59,7 +59,7 @@ class TournamentRunner:
         defaultWeightContainer = agentClass.getDefaultWeightContainer()
         population = []
         # each member of the population is a very mutated version of the default weight container
-        while len(population):
+        while len(population) < populationSize:
             newWeightContainer = WeightModifier.mutateRandom(defaultWeightContainer, 2)
             newWeightContainer = WeightModifier.mutateRandom(newWeightContainer, 2)
             newWeightContainer = WeightModifier.mutateRandom(newWeightContainer, 2)
@@ -227,11 +227,11 @@ if __name__ == "__main__":
     # start a new tournament
     TournamentRunner.startNewTournament(
         agentClass=FinalAgent,  # Specify the agent to be evaluated.
-        populationSize=30,  # The size of the population.
+        populationSize=24,  # The size of the population.
         freeGenerationCount=30,  # generations to skip before save top x% and starting to decrease the mutation rate.
         generationCount=100,  # The number of generations.
-        savePercentage=10,  # The top percentile of the population to save each generation.
-        mutationRate=1.5,  # The start mutation rate.
+        savePercentage=13,  # The top percentile of the population to save each generation.
+        mutationRate=1,  # The start mutation rate.
         gameCount=40,  # The number of games each agent will play each generation to calculate its fitness.
         cpuCount=6,  # multiprocessing.cpu_count(),
         timeoutSeconds=30 * 60  # The number of seconds to wait for each agent to finish its game before timing out.
