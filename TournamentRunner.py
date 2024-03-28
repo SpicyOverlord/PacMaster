@@ -59,7 +59,7 @@ class TournamentRunner:
         defaultWeightContainer = agentClass.getDefaultWeightContainer()
         population = []
         # each member of the population is a very mutated version of the default weight container
-        while len(population) < populationSize*5:
+        while len(population):
             newWeightContainer = WeightModifier.mutateRandom(defaultWeightContainer, 2)
             newWeightContainer = WeightModifier.mutateRandom(newWeightContainer, 2)
             newWeightContainer = WeightModifier.mutateRandom(newWeightContainer, 2)
@@ -86,7 +86,7 @@ class TournamentRunner:
             end_time = time.time()
 
             # add the calculated fitness to each member of the population
-            for j in range(populationSize):
+            for j in range(len(population)):
                 # if the agent timed out, set its fitness to 0
                 if stats[j] is None:
                     population[j].addFitness(0)
@@ -108,9 +108,9 @@ class TournamentRunner:
 
             # print the stats of the generation
             print("\nAgent      Fitness  Avg Lvl Comp  Survived")
-            for i in range(populationSize):
+            for i in range(len(population)):
                 print("{:<10} {:<8} {:<13} {:<8}".format(
-                    f"{i + 1} of {populationSize}",
+                    f"{i + 1} of {len(population)}",
                     population[i].getFitness(),
                     stats[i]['averageLevelsCompleted'],
                     population[i].getGenerationsSurvived()
@@ -152,7 +152,7 @@ class TournamentRunner:
                 populationSize=populationSize,
                 savePercentage=savePercentage,
                 currentMutationRate=currentMutationRate,
-                poolSize=poolSize if generation != 0 else poolSize*5,
+                poolSize=poolSize,
                 freeGenerationCount=freeGenerationCount,
                 generation=generation
             )
