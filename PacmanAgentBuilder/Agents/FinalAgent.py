@@ -320,22 +320,22 @@ class FinalAgent(IAgent):
             'tooCloseThreshold': 300,
             'tooCloseValue': 100,
             'tooFarAwayThreshold': 1000,
-            'dangerZoneMultiplier': 1,
-            'dangerZoneMiddleMapNodeMultiplier': 1,
-            'ghostIsCloserMultiplier': 1,
-            'edgeMultiplier': 1,
+            'dangerZoneMultiplier': 2,
+            'dangerZoneMiddleMapNodeMultiplier': 2,
+            'ghostIsCloserMultiplier': 2,
+            'edgeMultiplier': 2,
 
             'pelletLevelDistanceInDangerLevel': 60,
-            'pelletsInDangerLevelMultiplier': 1,
-            'distanceToPacManMultiplier': 1,
+            'pelletsInDangerLevelMultiplier': 2,
+            'distanceToPacManMultiplier': 2,
 
             'PelletIslandDistance': 60,
             'IslandSizeMultiplier': 10,
             'IslandDistanceMultiplier': 100,
 
             'ghostMultiplier': 2,
-            'blinky': 1,
-            'pinky': 1,
-            'inky': 1,
-            'clyde': 1
+            'blinky': 2,
+            'pinky': 2,
+            'inky': 2,
+            'clyde': 2
         })
