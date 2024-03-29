@@ -227,11 +227,11 @@ if __name__ == "__main__":
     TournamentRunner.startNewTournament(
         agentClass=FinalAgent,  # Specify the agent to be evaluated.
         populationSize=24,  # The size of the population.
-        freeGenerationCount=30,  # generations to skip before save top x% and starting to decrease the mutation rate.
+        freeGenerationCount=20,  # generations to skip before save top x% and starting to decrease the mutation rate.
         generationCount=100,  # The number of generations.
         savePercentage=13,  # The top percentile of the population to save each generation.
-        mutationRate=2,  # The start mutation rate.
-        gameCount=50,  # The number of games each agent will play each generation to calculate its fitness.
+        mutationRate=0.5,  # The start mutation rate.
+        gameCount=40,  # The number of games each agent will play each generation to calculate its fitness.
         cpuCount=6,  # multiprocessing.cpu_count(),
         timeoutSeconds=30 * 60  # The number of seconds to wait for each agent to finish its game before timing out.
     )
