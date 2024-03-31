@@ -227,7 +227,7 @@ if __name__ == "__main__":
     TournamentRunner.startNewTournament(
         agentClass=FinalAgent,  # Specify the agent to be evaluated.
         populationSize=24,  # The size of the population.
-        freeGenerationCount=40,  # generations to skip before save top x% and starting to decrease the mutation rate.
+        freeGenerationCount=10,  # generations to skip before save top x% and starting to decrease the mutation rate.
         generationCount=100,  # The number of generations.
         savePercentage=13,  # The top percentile of the population to save each generation.
         mutationRate=1,  # The start mutation rate.
