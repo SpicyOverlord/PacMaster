@@ -288,5 +288,5 @@ if __name__ == '__main__':
     os.chdir(dir_path)
 
     # Run fileA.py using Python
-    subprocess.run(['python', fileA_path])
+    subprocess.run(['python3', fileA_path])
 
