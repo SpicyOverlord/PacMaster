@@ -60,6 +60,23 @@ def getOppositeDirection(direction: int) -> int:
     #     return LEFT
 
 
+def directionToVector(direction: int):
+    """
+    :param direction: The direction
+    :return: The vector representation of the direction
+    """
+    if direction == UP:
+        return Vector2(0, -1)
+    if direction == DOWN:
+        return Vector2(0, 1)
+    if direction == LEFT:
+        return Vector2(-1, 0)
+    if direction == RIGHT:
+        return Vector2(1, 0)
+
+    raise Exception(f"Direction '{direction}' not recognized")
+
+
 def directionToString(direction: int):
     """
     :param direction: The direction

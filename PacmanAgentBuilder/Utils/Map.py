@@ -4,7 +4,7 @@ from collections import deque
 from typing import List
 
 from PacmanAgentBuilder.Utils.utils import manhattanDistance, squaredDistance, isPortalPath, getOppositeDirection, \
-    roundVector, distanceToNearestEdge, isInCenterArea
+    roundVector, distanceToNearestEdge, isInCenterArea, directionToVector
 from Pacman_Complete.constants import *
 from Pacman_Complete.ghosts import Ghost
 from Pacman_Complete.nodes import NodeGroup, Node
@@ -181,6 +181,9 @@ class DangerZone(object):
         edgeMapNodes = []
 
         for mapNode in self.midMapNodes:
+            if len(mapNode.neighborContainers) != 2:
+                print(len(mapNode.neighborContainers))
+
             for neighbor in mapNode.neighborContainers:
                 if neighbor.mapNode not in self.midMapNodes:
                     edgeMapNodes.append(neighbor.mapNode)
@@ -265,8 +268,9 @@ class Map(object):
     It is created from the NodeGroup and the Ghosts of the game.
     """
 
-    def __init__(self, obs, nodeGroup: NodeGroup, ghosts: list[Ghost]):
+    def __init__(self, obs, nodeGroup: NodeGroup, maxNodeDistance: int = 99999):
         self.obs = obs
+
 
         self.mapNodes = []
         for node in nodeGroup.nodesLUT.values():
@@ -275,36 +279,43 @@ class Map(object):
             self.mapNodes.append(MapNode(node))
 
         self.mapNodeDict = {(node.x, node.y): node for node in self.mapNodes}
-        self.ghosts = ghosts
 
-        self.__setNodeNeighbors__()
+        self.__setNodeNeighbors__(maxNodeDistance)
 
-        # remove unwanted mapNode at (270,280)
-        # TODO why did I do this?
-        unwantedVector = Vector2(270, 280)
-        for currentMapNode in self.mapNodes:
-            if currentMapNode.position == unwantedVector:
-                self.mapNodes.remove(currentMapNode)
-                break
+        # # remove unwanted node
+        # unwantedVector = Vector2(270, 280)
+        # for currentMapNode in self.mapNodes:
+        #     if currentMapNode.position == unwantedVector:
+        #         self.mapNodes.remove(currentMapNode)
+        #         break
+        #
+        #     for neighborContainer in currentMapNode.neighborContainers:
+        #         if neighborContainer.mapNode.position == unwantedVector:
+        #             nextNeighborContainer = neighborContainer.mapNode.getNeighborInDirection(
+        #                 neighborContainer.direction)
+        #             if nextNeighborContainer is not None:
+        #                 totalDistance = neighborContainer.distance + nextNeighborContainer.distance
+        #
+        #                 neighborContainer.distance = totalDistance
+        #                 neighborContainer.mapNode = nextNeighborContainer.mapNode
 
-            for neighborContainer in currentMapNode.neighborContainers:
-                if neighborContainer.mapNode.position == unwantedVector:
-                    nextNeighborContainer = neighborContainer.mapNode.getNeighborInDirection(
-                        neighborContainer.direction)
-                    if nextNeighborContainer is not None:
-                        totalDistance = neighborContainer.distance + nextNeighborContainer.distance
-
-                        neighborContainer.distance = totalDistance
-                        neighborContainer.mapNode = nextNeighborContainer.mapNode
-
-    def __setNodeNeighbors__(self):
+    def __setNodeNeighbors__(self, maxNodeDistance: int = 99999):
         """
         Connect the MapNodes by setting the neighbors of the MapNodes.
         :return: None
         """
+
+        doneNodes = set()
         for currentMapNode in self.mapNodes:
+            if currentMapNode.position in doneNodes:
+                continue
+            doneNodes.add(currentMapNode.position)
+
             for neighborDirection, neighborNode in currentMapNode.node.neighbors.items():
                 if neighborNode is None:
+                    continue
+
+                if neighborNode.position in doneNodes:
                     continue
 
                 # skip if neighbor is in the center (ghost start area)
@@ -315,17 +326,41 @@ class Map(object):
                 if neighborMapNode is None:
                     raise Exception("No node found for neighbor at position: " + str(neighborNode.position))
 
-                distance = 0
                 direction = neighborDirection
                 if neighborDirection == PORTAL:
                     if neighborMapNode.position.x == 0:
                         direction = RIGHT
                     else:
                         direction = LEFT
-                else:
-                    distance = manhattanDistance(currentMapNode.position, neighborMapNode.position)
 
-                currentMapNode.addNeighbor(neighborMapNode, direction, distance)
+                    currentMapNode.addNeighbor(neighborMapNode, direction, 0)
+                    continue
+
+                directionVector = directionToVector(direction)
+                fullDistance = manhattanDistance(currentMapNode.position, neighborMapNode.position)
+                if fullDistance <= maxNodeDistance:
+                    currentMapNode.addNeighbor(neighborMapNode, direction, fullDistance)
+                    continue
+
+                currentNewMapNode = currentMapNode
+                while fullDistance > maxNodeDistance:
+                    newPos = Vector2(
+                        currentNewMapNode.position.x + directionVector.x * maxNodeDistance,
+                        currentNewMapNode.position.y + directionVector.y * maxNodeDistance
+                    )
+                    newMapNode = MapNode(Node(newPos.x, newPos.y))
+                    self.mapNodes.append(newMapNode)
+
+                    currentNewMapNode.addNeighbor(newMapNode, direction, maxNodeDistance)
+                    newMapNode.addNeighbor(currentNewMapNode, -direction, maxNodeDistance)
+
+                    fullDistance -= maxNodeDistance
+                    currentNewMapNode = newMapNode
+
+                lastDistance = manhattanDistance(currentNewMapNode.position, neighborMapNode.position)
+                currentNewMapNode.addNeighbor(neighborMapNode, direction, lastDistance)
+                neighborMapNode.addNeighbor(currentNewMapNode, -direction, lastDistance)
+
 
     def getMapNode(self, vector: Vector2) -> MapNode:
         """

@@ -14,7 +14,7 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 if __name__ == "__main__":
     # comment the line below to enable the debug helper (show the drawings of the algorithms)
-    DebugHelper.disable()
+    # DebugHelper.disable()
 
     # --- USED IN THE PRESENTATION ---
     # enable the DebugHelper to show the drawings of the algorithms
@@ -22,20 +22,20 @@ if __name__ == "__main__":
     # agentClass = ShowDangerLevels
     # agentClass = ShowDangerZone
     # agentClass = ShowGraph
-    # agentClass = ShowPathfinding
+    agentClass = ShowPathfinding
     # agentClass = ShowFlee
     # agentClass = ShowCollect
 
-    agentClass = FinalAgent
+    # agentClass = FinalAgent
 
     # this will run the agent in 10 games and print the average performance over the 10 games
     stats = calculatePerformanceOverXGames(
-        agentClass=agentClass,  # Specify the agent to be evaluated.
+        agentClass=agentClass,  # Specify the a gent to be evaluated.
         gameCount=50,  # Number of games the agent will play.
         startLevel=0,  # Choose the starting level for the agent (0 for level one, 1 for level two, and so on).
         startLives=3,  # Choose the number of lives the agent will start with.
         ghostsEnabled=True,  # Toggle ghosts on or off.
-        freightEnabled=True,  # Toggle if the effect of power pellets should be ignored.
+        freightEnabled=False,  # Toggle if the effect of power pellets should be ignored.
         logging=True  # Toggle the logging of game-related information to the console while the agent is playing.
     )
     print(f"Score: {stats['maxScore']}\n"
