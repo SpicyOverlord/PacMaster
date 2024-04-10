@@ -24,3 +24,8 @@ ssh -t root@192.168.1.50 'cd /root/PacMaster; git pull'
 ```shell
 rsync -avz --progress root@192.168.1.50:/root/PacMaster/Tournaments/ /Users/frederik/Home/Python/PacMaster/Tournaments
 ```
+
+### Copy Snapshop data to local machine
+```shell
+rsync -avz --progress root@192.168.1.50:/root/PacMaster/Data/ /Users/frederik/Home/Python/PacMaster/Data
+```
