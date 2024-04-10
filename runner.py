@@ -22,11 +22,11 @@ if __name__ == "__main__":
     # agentClass = ShowDangerLevels
     # agentClass = ShowDangerZone
     # agentClass = ShowGraph
-    agentClass = ShowPathfinding
+    # agentClass = ShowPathfinding
     # agentClass = ShowFlee
     # agentClass = ShowCollect
 
-    # agentClass = FinalAgent
+    agentClass = FinalAgent
 
     # this will run the agent in 10 games and print the average performance over the 10 games
     stats = calculatePerformanceOverXGames(

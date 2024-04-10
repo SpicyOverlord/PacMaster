@@ -208,7 +208,7 @@ class DebugHelper(object):
 
         # if the ghost can reach the goal, draw the path
         if len(path) != 0:
-            DebugHelper.drawDashedPath(path, lineColor, width)
+            DebugHelper.drawPath(path, lineColor, width)
 
     @staticmethod
     def drawDangerZone(dangerZone: DangerZone):
@@ -244,9 +244,15 @@ class DebugHelper(object):
         if not DebugHelper._enabled:
             return
 
+        doneNodes = set()
         for mapNode in obs.map.mapNodes:
+            if mapNode.position in doneNodes:
+                continue
             DebugHelper.drawDot(mapNode.position, 3, DebugHelper.BLUE)
+            doneNodes.add(mapNode.position)
             for neighbor in mapNode.neighborContainers:
+                if neighbor.mapNode.position in doneNodes:
+                    continue
                 DebugHelper.drawLine(mapNode.position, neighbor.mapNode.position, DebugHelper.WHITE, 1)
 
     @staticmethod

@@ -34,6 +34,10 @@ class MapNode(object):
         :param distance: The distance to the neighbor
         :return: None
         """
+
+        if self.position == mapNode.position:
+            print("MapNode.addNeighbor: self.position == mapNode.position")
+
         neighbor = NeighborContainer(mapNode, direction, distance)
         self.neighborContainers.append(neighbor)
 
@@ -271,8 +275,7 @@ class Map(object):
     def __init__(self, obs, nodeGroup: NodeGroup, maxNodeDistance: int = 99999):
         self.obs = obs
 
-
-        self.mapNodes = []
+        self.mapNodes: List[MapNode] = []
         for node in nodeGroup.nodesLUT.values():
             if isInCenterArea(node.position):
                 continue
@@ -334,22 +337,29 @@ class Map(object):
                         direction = LEFT
 
                     currentMapNode.addNeighbor(neighborMapNode, direction, 0)
+                    neighborMapNode.addNeighbor(currentMapNode, direction, 0)
                     continue
 
                 directionVector = directionToVector(direction)
                 fullDistance = manhattanDistance(currentMapNode.position, neighborMapNode.position)
                 if fullDistance <= maxNodeDistance:
                     currentMapNode.addNeighbor(neighborMapNode, direction, fullDistance)
+                    neighborMapNode.addNeighbor(currentMapNode, direction, fullDistance)
                     continue
 
                 currentNewMapNode = currentMapNode
                 while fullDistance > maxNodeDistance:
                     newPos = Vector2(
-                        currentNewMapNode.position.x + directionVector.x * maxNodeDistance,
-                        currentNewMapNode.position.y + directionVector.y * maxNodeDistance
+                        int(currentNewMapNode.position.x + directionVector.x * maxNodeDistance),
+                        int(currentNewMapNode.position.y + directionVector.y * maxNodeDistance)
                     )
-                    newMapNode = MapNode(Node(newPos.x, newPos.y))
-                    self.mapNodes.append(newMapNode)
+
+                    # TODO might not need this!
+                    newMapNode = self.getMapNode(newPos)
+                    if newMapNode is None:
+                        newMapNode = MapNode(Node(newPos.x, newPos.y))
+                        self.mapNodes.append(newMapNode)
+                        self.mapNodeDict[(newPos.x, newPos.y)] = newMapNode
 
                     currentNewMapNode.addNeighbor(newMapNode, direction, maxNodeDistance)
                     newMapNode.addNeighbor(currentNewMapNode, -direction, maxNodeDistance)
@@ -357,9 +367,10 @@ class Map(object):
                     fullDistance -= maxNodeDistance
                     currentNewMapNode = newMapNode
 
-                lastDistance = manhattanDistance(currentNewMapNode.position, neighborMapNode.position)
-                currentNewMapNode.addNeighbor(neighborMapNode, direction, lastDistance)
-                neighborMapNode.addNeighbor(currentNewMapNode, -direction, lastDistance)
+                if fullDistance > 0:
+                    lastDistance = manhattanDistance(currentNewMapNode.position, neighborMapNode.position)
+                    currentNewMapNode.addNeighbor(neighborMapNode, direction, lastDistance)
+                    neighborMapNode.addNeighbor(currentNewMapNode, -direction, lastDistance)
 
 
     def getMapNode(self, vector: Vector2) -> MapNode:

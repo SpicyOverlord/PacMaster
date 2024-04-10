@@ -15,6 +15,8 @@ class FinalAgent(IAgent):
         super().__init__(gameController, weightContainer=weightContainer)
 
     def calculateNextMove(self, obs: Observation):
+        DebugHelper.drawMap(obs)
+
         mapPos = obs.map.createMapPosition(obs.getPacmanPosition())
 
         # if in danger, flee
