@@ -1,3 +1,7 @@
+import csv
+import os
+import random
+import time
 from collections import deque
 
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
@@ -16,14 +20,19 @@ class FinalAgent(IAgent):
 
     def calculateNextMove(self, obs: Observation):
         mapPos = obs.map.createMapPosition(obs.getPacmanPosition())
-        # sleep(0.03)
+
 
         # if in danger, flee
         if self.isInDanger(obs, mapPos):
-            return self.flee(obs, mapPos)
+            move = self.flee(obs, mapPos)
+        else:
+            # else, collect pellets
+            move = self.collect(obs)
 
-        # else, collect pellets
-        return self.collect(obs)
+        if random.randint(1, 100) == 1:
+            self.snapShots.append(takeSnapShot(obs, move))
+
+        return move
 
     def isInDanger(self, obs: Observation, mapPos: MapPosition) -> bool:
         dangerLevel = self.calculateDangerLevel(obs, mapPos, mapPos.mapNode1.position, self.weightContainer)

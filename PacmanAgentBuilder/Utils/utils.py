@@ -1,4 +1,7 @@
+import csv
+import os
 from datetime import datetime
+from typing import List
 
 from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
@@ -121,3 +124,73 @@ def secondsToTime(seconds) -> str:
     minutes = int((seconds % 3600) // 60)
     seconds = int(seconds % 60)
     return f"{hours:03}h {minutes:02}m {seconds:02}s"
+
+
+def takeSnapShot(obs, moveMade):
+    if moveMade == STOP:
+        return
+
+    pacmanPos = obs.getPacmanPosition()
+    nearestPelletPosition = obs.getNearestPelletPosition()
+    ghostPosArray = [ghost.position if ghost.mode not in [FREIGHT, SPAWN] else Vector2(0, 0) for ghost in
+                     obs.getGhosts()]
+    ghostDirectionArray = [ghost.direction if ghost.mode not in [FREIGHT, SPAWN] else 0 for ghost in obs.getGhosts()]
+    legalMoveArray = [1 if move in obs.getLegalMoves() else 0 for move in [UP, DOWN, LEFT, RIGHT]]
+    moveArray = [1 if move == moveMade else 0 for move in [1, -1, 2, -2]]
+
+    snapshot = []
+
+    snapshot.append(int(pacmanPos.x))
+    snapshot.append(int(pacmanPos.y))
+
+    for ghost in ghostPosArray:
+        snapshot.append(int(ghost.x))
+        snapshot.append(int(ghost.y))
+
+    for direction in ghostDirectionArray:
+        snapshot.append(direction)
+
+    snapshot.append(nearestPelletPosition.x)
+    snapshot.append(nearestPelletPosition.y)
+
+    for move in legalMoveArray:
+        snapshot.append(move)
+
+    for move in moveArray:
+        snapshot.append(move)
+
+    snapshot = list(map(int, snapshot))
+
+    return snapshot
+
+
+def save_snapshots_to_file(snapshots: List[List[int]], fileName):
+    directory = 'Data'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    filename = f'{directory}/{fileName}.csv'
+    header = ['pacman_x', 'pacman_y',
+              'ghost1_x', 'ghost1_y',
+              'ghost2_x', 'ghost2_y',
+              'ghost3_x', 'ghost3_y',
+              'ghost4_x', 'ghost4_y',
+              'ghost1_direction',
+              'ghost2_direction',
+              'ghost3_direction',
+              'ghost4_direction',
+              'nearest_pellet_x', 'nearest_pellet_y',
+              'possible_move_up', 'possible_move_down', 'possible_move_left', 'possible_move_right',
+              'move_made_up', 'move_made_down', 'move_made_left', 'move_made_right']
+
+    print(f"adding {len(snapshots)} snapshots to file")
+
+    with open(filename, 'a', newline='') as file:
+        writer = csv.writer(file)
+        if os.stat(filename).st_size == 0:  # check if file is empty
+            writer.writerow(header)  # write header
+        for snapshot in snapshots:
+            try:
+                writer.writerow(snapshot)
+            except Exception as e:
+                pass

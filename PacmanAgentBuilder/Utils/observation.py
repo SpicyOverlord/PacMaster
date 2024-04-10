@@ -24,6 +24,28 @@ class Observation(object):
 
         self.map = Map(self, gameController.nodes, self.getGhosts())
 
+    def getLegalMoves(self) -> list[int]:
+        """
+            :return: Returns the legal moves from pacman's current position
+        """
+        pacmanPosition = self.getPacmanPosition()
+        pacmanTargetPosition = self.getPacmanTargetPosition()
+        legalMoves = []
+        # if pacman is on a node we get the neighbors
+        if pacmanPosition.x == pacmanTargetPosition.x and pacmanPosition.y == pacmanTargetPosition.y:
+            for i in self.getNodeFromVector(pacmanPosition).neighbors:
+                if self.getNodeFromVector(pacmanPosition).neighbors[i] is not None:
+                    legalMoves.append(i)
+        # if pacman is left or right of node
+        if pacmanPosition.x != pacmanTargetPosition.x:
+            legalMoves.append(LEFT)
+            legalMoves.append(RIGHT)
+        # if pacman is above or below node
+        elif pacmanPosition.y != pacmanTargetPosition.y:
+            legalMoves.append(UP)
+            legalMoves.append(DOWN)
+        return legalMoves
+
     def isVectorBetweenVectors(self, vector1: Vector2, vector2: Vector2, middleVector: Vector2) -> bool:
         """
         Checks if a vector is between two other vectors.

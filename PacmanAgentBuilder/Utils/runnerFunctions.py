@@ -2,12 +2,14 @@ from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
 from PacmanAgentBuilder.Utils.GameStats import GameStats
 from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
+from PacmanAgentBuilder.Utils.utils import save_snapshots_to_file
 from Pacman_Complete.run import GameController
 
 
 def runGameWithAgent(agentClass: type[IAgent], weightContainer: WeightContainer = None,
                      gameSpeed=3, startLives=3, startLevel: int = 0,
-                     ghostsEnabled: bool = True, freightEnabled: bool = True, lockDeltaTime=False) -> GameStats:
+                     ghostsEnabled: bool = True, freightEnabled: bool = True, lockDeltaTime=False
+                     , disableVisuals=False) -> GameStats:
     """
         Runs a single game with the specified agent.
 
@@ -26,19 +28,26 @@ def runGameWithAgent(agentClass: type[IAgent], weightContainer: WeightContainer 
 
     game = GameController(gameSpeed=gameSpeed, startLives=startLives,
                           startLevel=startLevel, ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled,
-                          lockDeltaTime=lockDeltaTime)
+                          lockDeltaTime=lockDeltaTime, disableVisuals=disableVisuals)
     agent = agentClass(gameController=game, weightContainer=weightContainer)
     game.startGame(agent=agent)
     while True:
         game.update()
         if game.gameOver:
-            return GameStats(game, agent)
+            gameStats = GameStats(game, agent)
+
+            if gameStats.levelsCompleted > 7:
+                print(f"Game was saved! Levels completed: {gameStats.levelsCompleted}, snapshots: {len(agent.snapShots)}")
+                save_snapshots_to_file(agent.snapShots, "Over5Levels")
+
+            return gameStats
 
 
 def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: WeightContainer = None,
                                    gameCount: int = 50, gameSpeed=1, startLevel: int = 0, startLives=1,
                                    ghostsEnabled: bool = True, freightEnabled: bool = True,
-                                   logging=False, lockDeltaTime=False):
+                                   logging=False, lockDeltaTime=False,
+                                   disableVisuals: bool = False):
     """
         Calculates the performance of the specified agent over a number of games.
 
@@ -65,7 +74,7 @@ def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: We
         gameStats.append(runGameWithAgent(agentClass, weightContainer=weightContainer, gameSpeed=gameSpeed,
                                           startLives=startLives, startLevel=startLevel,
                                           ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled,
-                                          lockDeltaTime=lockDeltaTime))
+                                          lockDeltaTime=lockDeltaTime, disableVisuals=disableVisuals))
 
         if logging:
             print(f"Game {i + 1} result: {gameStats[i]}")
