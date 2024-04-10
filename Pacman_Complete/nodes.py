@@ -6,7 +6,7 @@ from Pacman_Complete.constants import *
 
 class Node(object):
     def __init__(self, x, y):
-        self.position = Vector2(int(x), int(y))
+        self.position = Vector2(x, y)
         self.neighbors = {UP: None, DOWN: None, LEFT: None, RIGHT: None, PORTAL: None}
         self.access = {UP: [PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT],
                        DOWN: [PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT],

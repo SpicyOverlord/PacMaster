@@ -22,7 +22,7 @@ class Observation(object):
         self.pacman = gameController.pacman
         self.nodeGroup = gameController.nodes
 
-        self.map = Map(self, gameController.nodes, 10)
+        self.map = Map(self, gameController.nodes, self.getGhosts())
 
     def isVectorBetweenVectors(self, vector1: Vector2, vector2: Vector2, middleVector: Vector2) -> bool:
         """
