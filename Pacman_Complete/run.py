@@ -33,12 +33,17 @@ class GameController(object):
             pygame.display.init()
 
             # Disable audio subsystem if you don't need audio
-            pygame.mixer.quit()
-            pygame.mixer.init(frequency=0)
-
+            try:
+                pygame.mixer.quit()
+                pygame.mixer.init(frequency=0)
+            except pygame.error:
+                pass
             # Disable font subsystem if you don't need fonts
-            pygame.font.quit()
-            pygame.font.init()
+            try:
+                pygame.font.quit()
+                pygame.font.init()
+            except pygame.error:
+                pass
         else:
             pygame.init()
 
