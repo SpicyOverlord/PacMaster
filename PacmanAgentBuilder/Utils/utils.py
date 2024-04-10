@@ -183,8 +183,6 @@ def save_snapshots_to_file(snapshots: List[List[int]], fileName):
               'possible_move_up', 'possible_move_down', 'possible_move_left', 'possible_move_right',
               'move_made_up', 'move_made_down', 'move_made_left', 'move_made_right']
 
-    print(f"adding {len(snapshots)} snapshots to file")
-
     with open(filename, 'a', newline='') as file:
         writer = csv.writer(file)
         if os.stat(filename).st_size == 0:  # check if file is empty
