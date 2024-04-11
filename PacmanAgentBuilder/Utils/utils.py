@@ -147,8 +147,9 @@ def save_snapshots_to_file(snapshots: List[Snapshot], fileName):
 
     snapshots[-1].setGameEnded()
     lastSnapshot = snapshots[-1]
-    # randomly remove 50% of the elements of the snapshots.
-    snapshots = [snapshot for snapshot in snapshots if random.random() < 0.3]  # keep ~30% of the snapshots
+
+    snapshots = [snapshot for snapshot in snapshots if random.random() < 0.2]  # keep ~20% of the snapshots
+
     if snapshots[-1] != lastSnapshot:
         snapshots.append(lastSnapshot)
 
