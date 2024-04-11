@@ -132,6 +132,7 @@ def secondsToTime(seconds) -> str:
 global_row_count = 0
 global_last_time = datetime.now()
 
+
 def save_snapshots_to_file(snapshots, fileName):
     directory = 'Data'
     if not os.path.exists(directory):
@@ -173,7 +174,8 @@ def save_snapshots_to_file(snapshots, fileName):
         global_row_count += len(snapshots)
 
         global global_last_time
-        print(f" - game snapshots: {len(snapshots)} -  Total Snapshots: {global_row_count} - Time: {secondsToTime(datetime.now() - global_last_time)}")
+        print(
+            f" - game snapshots: {len(snapshots)} -  Total Snapshots: {global_row_count} - Time: {secondsToTime(datetime.now() - global_last_time)}")
 
         if os.stat(filename).st_size == 0:  # check if file is empty
             writer.writerow(header)  # write header
