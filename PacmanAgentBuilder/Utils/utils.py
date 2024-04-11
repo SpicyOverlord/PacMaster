@@ -138,6 +138,9 @@ def takeSnapShot(obs, moveMade) -> Snapshot | None:
 
 
 def save_snapshots_to_file(snapshots: List[Snapshot], fileName):
+    if len(snapshots) == 0:
+        return
+
     directory = 'Data'
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -148,7 +151,7 @@ def save_snapshots_to_file(snapshots: List[Snapshot], fileName):
     snapshots[-1].setGameEnded()
     lastSnapshot = snapshots[-1]
 
-    snapshots = [snapshot for snapshot in snapshots if random.random() < 0.2]  # keep ~20% of the snapshots
+    snapshots = [snapshot for snapshot in snapshots if random.random() < 0.1]  # keep ~10% of the snapshots
 
     if snapshots[-1] != lastSnapshot:
         snapshots.append(lastSnapshot)
