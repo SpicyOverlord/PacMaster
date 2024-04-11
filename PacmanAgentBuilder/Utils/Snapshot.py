@@ -1,5 +1,6 @@
 from typing import List
 
+from PacmanAgentBuilder.Utils.utils import isInCenterArea
 from Pacman_Complete.constants import FREIGHT, SPAWN, UP, DOWN, LEFT, RIGHT
 from Pacman_Complete.vector import Vector2
 
@@ -11,7 +12,7 @@ class Snapshot:
         self.nearest5PelletPosition = obs.getNearestXPelletPosition(5)
         self.ghostPosArray = [ghost.position for ghost in obs.getGhosts()]
         self.ghostDirectionArray = [ghost.direction for ghost in obs.getGhosts()]
-        self.ghostActiveArray = [1 if ghost.mode.current not in [FREIGHT, SPAWN] else 0 for ghost in obs.getGhosts()]
+        self.ghostActiveArray = [0 if ghost.mode.current in [FREIGHT, SPAWN] or isInCenterArea(ghost.position) else 1 for ghost in obs.getGhosts()]
         self.legalMoves = obs.getLegalMoves()
         self.currentLevel = obs.currentLevel
         self.gameEnded = 0
