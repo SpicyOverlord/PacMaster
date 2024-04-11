@@ -10,8 +10,6 @@ from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
 
 
-global_row_count = 0
-
 def roundVector(vector: Vector2) -> Vector2:
     """
     Rounds the x and y values of the vector to the nearest integer
@@ -131,6 +129,9 @@ def secondsToTime(seconds) -> str:
     return f"{hours:03}h {minutes:02}m {seconds:02}s"
 
 
+global_row_count = 0
+global_last_time = datetime.now()
+
 def save_snapshots_to_file(snapshots, fileName):
     directory = 'Data'
     if not os.path.exists(directory):
@@ -138,24 +139,24 @@ def save_snapshots_to_file(snapshots, fileName):
 
     filename = f'{directory}/{fileName}.csv'
     header = ['current_level_layout',
-                  'pacman_x', 'pacman_y',
-                  'ghost1_x', 'ghost1_y',
-                  'ghost2_x', 'ghost2_y',
-                  'ghost3_x', 'ghost3_y',
-                  'ghost4_x', 'ghost4_y',
-                  'ghost1_direction_x', 'ghost1_direction_y',
-                  'ghost2_direction_x', 'ghost2_direction_y',
-                  'ghost3_direction_x', 'ghost3_direction_y',
-                  'ghost4_direction_x', 'ghost4_direction_y',
-                  'ghost1_active', 'ghost2_active', 'ghost3_active', 'ghost4_active',
-                  'nearest_pellet1_x', 'nearest_pellet1_y',
-                  'nearest_pellet2_x', 'nearest_pellet2_y',
-                  'nearest_pellet3_x', 'nearest_pellet3_y',
-                  'nearest_pellet4_x', 'nearest_pellet4_y',
-                  'nearest_pellet5_x', 'nearest_pellet5_y',
-                  'game_ended',
-                  'legal_move_up', 'legal_move_down', 'legal_move_left', 'legal_move_right',
-                  'made_move_up', 'made_move_down', 'made_move_left', 'made_move_right']
+              'pacman_x', 'pacman_y',
+              'ghost1_x', 'ghost1_y',
+              'ghost2_x', 'ghost2_y',
+              'ghost3_x', 'ghost3_y',
+              'ghost4_x', 'ghost4_y',
+              'ghost1_direction_x', 'ghost1_direction_y',
+              'ghost2_direction_x', 'ghost2_direction_y',
+              'ghost3_direction_x', 'ghost3_direction_y',
+              'ghost4_direction_x', 'ghost4_direction_y',
+              'ghost1_active', 'ghost2_active', 'ghost3_active', 'ghost4_active',
+              'nearest_pellet1_x', 'nearest_pellet1_y',
+              'nearest_pellet2_x', 'nearest_pellet2_y',
+              'nearest_pellet3_x', 'nearest_pellet3_y',
+              'nearest_pellet4_x', 'nearest_pellet4_y',
+              'nearest_pellet5_x', 'nearest_pellet5_y',
+              'game_ended',
+              'legal_move_up', 'legal_move_down', 'legal_move_left', 'legal_move_right',
+              'made_move_up', 'made_move_down', 'made_move_left', 'made_move_right']
 
     snapshots[-1].setGameEnded()
     lastSnapshot = snapshots[-1]
@@ -171,10 +172,11 @@ def save_snapshots_to_file(snapshots, fileName):
         global global_row_count
         global_row_count += len(snapshots)
 
+        global global_last_time
+        print(f" - game snapshots: {len(snapshots)} -  Total Snapshots: {global_row_count} - Time: {secondsToTime(datetime.now() - global_last_time)}")
+
         if os.stat(filename).st_size == 0:  # check if file is empty
             writer.writerow(header)  # write header
-
-        print(f" - game snapshots: {len(snapshots)} -  Total Snapshots: {global_row_count}")
 
         for snapshot in snapshots:
             if snapshot is None:
@@ -185,4 +187,3 @@ def save_snapshots_to_file(snapshots, fileName):
                 writer.writerow(snapshotArray)
             except Exception as e:
                 pass
-
