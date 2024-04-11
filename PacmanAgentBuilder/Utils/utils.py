@@ -148,6 +148,9 @@ def save_snapshots_to_file(snapshots: List[Snapshot], fileName):
     filename = f'{directory}/{fileName}.csv'
     header = Snapshot.getParameterNames()
 
+    if snapshots[-1] is None:
+        print(snapshots)
+        return
     snapshots[-1].setGameEnded()
     lastSnapshot = snapshots[-1]
 
@@ -161,6 +164,8 @@ def save_snapshots_to_file(snapshots: List[Snapshot], fileName):
 
         if os.stat(filename).st_size == 0:  # check if file is empty
             writer.writerow(header)  # write header
+        else:
+            print(f" - Snapshot count: {len(snapshots)}")
 
         for snapshot in snapshots:
             if snapshot is None:
