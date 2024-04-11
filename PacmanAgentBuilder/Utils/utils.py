@@ -160,6 +160,9 @@ def save_snapshots_to_file(snapshots, fileName):
         'made_move'
     ]
 
+    if len(snapshots) > 0:
+        snapshots[-1].setGameEnded()
+
     with open(filePath, 'a', newline='') as file:
         writer = csv.writer(file)
 
