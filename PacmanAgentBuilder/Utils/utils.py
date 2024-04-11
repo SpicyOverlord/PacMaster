@@ -159,13 +159,17 @@ def save_snapshots_to_file(snapshots: List[Snapshot], fileName):
     if snapshots[-1] != lastSnapshot:
         snapshots.append(lastSnapshot)
 
+    fileRowCount = 0
+    with open(filename, 'r') as file:
+        fileRowCount = sum(1 for line in file)
+
     with open(filename, 'a', newline='') as file:
         writer = csv.writer(file)
 
         if os.stat(filename).st_size == 0:  # check if file is empty
             writer.writerow(header)  # write header
         else:
-            print(f" - Snapshot count: {len(snapshots)}")
+            print(f" - Total Snapshot count: {fileRowCount - 1}")
 
         for snapshot in snapshots:
             if snapshot is None:
