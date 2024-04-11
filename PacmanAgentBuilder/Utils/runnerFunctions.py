@@ -36,7 +36,7 @@ def runGameWithAgent(agentClass: type[IAgent], weightContainer: WeightContainer 
         if game.gameOver:
             gameStats = GameStats(game, agent)
 
-            if gameStats.levelsCompleted >= 5:
+            if gameStats.levelsCompleted >= 4:
                 print(f"Levels completed: {gameStats.levelsCompleted}", end="")
                 save_snapshots_to_file(agent.snapshots, "Over5Levels")
             return gameStats

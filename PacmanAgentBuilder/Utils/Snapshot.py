@@ -1,12 +1,12 @@
 from typing import List
 
 from PacmanAgentBuilder.Utils.utils import isInCenterArea
-from Pacman_Complete.constants import FREIGHT, SPAWN, UP, DOWN, LEFT, RIGHT
+from Pacman_Complete.constants import FREIGHT, SPAWN, UP, DOWN, LEFT, RIGHT, STOP
 from Pacman_Complete.vector import Vector2
 
 
 class Snapshot:
-    def __init__(self, obs, moveMade: int):
+    def __init__(self, obs, moveMade: int = STOP):
         self.moveMade = moveMade
         self.pacmanPos = obs.getPacmanPosition()
         self.nearest5PelletPosition = obs.getNearestXPelletPosition(5)
@@ -20,6 +20,8 @@ class Snapshot:
     def setGameEnded(self):
         self.gameEnded = 1
 
+    def getInputArray(self) -> List[int]:
+        return self.getArray()[:-4]
 
     def getArray(self) -> List[int]:
         snapshot = []
@@ -89,5 +91,7 @@ class Snapshot:
             return [0, 0, 1, 0]
         if direction == RIGHT:
             return [0, 0, 0, 1]
+        if direction == STOP:
+            return [0, 0, 0, 0]
 
         raise Exception(f"Direction '{direction}' not recognized")
