@@ -133,10 +133,12 @@ def secondsToTime(seconds) -> str:
 
 
 globalStartTime = time.time()
+globalStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 globalAddCount = 0
 
 
 def save_snapshots_to_file(snapshots, fileName):
+    global globalStartDate
     global globalStartTime
     global globalAddCount
     globalAddCount += 1
@@ -145,7 +147,7 @@ def save_snapshots_to_file(snapshots, fileName):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    filePath = f'{directory}/{fileName}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
+    filePath = f'{directory}/{fileName}_{globalStartDate}.csv'
     header = [
         'current_level_layout',
         'pacman_x', 'pacman_y',

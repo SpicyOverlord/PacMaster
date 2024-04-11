@@ -8,7 +8,7 @@ ssh root@192.168.1.50
 ```shell
 ssh -t root@192.168.1.50 'tmux attach -t pacmantour'
 ```
-### Connect to Tmux Snapshot Session
+### Connect to Tmux Snapshot Sessions
 ```shell
 ssh -t root@192.168.1.50 'tmux attach -t pacmanSnapshot1'
 ```
