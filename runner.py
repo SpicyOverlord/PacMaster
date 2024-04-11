@@ -23,8 +23,8 @@ if __name__ == "__main__":
     # agentClass = ShowFlee
     # agentClass = IslandCollectorAgent
 
-    # agentClass = FinalAgent
-    agentClass = AIAgent
+    agentClass = FinalAgent
+    # agentClass = AIAgent
 
     # this will run the agent in 50 games and print the average performance over the 50 games
     stats = calculatePerformanceOverXGames(
