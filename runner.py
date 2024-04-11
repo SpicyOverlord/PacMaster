@@ -13,6 +13,7 @@ from PacmanAgentBuilder.Utils.runnerFunctions import *
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 if __name__ == "__main__":
+    DebugHelper.enable()
     # --- USED IN THE PRESENTATION ---
     # agentClass = ShowIsInDanger
     # agentClass = ShowDangerLevels
@@ -36,5 +37,5 @@ if __name__ == "__main__":
         freightEnabled=True,  # Toggle if the effect of power pellets should be ignored.
         lockDeltaTime=True,  # When enabled, the game will run at the highest possible speed.
         logging=False,  # Toggle the logging of game-related information to the console while the agent is playing.
-        disableVisuals=False  # Toggle the visuals of the game.
+        disableVisuals=True  # Toggle the visuals of the game.
     )

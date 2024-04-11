@@ -20,8 +20,15 @@ class FinalAgent(IAgent):
         super().__init__(gameController, weightContainer=weightContainer)
 
     def calculateNextMove(self, obs: Observation):
-        mapPos = obs.map.createMapPosition(obs.getPacmanPosition())
+        # factor = Snapshot.simplifyFactor
+        # for x in range(100):
+        #     for y in range(100):
+        #         if (x*10) % factor == 0 or (y*10) % factor == 0:
+        #             DebugHelper.drawDot(Vector2(x*10, y*10), 1, DebugHelper.GREEN)
+        #
+        # DebugHelper.pauseGame()
 
+        mapPos = obs.map.createMapPosition(obs.getPacmanPosition())
 
         # if in danger, flee
         if self.isInDanger(obs, mapPos):

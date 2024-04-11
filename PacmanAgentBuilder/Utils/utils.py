@@ -7,6 +7,8 @@ import time
 from datetime import datetime
 from typing import List
 
+import pandas as pd
+
 from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
 
@@ -130,8 +132,8 @@ def secondsToTime(seconds) -> str:
     return f"{hours:03}h {minutes:02}m {seconds:02}s"
 
 
-global_row_count = 0
-global_last_time = time.time()
+globalStartTime = time.time()
+globalAddCount = 0
 
 
 def save_snapshots_to_file(snapshots, fileName):
@@ -139,46 +141,27 @@ def save_snapshots_to_file(snapshots, fileName):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    filename = f'{directory}/{fileName}.csv'
-    header = ['current_level_layout',
-              'pacman_x', 'pacman_y',
-              'ghost1_x', 'ghost1_y',
-              'ghost2_x', 'ghost2_y',
-              'ghost3_x', 'ghost3_y',
-              'ghost4_x', 'ghost4_y',
-              'ghost1_direction_x', 'ghost1_direction_y',
-              'ghost2_direction_x', 'ghost2_direction_y',
-              'ghost3_direction_x', 'ghost3_direction_y',
-              'ghost4_direction_x', 'ghost4_direction_y',
-              'ghost1_active', 'ghost2_active', 'ghost3_active', 'ghost4_active',
-              'nearest_pellet1_x', 'nearest_pellet1_y',
-              'nearest_pellet2_x', 'nearest_pellet2_y',
-              'nearest_pellet3_x', 'nearest_pellet3_y',
-              'nearest_pellet4_x', 'nearest_pellet4_y',
-              'nearest_pellet5_x', 'nearest_pellet5_y',
-              'game_ended',
-              'legal_move_up', 'legal_move_down', 'legal_move_left', 'legal_move_right',
-              'made_move_up', 'made_move_down', 'made_move_left', 'made_move_right']
+    filePath = f'{directory}/{fileName}.csv'
+    header = [
+        'current_level_layout',
+        'pacman_x', 'pacman_y',
+        'ghost1_x', 'ghost1_y', 'ghost1_direction',
+        'ghost2_x', 'ghost2_y', 'ghost2_direction',
+        'ghost3_x', 'ghost3_y', 'ghost3_direction',
+        'ghost4_x', 'ghost4_y', 'ghost4_direction',
+        'nearest_pellet_x', 'nearest_pellet_y',
+        'game_ended',
+        'made_move'
+    ]
 
-    snapshots[-1].setGameEnded()
-    lastSnapshot = snapshots[-1]
+    # remove the last 50 so the model doesn't learn to die (hopefully...)
+    if len(snapshots) > 50:
+        snapshots = snapshots[:-50]
 
-    snapshots = [snapshot for snapshot in snapshots if random.random() < 1]  # keep ~100% of the snapshots
-
-    if snapshots[-1] != lastSnapshot:
-        snapshots.append(lastSnapshot)
-
-    with open(filename, 'a', newline='') as file:
+    with open(filePath, 'a', newline='') as file:
         writer = csv.writer(file)
 
-        global global_row_count
-        global_row_count += len(snapshots)
-
-        global global_last_time
-        print(
-            f" - game snapshots: {len(snapshots)} -  Total Snapshots: {global_row_count} - Time: {secondsToTime(time.time() - global_last_time)}")
-
-        if os.stat(filename).st_size == 0:  # check if file is empty
+        if os.stat(filePath).st_size == 0:  # check if file is empty
             writer.writerow(header)  # write header
 
         for snapshot in snapshots:
@@ -190,3 +173,21 @@ def save_snapshots_to_file(snapshots, fileName):
                 writer.writerow(snapshotArray)
             except Exception as e:
                 pass
+
+    global globalStartTime
+    global globalAddCount
+    globalAddCount += 1
+    if globalAddCount % 10 == 0:
+        # remove duplicate rows every 10 adds
+        data = pd.read_csv(filePath)
+        beforeCount = len(data)
+        data = data.drop_duplicates()
+        afterCount = len(data)
+
+        print(
+            f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - "
+            f"Game snapshots: {len(snapshots)} - "
+            f"{beforeCount} -> {afterCount} ({((beforeCount - afterCount) / beforeCount) * 100}%)")
+        data.to_csv(filePath, index=False)
+    else:
+        print(f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - Game snapshots: {len(snapshots)}")
