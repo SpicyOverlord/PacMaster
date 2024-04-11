@@ -6,7 +6,7 @@ from Pacman_Complete.vector import Vector2
 
 
 class Snapshot:
-    simplifyFactor = 20
+    simplifyFactor = 1
 
     def __init__(self, obs, moveMade: int = STOP):
         self.moveMade = moveMade
