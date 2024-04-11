@@ -137,11 +137,15 @@ globalAddCount = 0
 
 
 def save_snapshots_to_file(snapshots, fileName):
+    global globalStartTime
+    global globalAddCount
+    globalAddCount += 1
+
     directory = 'Data'
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    filePath = f'{directory}/{fileName}.csv'
+    filePath = f'{directory}/{fileName}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
     header = [
         'current_level_layout',
         'pacman_x', 'pacman_y',
@@ -174,9 +178,6 @@ def save_snapshots_to_file(snapshots, fileName):
             except Exception as e:
                 pass
 
-    global globalStartTime
-    global globalAddCount
-    globalAddCount += 1
     if globalAddCount % 10 == 0:
         # remove duplicate rows every 10 adds
         data = pd.read_csv(filePath)
