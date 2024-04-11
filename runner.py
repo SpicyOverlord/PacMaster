@@ -1,6 +1,5 @@
 import os
 
-from PacmanAgentBuilder.Agents.AIAgent import AIAgent
 from PacmanAgentBuilder.Agents.FinalAgent import FinalAgent
 from PacmanAgentBuilder.Agents.Other.IslandCollectorAgent import IslandCollectorAgent
 from PacmanAgentBuilder.Agents.Other.ShowDangerLevels import ShowDangerLevels
