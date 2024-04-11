@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import os
 import random
+import time
 from datetime import datetime
 from typing import List
 
@@ -130,7 +131,7 @@ def secondsToTime(seconds) -> str:
 
 
 global_row_count = 0
-global_last_time = datetime.now()
+global_last_time = time.time()
 
 
 def save_snapshots_to_file(snapshots, fileName):
@@ -175,7 +176,7 @@ def save_snapshots_to_file(snapshots, fileName):
 
         global global_last_time
         print(
-            f" - game snapshots: {len(snapshots)} -  Total Snapshots: {global_row_count} - Time: {secondsToTime(datetime.now() - global_last_time)}")
+            f" - game snapshots: {len(snapshots)} -  Total Snapshots: {global_row_count} - Time: {secondsToTime(time.time() - global_last_time)}")
 
         if os.stat(filename).st_size == 0:  # check if file is empty
             writer.writerow(header)  # write header

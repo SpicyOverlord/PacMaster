@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 
 
 def defineModel(df: DataFrame):
-    inputShape = df.shape[1] - 1
+    inputShape = df.shape[1] - 4
 
     model = models.Sequential([
         Input(shape=(inputShape,)),
@@ -48,7 +48,7 @@ def createNormalizedDataSets(df: DataFrame):
 
 
 def trainModel(model, X_train, y_train):
-    return model.fit(X_train, y_train, epochs=10, batch_size=64, validation_split=0.2)
+    return model.fit(X_train, y_train, epochs=100, batch_size=64, validation_split=0.2)
 
 
 def testModel(model, X_test, y_test):
