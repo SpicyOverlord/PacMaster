@@ -143,7 +143,7 @@ def save_snapshots_to_file(snapshots: List[Snapshot], fileName):
     snapshots[-1].setGameEnded()
     lastSnapshot = snapshots[-1]
 
-    snapshots = [snapshot for snapshot in snapshots if random.random() < 0.30]  # keep ~30% of the snapshots
+    snapshots = [snapshot for snapshot in snapshots if random.random() < 0.05]  # keep ~5% of the snapshots
 
     if snapshots[-1] != lastSnapshot:
         snapshots.append(lastSnapshot)
