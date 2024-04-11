@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import os
+import random
 from datetime import datetime
 from typing import List
 
@@ -144,10 +145,19 @@ def save_snapshots_to_file(snapshots: List[Snapshot], fileName):
     filename = f'{directory}/{fileName}.csv'
     header = Snapshot.getParameterNames()
 
+    snapshots[-1].setGameEnded()
+    lastSnapshot = snapshots[-1]
+    # randomly remove 50% of the elements of the snapshots.
+    snapshots = [snapshot for snapshot in snapshots if random.random() < 0.8]  # keep ~30% of the snapshots
+    if snapshots[-1] != lastSnapshot:
+        snapshots.append(lastSnapshot)
+
     with open(filename, 'a', newline='') as file:
         writer = csv.writer(file)
+
         if os.stat(filename).st_size == 0:  # check if file is empty
             writer.writerow(header)  # write header
+
         for snapshot in snapshots:
             if snapshot is None:
                 continue

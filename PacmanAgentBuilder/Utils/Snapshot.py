@@ -12,7 +12,10 @@ class Snapshot:
         self.ghostActiveArray = [1 if ghost.mode not in [FREIGHT, SPAWN] else 0 for ghost in obs.getGhosts()]
         self.legalMoves = obs.getLegalMoves()
         self.currentLevel = obs.currentLevel
+        self.gameEnded = 0
 
+    def setGameEnded(self):
+        self.gameEnded = 1
     @staticmethod
     def getParameterNames() -> list[str]:
         paramNames = ['current_level_layout',
@@ -31,6 +34,7 @@ class Snapshot:
                       'nearest_pellet3_x', 'nearest_pellet3_y',
                       'nearest_pellet4_x', 'nearest_pellet4_y',
                       'nearest_pellet5_x', 'nearest_pellet5_y',
+                      'game_ended',
                       'legal_move_up', 'legal_move_down', 'legal_move_left', 'legal_move_right',
                       'made_move_up', 'made_move_down', 'made_move_left', 'made_move_right']
 
@@ -60,6 +64,8 @@ class Snapshot:
         for position in self.nearest5PelletPosition:
             snapshot.append(int(position.x))
             snapshot.append(int(position.y))
+
+        snapshot.append(self.gameEnded)
 
         legalMoveArray = [1 if move in self.legalMoves else 0 for move in [UP, DOWN, LEFT, RIGHT]]
         for move in legalMoveArray:
