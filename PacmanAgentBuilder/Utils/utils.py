@@ -136,24 +136,6 @@ def takeSnapShot(obs, moveMade) -> Snapshot | None:
     return Snapshot(obs, moveMade)
 
 
-def directionToVector(direction: int) -> Vector2:
-    """
-    Converts a direction to a vector
-    :param direction: The direction
-    :return: The vector
-    """
-    if direction == UP:
-        return Vector2(0, -1)
-    if direction == DOWN:
-        return Vector2(0, 1)
-    if direction == LEFT:
-        return Vector2(-1, 0)
-    if direction == RIGHT:
-        return Vector2(1, 0)
-
-    raise Exception(f"Direction '{direction}' not recognized")
-
-
 def save_snapshots_to_file(snapshots: List[Snapshot], fileName):
     directory = 'Data'
     if not os.path.exists(directory):

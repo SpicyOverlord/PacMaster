@@ -1,11 +1,9 @@
-from PacmanAgentBuilder.Utils.observation import Observation
-from PacmanAgentBuilder.Utils.utils import directionToVector
 from Pacman_Complete.constants import FREIGHT, SPAWN, UP, DOWN, LEFT, RIGHT
 from Pacman_Complete.vector import Vector2
 
 
 class Snapshot:
-    def __init__(self, obs: Observation, moveMade: int):
+    def __init__(self, obs, moveMade: int):
         self.moveMade = moveMade
         self.pacmanPos = obs.getPacmanPosition()
         self.nearest5PelletPosition = obs.getNearestXPelletPosition(5)
@@ -47,7 +45,7 @@ class Snapshot:
             snapshot.append(int(ghost.y))
 
         for direction in self.ghostDirectionArray:
-            directionVector = directionToVector(direction)
+            directionVector = self.directionToVector(direction)
 
             snapshot.append(int(directionVector.x))
             snapshot.append(int(directionVector.y))
@@ -63,8 +61,25 @@ class Snapshot:
         for move in legalMoveArray:
             snapshot.append(move)
 
-        moveVector = directionToVector(self.moveMade)
+        moveVector = self.directionToVector(self.moveMade)
         snapshot.append(int(moveVector.x))
         snapshot.append(int(moveVector.y))
 
         return snapshot
+
+    def directionToVector(self, direction: int) -> Vector2:
+        """
+        Converts a direction to a vector
+        :param direction: The direction
+        :return: The vector
+        """
+        if direction == UP:
+            return Vector2(0, -1)
+        if direction == DOWN:
+            return Vector2(0, 1)
+        if direction == LEFT:
+            return Vector2(-1, 0)
+        if direction == RIGHT:
+            return Vector2(1, 0)
+
+        raise Exception(f"Direction '{direction}' not recognized")
