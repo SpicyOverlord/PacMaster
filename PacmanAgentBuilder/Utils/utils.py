@@ -155,7 +155,11 @@ def save_snapshots_to_file(snapshots, fileName):
         'ghost2_x', 'ghost2_y', 'ghost2_direction',
         'ghost3_x', 'ghost3_y', 'ghost3_direction',
         'ghost4_x', 'ghost4_y', 'ghost4_direction',
-        'nearest_pellet_x', 'nearest_pellet_y',
+        'nearest_pelle1_x', 'nearest_pellet1_y',
+        'nearest_pellet2_x', 'nearest_pellet2_y',
+        'nearest_pellet3_x', 'nearest_pellet3_y',
+        'nearest_pellet4_x', 'nearest_pellet4_y',
+        'nearest_pellet5_x', 'nearest_pellet5_y',
         'game_ended',
         'made_move'
     ]

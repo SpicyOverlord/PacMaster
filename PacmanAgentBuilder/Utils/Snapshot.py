@@ -57,12 +57,10 @@ class Snapshot:
             ghostDirection = sortedGhostDirectionArray[i]
             snapshot.append(ghostDirection)
 
-        simpleNearestPelletPos = self.simplifyVector(self.nearest5PelletPosition[0])
-        snapshot.append(simpleNearestPelletPos.x)
-        snapshot.append(simpleNearestPelletPos.y)
-        # for position in self.nearest5PelletPosition:
-        #     snapshot.append(int(position.x))
-        #     snapshot.append(int(position.y))
+        for position in self.nearest5PelletPosition:
+            simpleNearestPelletPos = self.simplifyVector(position)
+            snapshot.append(simpleNearestPelletPos.x)
+            snapshot.append(simpleNearestPelletPos.y)
 
         snapshot.append(self.gameEnded)
 
