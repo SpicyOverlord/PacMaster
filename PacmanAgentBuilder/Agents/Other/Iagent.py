@@ -14,7 +14,7 @@ class IAgent(ABC):
         self.gameController = gameController
         self.actionsTaken = 0
         self.pelletsEatenThisLevel = 0
-        self.snapShots = []
+        self.snapshots = []
 
         if weightContainer is None:
             self.weightContainer = self.getBestWeightContainer()

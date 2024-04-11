@@ -43,7 +43,7 @@ class Snapshot:
 
         return paramNames
 
-    def getArray(self):
+    def getArray(self) -> List[int]:
         snapshot = []
 
         snapshot.append(self.currentLevel % 2)

@@ -11,6 +11,8 @@ from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
 
 
+global_row_count = 0
+
 def roundVector(vector: Vector2) -> Vector2:
     """
     Rounds the x and y values of the vector to the nearest integer
@@ -130,17 +132,7 @@ def secondsToTime(seconds) -> str:
     return f"{hours:03}h {minutes:02}m {seconds:02}s"
 
 
-def takeSnapShot(obs, moveMade) -> Snapshot | None:
-    if moveMade == STOP:
-        return None
-
-    return Snapshot(obs, moveMade)
-
-
 def save_snapshots_to_file(snapshots: List[Snapshot], fileName):
-    if len(snapshots) == 0:
-        return
-
     directory = 'Data'
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -148,28 +140,24 @@ def save_snapshots_to_file(snapshots: List[Snapshot], fileName):
     filename = f'{directory}/{fileName}.csv'
     header = Snapshot.getParameterNames()
 
-    if snapshots[-1] is None:
-        print(snapshots)
-        return
     snapshots[-1].setGameEnded()
     lastSnapshot = snapshots[-1]
 
-    snapshots = [snapshot for snapshot in snapshots if random.random() < 0.05]  # keep ~5% of the snapshots
+    snapshots = [snapshot for snapshot in snapshots if random.random() < 0.30]  # keep ~30% of the snapshots
 
     if snapshots[-1] != lastSnapshot:
         snapshots.append(lastSnapshot)
 
-    fileRowCount = 0
-    with open(filename, 'r') as file:
-        fileRowCount = sum(1 for line in file)
-
     with open(filename, 'a', newline='') as file:
         writer = csv.writer(file)
+
+        global global_row_count
+        global_row_count += len(snapshots)
 
         if os.stat(filename).st_size == 0:  # check if file is empty
             writer.writerow(header)  # write header
         else:
-            print(f" - Total Snapshot count: {fileRowCount - 1}")
+            print(f" - game snapshots: {len(snapshots)} -  Total Snapshots: {global_row_count}")
 
         for snapshot in snapshots:
             if snapshot is None:
@@ -180,3 +168,4 @@ def save_snapshots_to_file(snapshots: List[Snapshot], fileName):
                 writer.writerow(snapshotArray)
             except Exception as e:
                 pass
+

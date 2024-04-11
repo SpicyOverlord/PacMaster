@@ -29,7 +29,9 @@ class FinalAgent(IAgent):
             # else, collect pellets
             move = self.collect(obs)
 
-        self.snapShots.append(takeSnapShot(obs, move))
+        if move != STOP:
+            snapshot = Snapshot(obs, move)
+            self.snapshots.append(snapshot)
 
         return move
 
