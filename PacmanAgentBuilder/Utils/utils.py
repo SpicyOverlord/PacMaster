@@ -160,7 +160,7 @@ def save_snapshots_to_file(snapshots, fileName):
     snapshots[-1].setGameEnded()
     lastSnapshot = snapshots[-1]
 
-    snapshots = [snapshot for snapshot in snapshots if random.random() < 0.05]  # keep ~5% of the snapshots
+    snapshots = [snapshot for snapshot in snapshots if random.random() < 0.20]  # keep ~20% of the snapshots
 
     if snapshots[-1] != lastSnapshot:
         snapshots.append(lastSnapshot)
@@ -173,8 +173,8 @@ def save_snapshots_to_file(snapshots, fileName):
 
         if os.stat(filename).st_size == 0:  # check if file is empty
             writer.writerow(header)  # write header
-        else:
-            print(f" - game snapshots: {len(snapshots)} -  Total Snapshots: {global_row_count}")
+
+        print(f" - game snapshots: {len(snapshots)} -  Total Snapshots: {global_row_count}")
 
         for snapshot in snapshots:
             if snapshot is None:
