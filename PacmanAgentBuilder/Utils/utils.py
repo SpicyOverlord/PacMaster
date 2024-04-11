@@ -160,10 +160,6 @@ def save_snapshots_to_file(snapshots, fileName):
         'made_move'
     ]
 
-    # remove the last 50 so the model doesn't learn to die (hopefully...)
-    if len(snapshots) > 50:
-        snapshots = snapshots[:-50]
-
     with open(filePath, 'a', newline='') as file:
         writer = csv.writer(file)
 
