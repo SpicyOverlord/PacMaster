@@ -19,14 +19,16 @@ from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
 
 
 class GameController(object):
-    def __init__(self, gameSpeed: int,
-                 startLives: int,
-                 startLevel: int = 0,
-                 ghostsEnabled: bool = True,
-                 freightEnabled: bool = True,
-                 lockDeltaTime: bool = False,
-                 disableVisuals: bool = False
-                 ):
+    def __init__(
+            self,
+            gameSpeed: int,
+            startLives: int,
+            startLevel: int = 0,
+            ghostsEnabled: bool = True,
+            freightEnabled: bool = True,
+            lockDeltaTime: bool = False,
+            disableVisuals: bool = False
+    ):
         if disableVisuals:
             os.environ["SDL_VIDEODRIVER"] = "dummy"
             # Disable video subsystem completely
@@ -308,4 +310,3 @@ if __name__ == '__main__':
 
     # Run fileA.py using Python
     subprocess.run(['python', fileA_path])
-

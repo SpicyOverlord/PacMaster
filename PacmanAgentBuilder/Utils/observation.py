@@ -22,6 +22,7 @@ class Observation(object):
         self.pelletGroup = gameController.pellets
         self.pacman = gameController.pacman
         self.nodeGroup = gameController.nodes
+        self.currentLevel = gameController.level
 
         self.map = Map(self, gameController.nodes, self.getGhosts())
 

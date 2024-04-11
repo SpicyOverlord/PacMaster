@@ -11,10 +11,12 @@ class Snapshot:
         self.ghostDirectionArray = [ghost.direction for ghost in obs.getGhosts()]
         self.ghostActiveArray = [1 if ghost.mode not in [FREIGHT, SPAWN] else 0 for ghost in obs.getGhosts()]
         self.legalMoves = obs.getLegalMoves()
+        self.currentLevel = obs.currentLevel
 
     @staticmethod
     def getParameterNames() -> list[str]:
-        paramNames = ['pacman_x', 'pacman_y',
+        paramNames = ['current_level_layout',
+                      'pacman_x', 'pacman_y',
                       'ghost1_x', 'ghost1_y',
                       'ghost2_x', 'ghost2_y',
                       'ghost3_x', 'ghost3_y',
@@ -36,6 +38,8 @@ class Snapshot:
 
     def getArray(self):
         snapshot = []
+
+        snapshot.append(self.currentLevel % 2)
 
         snapshot.append(int(self.pacmanPos.x))
         snapshot.append(int(self.pacmanPos.y))
