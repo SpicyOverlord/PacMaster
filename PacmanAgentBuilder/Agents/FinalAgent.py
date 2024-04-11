@@ -29,7 +29,7 @@ class FinalAgent(IAgent):
             # else, collect pellets
             move = self.collect(obs)
 
-        if random.randint(1, 100) == 1:
+        if random.randint(1, 20) == 1:
             self.snapShots.append(takeSnapShot(obs, move))
 
         return move

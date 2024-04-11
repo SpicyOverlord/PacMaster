@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from typing import List
 
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Utils.Map import Map, MapNode, MapPosition
@@ -142,6 +143,16 @@ class Observation(object):
         if nearestPelletPosition is None:
             return pacmanPosition
         return nearestPelletPosition
+
+    def getNearestXPelletPosition(self, x: int) -> List[Vector2]:
+        pacmanPosition = self.getPacmanPosition()
+        pelletPositions = self.getPelletPositions()
+        pelletPositions.sort(key=lambda pellet: manhattanDistance(pellet, pacmanPosition))
+        nearest_pellets = pelletPositions[:x]
+
+        if len(nearest_pellets) < x:
+            nearest_pellets += [Vector2(0, 0)] * (x - len(nearest_pellets))
+        return nearest_pellets
 
     def getNearestPowerPelletPosition(self) -> Vector2:
         return min(self.getPowerPelletPositions(),
