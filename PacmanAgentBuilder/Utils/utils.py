@@ -193,7 +193,7 @@ def save_snapshots_to_file(snapshots, fileName):
         print(
             f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - "
             f"Game snapshots: {len(snapshots)} - "
-            f"{beforeCount} -> {afterCount} ({((beforeCount - afterCount) / beforeCount) * 100}%)")
+            f"{beforeCount} -> {afterCount} ({beforeCount - afterCount})")
         data.to_csv(filePath, index=False)
     else:
         print(f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - Game snapshots: {len(snapshots)}")
