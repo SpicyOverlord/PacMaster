@@ -191,14 +191,15 @@ def save_snapshots_to_file(snapshots, fileName):
         data = data.drop_duplicates()
         afterCount = len(data)
 
-        # if the file gets too large, create a new file
-        if afterCount > 2000000:
-            globalStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-
         print(
             f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - "
             f"Game snapshots: {len(snapshots)} - "
             f"{beforeCount} -> {afterCount} ({beforeCount - afterCount})")
-        data.to_csv(filePath, index=False)
+
+        # data.to_csv(filePath, index=False)
+
+        # if the file gets too large, create a new file
+        if afterCount > 2000000:
+            globalStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     else:
         print(f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - Game snapshots: {len(snapshots)}")

@@ -44,3 +44,6 @@ class GameStateData:
 
         self.made_move = gameStateList[30]
 
+    def generatePredictions(self):
+
+        pass
