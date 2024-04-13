@@ -1,6 +1,7 @@
 from typing import List
 
 from PacmanAgentBuilder.Qlearning.GameState import GameState
+from PacmanAgentBuilder.Utils.utils import directionToVector
 from Pacman_Complete.constants import UP, DOWN, LEFT, RIGHT
 from Pacman_Complete.vector import Vector2
 
@@ -55,7 +56,7 @@ class GameStateData:
         predictions = []
         for legalMove in [self.legal_move_up, self.legal_move_down, self.legal_move_left, self.legal_move_right]:
             if legalMove == 1:
-                possibleMove = GameState.directionToVector(legalMove)
+                possibleMove = directionToVector(legalMove)
             else:
                 continue
 
@@ -64,25 +65,25 @@ class GameStateData:
                 self.pacman_y + possibleMove.y * self.moveDistance
             )
 
-            ghost1MoveVector = GameState.directionToVector(self.ghost1_direction)
+            ghost1MoveVector = directionToVector(self.ghost1_direction)
             newGhost1Pos = Vector2(
                 self.ghost1_x + ghost1MoveVector.x * self.moveDistance,
                 self.ghost1_y + ghost1MoveVector.y * self.moveDistance
             )
 
-            ghost2MoveVector = GameState.directionToVector(self.ghost2_direction)
+            ghost2MoveVector = directionToVector(self.ghost2_direction)
             newGhost2Pos = Vector2(
                 self.ghost2_x + ghost2MoveVector.x * self.moveDistance,
                 self.ghost2_y + ghost2MoveVector.y * self.moveDistance
             )
 
-            ghost3MoveVector = GameState.directionToVector(self.ghost3_direction)
+            ghost3MoveVector = directionToVector(self.ghost3_direction)
             newGhost3Pos = Vector2(
                 self.ghost3_x + ghost3MoveVector.x * self.moveDistance,
                 self.ghost3_y + ghost3MoveVector.y * self.moveDistance
             )
 
-            ghost4MoveVector = GameState.directionToVector(self.ghost4_direction)
+            ghost4MoveVector = directionToVector(self.ghost4_direction)
             newGhost4Pos = Vector2(
                 self.ghost4_x + ghost4MoveVector.x * self.moveDistance,
                 self.ghost4_y + ghost4MoveVector.y * self.moveDistance

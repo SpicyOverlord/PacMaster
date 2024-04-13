@@ -132,6 +132,26 @@ def secondsToTime(seconds) -> str:
     return f"{hours:03}h {minutes:02}m {seconds:02}s"
 
 
+def directionToVector(direction: int) -> Vector2:
+    """
+    Converts a direction to a vector
+    :param direction: The direction
+    :return: The vector
+    """
+    if direction == UP:
+        return Vector2(0, -1)
+    if direction == DOWN:
+        return Vector2(0, 1)
+    if direction == LEFT:
+        return Vector2(-1, 0)
+    if direction == RIGHT:
+        return Vector2(1, 0)
+    if direction == STOP:
+        return Vector2(0, 0)
+
+    raise Exception(f"Direction '{direction}' not recognized")
+
+
 globalStartTime = time.time()
 globalStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 globalAddCount = 0

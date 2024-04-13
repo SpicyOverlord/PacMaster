@@ -88,26 +88,6 @@ class GameState:
 
         return Vector2(int(newX), int(newY))
 
-    @staticmethod
-    def directionToVector(direction: int) -> Vector2:
-        """
-        Converts a direction to a vector
-        :param direction: The direction
-        :return: The vector
-        """
-        if direction == UP:
-            return Vector2(0, -1)
-        if direction == DOWN:
-            return Vector2(0, 1)
-        if direction == LEFT:
-            return Vector2(-1, 0)
-        if direction == RIGHT:
-            return Vector2(1, 0)
-        if direction == STOP:
-            return Vector2(0, 0)
-
-        raise Exception(f"Direction '{direction}' not recognized")
-
     def directionToArray(self, direction: int) -> List[int]:
         """
         Converts a direction to an array
