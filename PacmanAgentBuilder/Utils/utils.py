@@ -184,12 +184,16 @@ def save_snapshots_to_file(snapshots, fileName):
             except Exception as e:
                 pass
 
-    if globalAddCount % 100 == 0:
+    if globalAddCount % 10 == 0:
         # remove duplicate rows every 10 adds
         data = pd.read_csv(filePath)
         beforeCount = len(data)
         data = data.drop_duplicates()
         afterCount = len(data)
+
+        # if the file gets too large, create a new file
+        if afterCount > 2000000:
+            globalStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
         print(
             f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - "
