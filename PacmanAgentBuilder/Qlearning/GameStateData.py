@@ -1,6 +1,5 @@
 from typing import List
 
-from PacmanAgentBuilder.Qlearning.GameState import GameState
 from PacmanAgentBuilder.Utils.utils import directionToVector
 from Pacman_Complete.constants import UP, DOWN, LEFT, RIGHT
 from Pacman_Complete.vector import Vector2
