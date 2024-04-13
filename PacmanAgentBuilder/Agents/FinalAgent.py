@@ -2,7 +2,7 @@ from collections import deque
 
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
-from PacmanAgentBuilder.Qlearning.Snapshot import Snapshot
+from PacmanAgentBuilder.Qlearning.GameState import GameState
 from PacmanAgentBuilder.Utils.Map import MapPosition
 from PacmanAgentBuilder.Utils.observation import Observation
 from PacmanAgentBuilder.Utils.utils import *
@@ -15,7 +15,7 @@ class FinalAgent(IAgent):
         super().__init__(gameController, weightContainer=weightContainer)
 
     def calculateNextMove(self, obs: Observation):
-        # factor = Snapshot.simplifyFactor
+        # factor = GameState.simplifyFactor
         # for x in range(100):
         #     for y in range(100):
         #         if (x*10) % factor == 0 or (y*10) % factor == 0:
@@ -33,7 +33,7 @@ class FinalAgent(IAgent):
             move = self.collect(obs)
 
         if move != STOP:
-            snapshot = Snapshot(obs, move)
+            snapshot = GameState(obs, move)
             self.snapshots.append(snapshot)
 
         return move

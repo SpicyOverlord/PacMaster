@@ -9,7 +9,7 @@
 #
 # from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 # from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
-# from PacmanAgentBuilder.Utils.Snapshot import Snapshot
+# from PacmanAgentBuilder.Utils.GameState import GameState
 # from PacmanAgentBuilder.Utils.observation import Observation
 # from Pacman_Complete.constants import *
 #
@@ -36,7 +36,7 @@
 #             sleep(0.1)
 #             return RIGHT
 #
-#         snapshot = Snapshot(obs)
+#         snapshot = GameState(obs)
 #         snapShotArray = snapshot.getInputArray()
 #         normalizedSnapShotArray = self.scaler.transform([snapShotArray])
 #
