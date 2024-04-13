@@ -62,15 +62,17 @@ class Snapshot:
             snapshot.append(simpleNearestPelletPos.x)
             snapshot.append(simpleNearestPelletPos.y)
 
-        snapshot.append(self.gameEnded)
 
-        # legalMoveArray = [1 if move in self.legalMoves else 0 for move in [UP, DOWN, LEFT, RIGHT]]
-        # for move in legalMoveArray:
-        #     snapshot.append(move)
+        legalMoveArray = [1 if move in self.legalMoves else 0 for move in [UP, DOWN, LEFT, RIGHT]]
+        for move in legalMoveArray:
+            snapshot.append(move)
 
         # madeModeArray = self.directionToArray(self.moveMade)
         # for move in madeModeArray:
         #     snapshot.append(move)
+
+        snapshot.append(self.gameEnded)
+
 
         snapshot.append(self.moveMade)
 

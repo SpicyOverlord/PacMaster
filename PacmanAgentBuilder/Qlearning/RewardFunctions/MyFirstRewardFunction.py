@@ -14,7 +14,7 @@ class MyFirstRewardFunction(IRewardFunction):
     @staticmethod
     def getBestWeightContainer() -> WeightContainer:
         """
-        :return: The best known weight container for this agent
+        :return: The best known weight container for this reward function
         """
         return WeightContainer({
             'fleeThreshold': 10.3649,
@@ -42,7 +42,7 @@ class MyFirstRewardFunction(IRewardFunction):
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
         """
-        :return: The default weight container for this agent (used in the genetic algorithm to create start population)
+        :return: The default weight container for this reward function (used in the genetic algorithm to create start population)
         """
         return WeightContainer({
             'fleeThreshold': 5,

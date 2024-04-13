@@ -160,6 +160,7 @@ def save_snapshots_to_file(snapshots, fileName):
         'nearest_pellet3_x', 'nearest_pellet3_y',
         'nearest_pellet4_x', 'nearest_pellet4_y',
         'nearest_pellet5_x', 'nearest_pellet5_y',
+        'legal_move_up', 'legal_move_down', 'legal_move_left', 'legal_move_right',
         'game_ended',
         'made_move'
     ]
