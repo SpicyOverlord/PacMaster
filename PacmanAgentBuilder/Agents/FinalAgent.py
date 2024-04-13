@@ -1,13 +1,8 @@
-import csv
-import os
-import random
-import time
 from collections import deque
 
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
-from PacmanAgentBuilder.Utils.Snapshot import Snapshot
-from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
+from PacmanAgentBuilder.Qlearning.Snapshot import Snapshot
 from PacmanAgentBuilder.Utils.Map import MapPosition
 from PacmanAgentBuilder.Utils.observation import Observation
 from PacmanAgentBuilder.Utils.utils import *

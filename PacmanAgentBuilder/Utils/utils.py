@@ -183,17 +183,17 @@ def save_snapshots_to_file(snapshots, fileName):
             except Exception as e:
                 pass
 
-    if globalAddCount % 10 == 0:
-        # remove duplicate rows every 10 adds
-        data = pd.read_csv(filePath)
-        beforeCount = len(data)
-        data = data.drop_duplicates()
-        afterCount = len(data)
-
-        print(
-            f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - "
-            f"Game snapshots: {len(snapshots)} - "
-            f"{beforeCount} -> {afterCount} ({beforeCount - afterCount})")
-        data.to_csv(filePath, index=False)
-    else:
-        print(f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - Game snapshots: {len(snapshots)}")
+    # if globalAddCount % 10 == 0:
+    #     # remove duplicate rows every 10 adds
+    #     data = pd.read_csv(filePath)
+    #     beforeCount = len(data)
+    #     data = data.drop_duplicates()
+    #     afterCount = len(data)
+    #
+    #     print(
+    #         f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - "
+    #         f"Game snapshots: {len(snapshots)} - "
+    #         f"{beforeCount} -> {afterCount} ({beforeCount - afterCount})")
+    #     data.to_csv(filePath, index=False)
+    # else:
+    print(f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - Game snapshots: {len(snapshots)}")
