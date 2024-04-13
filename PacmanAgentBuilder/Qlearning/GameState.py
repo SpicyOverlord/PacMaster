@@ -1,6 +1,7 @@
 from typing import List
 
 from PacmanAgentBuilder.Qlearning.GameStateData import GameStateData
+from PacmanAgentBuilder.Utils.observation import Observation
 from PacmanAgentBuilder.Utils.utils import isInCenterArea
 from Pacman_Complete.constants import FREIGHT, SPAWN, UP, DOWN, LEFT, RIGHT, STOP
 from Pacman_Complete.vector import Vector2
@@ -9,7 +10,7 @@ from Pacman_Complete.vector import Vector2
 class GameState:
     simplifyFactor = 1
 
-    def __init__(self, obs, moveMade: int = STOP):
+    def __init__(self, obs: Observation, moveMade: int = STOP):
         self.moveMade = moveMade
         self.pacmanPos = obs.getPacmanPosition()
         self.nearest5PelletPosition = obs.getNearestXPelletPosition(5)
@@ -32,7 +33,7 @@ class GameState:
 
         gameState.append(self.currentLevel % 2)
 
-        simplePacmanPos = self.simplifyVector(self.pacmanPos)
+        simplePacmanPos = GameState.simplifyVector(self.pacmanPos)
         gameState.append(simplePacmanPos.x)
         gameState.append(simplePacmanPos.y)
 
@@ -51,7 +52,7 @@ class GameState:
                 continue
 
             ghostPos = sortedGhostPosArray[i]
-            simpleGhostPos = self.simplifyVector(ghostPos)
+            simpleGhostPos = GameState.simplifyVector(ghostPos)
             gameState.append(simpleGhostPos.x)
             gameState.append(simpleGhostPos.y)
 
@@ -59,7 +60,7 @@ class GameState:
             gameState.append(ghostDirection)
 
         for position in self.nearest5PelletPosition:
-            simpleNearestPelletPos = self.simplifyVector(position)
+            simpleNearestPelletPos = GameState.simplifyVector(position)
             gameState.append(simpleNearestPelletPos.x)
             gameState.append(simpleNearestPelletPos.y)
 
@@ -80,13 +81,15 @@ class GameState:
     def toGameStateData(self) -> GameStateData:
         return GameStateData(self.getArray())
 
-    def simplifyVector(self, vector: Vector2) -> Vector2:
+    @staticmethod
+    def simplifyVector(vector: Vector2) -> Vector2:
         newX = round(int(vector.x - 19) / GameState.simplifyFactor)
         newY = round(int(vector.y - 79) / GameState.simplifyFactor)
 
         return Vector2(int(newX), int(newY))
 
-    def directionToVector(self, direction: int) -> Vector2:
+    @staticmethod
+    def directionToVector(direction: int) -> Vector2:
         """
         Converts a direction to a vector
         :param direction: The direction
@@ -100,6 +103,8 @@ class GameState:
             return Vector2(-1, 0)
         if direction == RIGHT:
             return Vector2(1, 0)
+        if direction == STOP:
+            return Vector2(0, 0)
 
         raise Exception(f"Direction '{direction}' not recognized")
 

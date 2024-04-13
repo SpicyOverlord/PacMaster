@@ -35,6 +35,23 @@ class WeightModifier:
         return mutation
 
     @staticmethod
+    def FullRandom(weights: WeightContainer, spread: float):
+        """
+        This method mutates the weights by a random amount (max mutationRate).
+        :param weights: The WeightContainer to mutate.
+        :param spread: The min and max amount to set the weights.
+        :return: The new mutated WeightContainer.
+        """
+        mutation = WeightContainer()
+
+        for key, _ in weights.items():
+            mutatedValue = random.uniform(-spread, spread)
+
+            mutation.add(key, round(mutatedValue, 5))
+
+        return mutation
+
+    @staticmethod
     def randomSelectCombine(weightsA: WeightContainer, weightsB: WeightContainer) -> WeightContainer:
         """
         This method combines two WeightContainers by randomly selecting the weights from one of the two,

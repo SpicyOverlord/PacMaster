@@ -48,7 +48,8 @@ class Observation(object):
             legalMoves.append(DOWN)
         return legalMoves
 
-    def isVectorBetweenVectors(self, vector1: Vector2, vector2: Vector2, middleVector: Vector2) -> bool:
+    @staticmethod
+    def isVectorBetweenVectors(vector1: Vector2, vector2: Vector2, middleVector: Vector2) -> bool:
         """
         Checks if a vector is between two other vectors.
         :param vector1: The first vector.

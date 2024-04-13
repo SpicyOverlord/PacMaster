@@ -196,7 +196,7 @@ def save_snapshots_to_file(snapshots, fileName):
             f"Game snapshots: {len(snapshots)} - "
             f"{beforeCount} -> {afterCount} ({beforeCount - afterCount})")
 
-        # data.to_csv(filePath, index=False)
+        data.to_csv(filePath, index=False)
 
         # if the file gets too large, create a new file
         if afterCount > 2000000:

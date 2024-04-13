@@ -2,9 +2,14 @@ import random
 import time
 import multiprocessing
 import os
+from typing import List
 
 from PacmanAgentBuilder.Agents.FinalAgent import FinalAgent
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
+from PacmanAgentBuilder.Qlearning.GameState import GameState
+from PacmanAgentBuilder.Qlearning.GameStateData import GameStateData
+from PacmanAgentBuilder.Qlearning.RewardFunctions.IRewardFunction import IRewardFunction
+from PacmanAgentBuilder.Qlearning.RewardFunctions.MyFirstRewardFunction import MyFirstRewardFunction
 from PacmanAgentBuilder.Utils.GameStats import GameStats
 
 from PacmanAgentBuilder.Genetics.WeightModifier import WeightModifier
@@ -21,12 +26,12 @@ class RewardTournamentRunner:
     """
 
     @staticmethod
-    def startNewTournament(agentClass: type[IAgent], populationSize: int, generationCount: int,
+    def startNewTournament(rewardFunctionClass: type[IRewardFunction], dataSet: List[GameState], populationSize: int, generationCount: int,
                            freeGenerationCount: int, savePercentage: int, mutationRate: float,
-                           gameCount: int, cpuCount: int, timeoutSeconds: int):
+                           cpuCount: int, timeoutSeconds: int):
         """
         This method starts a new genetic algorithm tournament for the specified agent.
-        :param agentClass: The specified agent.
+        :param rewardFunctionClass: The specified agent.
         :param populationSize: The size of the population.
         :param generationCount: The number of generations.
         :param freeGenerationCount: The number of generations to skip before save top x% and starting to decrease the mutation rate.
@@ -40,12 +45,10 @@ class RewardTournamentRunner:
 
         # set some variables that is used in the tournament
         tournamentStartTime = time.time()
-        logFileName = f"Tournaments/{getCurrentTimestamp()}_{agentClass.__name__}.txt"
+        logFileName = f"RewardFunctions/{getCurrentTimestamp()}_{rewardFunctionClass.__name__}.txt"
         allMembers = []
         bestOfEachGenerations = []
-        totalGameCount = populationSize * generationCount * gameCount
         poolSize = max(int(populationSize * 0.1), 2)  # 10% of the population size, but minimum 2
-        constArgs = (agentClass, gameCount)
 
         # calculate the mutation rate multiplier
         # this is done to decrease the mutation rate each generation so the last generations mutation rate is 0.1
@@ -54,7 +57,7 @@ class RewardTournamentRunner:
                 1 / (generationCount - freeGenerationCount))
 
         # generate start population
-        defaultWeightContainer = agentClass.getDefaultWeightContainer()
+        defaultWeightContainer = rewardFunctionClass.getDefaultWeightContainer()
         population = []
         # each member of the population is a very mutated version of the default weight container
         while len(population) < populationSize:
@@ -67,7 +70,7 @@ class RewardTournamentRunner:
 
         print("\n\n------------- Starting new genetic tournament -------------")
         print(f"Starting at: {getCurrentTimestamp()}")
-        print(f"Agent: {agentClass.__name__}")
+        print(f"Agent: {rewardFunctionClass.__name__}")
         print(f"{totalGameCount} games will be played over "
               f"{generationCount} generations with a population size of {populationSize}.")
         print(f"Each agent will be tested on {gameCount} games, using {cpuCount} CPU cores.")
@@ -79,7 +82,7 @@ class RewardTournamentRunner:
 
             # calculate fitness of population
             start_time = time.time()
-            stats = TournamentRunner.parallelFitnessEvaluation(population, constArgs, timeoutSeconds, cpuCount)
+            stats = RewardTournamentRunner.parallelFitnessEvaluation(population, rewardFunctionClass, dataSet, timeoutSeconds, cpuCount)
             end_time = time.time()
 
             # add the calculated fitness to each member of the population
@@ -165,18 +168,18 @@ class RewardTournamentRunner:
         print(f"The tournament finished at: {getCurrentTimestamp()}")
 
     @staticmethod
-    def parallelFitnessEvaluation(population, constArgs, timeoutSeconds, cpuCount):
+    def parallelFitnessEvaluation(population, rewardFunctionClass, dataSet, timeoutSeconds, cpuCount):
         """
         This method is used to evaluate the fitness of the population in parallel.
         :param population: The population to evaluate.
-        :param constArgs: The constant arguments to pass to the fitness function (agentClass, gameCount).
+        :param constArgs: The constant arguments to pass to the fitness function (rewardFunctionClass, gameCount).
         :param timeoutSeconds: The number of seconds to wait for each agent to finish its game before timing out.
         :param cpuCount: The number of CPU cores to use for parallel fitness evaluation.
         :return: A list of the calculated fitness of the population.
         """
         # create a pool of workers
         with multiprocessing.Pool(processes=cpuCount) as pool:
-            results = [pool.apply_async(TournamentRunner.fitnessFunctionWrapper, (member, constArgs)) for member in
+            results = [pool.apply_async(RewardTournamentRunner.fitnessFunctionWrapper, (member, rewardFunctionClass, dataSet)) for member in
                        population]
             finished_stats = []
 
@@ -191,39 +194,50 @@ class RewardTournamentRunner:
             return finished_stats
 
     @staticmethod
-    def fitnessFunctionWrapper(member, args):
+    def fitnessFunctionWrapper(member, rewardFunctionClass, dataSet) -> float:
         """
         This method is used to wrap the fitness function, so it can be used in the multiprocessing pool.
         :param member: The member to evaluate.
-        :param args: The constant arguments to pass to the fitness function (agentClass, gameCount).
+        :param args: The constant arguments to pass to the fitness function (rewardFunctionClass, gameCount).
         :return: The calculated fitness of the member.
         """
         # disable the DebugHelper, so it doesn't low down the fitness evaluation
         DebugHelper.disable()
 
         # calculate the fitness of the member
-        agentClass = args[0]
-        gameCount = args[1]
         try:
-            stats = calculatePerformanceOverXGames(
-                agentClass=agentClass,
-                weightContainer=member,
-                gameCount=gameCount,
-                lockDeltaTime=True
-            )
+            rewardFunction = rewardFunctionClass(member)
+            for row in dataSet:
+                predictions = GameStateData(row).generatePredictions()
+
+                maxPredictionReward = -99999.0
+                maxPredictionMove = 0
+                for prediction in predictions:
+                    reward = rewardFunction.calculateReward(prediction)
+                    if reward > maxPredictionReward:
+                        maxPredictionReward = reward
+                        maxPredictionMove = prediction.moveMade
+
+
+            return float in percent
+
+
         except Exception as e:
             print(f"An error occurred during fitness evaluation: {e}")
-            stats = GameStats.getEmpty()
+            stats = 0
 
         return stats
 
 
 if __name__ == "__main__":
+    dataSet = []
+
     DebugHelper.disable()
 
     # start a new tournament
-    TournamentRunner.startNewTournament(
-        agentClass=FinalAgent,  # Specify the agent to be evaluated.
+    RewardTournamentRunner.startNewTournament(
+        rewardFunctionClass=MyFirstRewardFunction,  # Specify the agent to be evaluated.
+        dataSet=dataSet,  # The data set to be used in the reward function.
         populationSize=24,  # The size of the population.
         freeGenerationCount=10,  # generations to skip before save top x% and starting to decrease the mutation rate.
         generationCount=100,  # The number of generations.

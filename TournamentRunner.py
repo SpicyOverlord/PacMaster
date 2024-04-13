@@ -171,7 +171,7 @@ class TournamentRunner:
         """
         This method is used to evaluate the fitness of the population in parallel.
         :param population: The population to evaluate.
-        :param constArgs: The constant arguments to pass to the fitness function (agentClass, gameCount).
+        :param constArgs: The constant arguments to pass to the fitness function (rewardFunctionClass, gameCount).
         :param timeoutSeconds: The number of seconds to wait for each agent to finish its game before timing out.
         :param cpuCount: The number of CPU cores to use for parallel fitness evaluation.
         :return: A list of the calculated fitness of the population.
@@ -197,7 +197,7 @@ class TournamentRunner:
         """
         This method is used to wrap the fitness function, so it can be used in the multiprocessing pool.
         :param member: The member to evaluate.
-        :param args: The constant arguments to pass to the fitness function (agentClass, gameCount).
+        :param args: The constant arguments to pass to the fitness function (rewardFunctionClass, gameCount).
         :return: The calculated fitness of the member.
         """
         # disable the DebugHelper, so it doesn't low down the fitness evaluation

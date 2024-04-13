@@ -15,16 +15,16 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 if __name__ == "__main__":
     DebugHelper.enable()
     # --- USED IN THE PRESENTATION ---
-    # agentClass = ShowIsInDanger
-    # agentClass = ShowDangerLevels
-    # agentClass = ShowDangerZone
-    # agentClass = ShowGraph
-    # agentClass = ShowPathfinding
-    # agentClass = ShowFlee
-    # agentClass = IslandCollectorAgent
+    # rewardFunctionClass = ShowIsInDanger
+    # rewardFunctionClass = ShowDangerLevels
+    # rewardFunctionClass = ShowDangerZone
+    # rewardFunctionClass = ShowGraph
+    # rewardFunctionClass = ShowPathfinding
+    # rewardFunctionClass = ShowFlee
+    # rewardFunctionClass = IslandCollectorAgent
 
     agentClass = FinalAgent
-    # agentClass = AIAgent
+    # rewardFunctionClass = AIAgent
 
     # this will run the agent in 50 games and print the average performance over the 50 games
     stats = calculatePerformanceOverXGames(

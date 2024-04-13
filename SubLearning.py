@@ -24,7 +24,7 @@
 #     print("\n----- NORMALIZED INPUT -----")
 #     print(X[:3])
 #
-#     # Split the dataset into training and test sets
+#     # Split the dataSet into training and test sets
 #     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 #     return X_train, X_test, y_train, y_test, scaler
 #
