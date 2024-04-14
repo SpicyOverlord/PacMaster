@@ -24,9 +24,9 @@ if __name__ == "__main__":
     # rewardFunctionClass = ShowFlee
     # rewardFunctionClass = IslandCollectorAgent
 
-    # agentClass = FinalAgent
+    agentClass = FinalAgent
     # rewardFunctionClass = AIAgent
-    agentClass = OneValueAgent
+    # agentClass = OneValueAgent
 
     # this will run the agent in 50 games and print the average performance over the 50 games
     stats = calculatePerformanceOverXGames(
