@@ -265,7 +265,7 @@ class Map(object):
     It is created from the NodeGroup and the Ghosts of the game.
     """
 
-    def __init__(self, obs, nodeGroup: NodeGroup, ghosts: list[Ghost]):
+    def __init__(self, obs, nodeGroup: NodeGroup):
         self.obs = obs
 
         self.mapNodes = []
@@ -275,7 +275,6 @@ class Map(object):
             self.mapNodes.append(MapNode(node))
 
         self.mapNodeDict = {(node.x, node.y): node for node in self.mapNodes}
-        self.ghosts = ghosts
 
         self.__setNodeNeighbors__()
 

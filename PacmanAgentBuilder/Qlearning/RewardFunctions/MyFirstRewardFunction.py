@@ -4,8 +4,8 @@ from PacmanAgentBuilder.Utils.utils import *
 
 
 class MyFirstRewardFunction(IRewardFunction):
-    def __init__(self, weightContainer: WeightContainer = None):
-        super().__init__(weightContainer=weightContainer)
+    def __init__(self, gameController, weightContainer: WeightContainer = None):
+        super().__init__(gameController, weightContainer=weightContainer)
 
     def calculateReward(self, snapshotList: List[int]) -> float:
 

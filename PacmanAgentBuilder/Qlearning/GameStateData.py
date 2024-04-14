@@ -51,7 +51,7 @@ class GameStateData:
 
         self.made_move = gameStateList[30]
 
-    def generatePredictions(self) -> List["GameStateData"]:
+    def generatePredictions(self):  #-> List[(int, "GameStateData")]:
         predictions = []
         for legalMove in [self.legal_move_up, self.legal_move_down, self.legal_move_left, self.legal_move_right]:
             if legalMove == 1:
@@ -125,8 +125,8 @@ class GameStateData:
 
                 self.game_ended,
 
-                self.made_move
+                legalMove
             ]
 
-            predictions.append(GameStateData(movePredictionArray))
+            predictions.append((legalMove, GameStateData(movePredictionArray)))
         return predictions

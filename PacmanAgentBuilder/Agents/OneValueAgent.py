@@ -4,15 +4,18 @@ from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
 from PacmanAgentBuilder.Qlearning.GameState import GameState
 from PacmanAgentBuilder.Utils.Map import MapPosition
+from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
 from PacmanAgentBuilder.Utils.observation import Observation
 from PacmanAgentBuilder.Utils.utils import *
 from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
 
 
-class FinalAgent(IAgent):
+class OneValueAgent(IAgent):
     def __init__(self, gameController, weightContainer: WeightContainer = None):
         super().__init__(gameController, weightContainer=weightContainer)
+
+        self.lastGameStateScore = 0
 
     def calculateNextMove(self, obs: Observation):
         # factor = GameState.simplifyFactor
@@ -23,38 +26,24 @@ class FinalAgent(IAgent):
         #
         # DebugHelper.pauseGame()
 
-        mapPos = obs.map.createMapPosition(obs.getPacmanPosition())
+        if self.actionsTaken % 5 != 0:
+            return STOP
 
+        minMove, minDangerLevel = self.flee(obs, obs.map.createMapPosition(obs.getPacmanPosition()))
 
+        gameStateScore = minDangerLevel
 
+        # gameStateScore = -self.calculateDangerLevel(
+        #     obs,
+        #     obs.map.createMapPosition(obs.getPacmanPosition()),
+        #     obs.getPacmanPosition(),
+        #     self.weightContainer
+        # )
 
-        # dangerLevel = self.calculateDangerLevel(obs, mapPos, mapPos.mapNode1.position, self.weightContainer)
-        # if mapPos.isBetweenMapNodes:
-        #     dangerLevel = max(
-        #         dangerLevel,
-        #         self.calculateDangerLevel(obs, mapPos, mapPos.mapNode2.position, self.weightContainer)
-        #     )
+        print(gameStateScore >= self.lastGameStateScore, gameStateScore - self.lastGameStateScore)
+        self.lastGameStateScore = gameStateScore
 
-        dangerLevel = self.calculateDangerLevel(obs, mapPos, obs.getPacmanPosition(), self.weightContainer)
-        print(dangerLevel)
-
-        return self.flee(obs, mapPos)
-
-
-
-
-        # if in danger, flee
-        if self.isInDanger(obs, mapPos):
-            move = self.flee(obs, mapPos)
-        else:
-            # else, collect pellets
-            move = self.collect(obs)
-
-        if move != STOP:
-            snapshot = GameState(obs, move)
-            self.snapshots.append(snapshot)
-
-        return move
+        return minMove
 
     def isInDanger(self, obs: Observation, mapPos: MapPosition) -> bool:
         dangerLevel = self.calculateDangerLevel(obs, mapPos, mapPos.mapNode1.position, self.weightContainer)
@@ -157,7 +146,26 @@ class FinalAgent(IAgent):
 
         return round(normalizedDanger, 5)
 
-    def flee(self, obs: Observation, mapPos: MapPosition) -> int:
+    def calculateGameStateScore(self, obs: Observation, mapPos: MapPosition) -> (int, int):
+        startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
+
+        sumDangerLevel = 0
+        for neighborContainer in startMapNode.neighborContainers:
+            endMapNode, path, distance = obs.map.getPathToEndOfDangerZoneInDirection(startMapNode,
+                                                                                     neighborContainer.direction)
+
+            if obs.isGhostInPath(path):
+                # DebugHelper.drawPath(path, DebugHelper.RED, 5)
+                continue
+            # DebugHelper.drawPath(path, DebugHelper.GREEN, 5)
+
+            dangerLevel = self.calculateDangerLevel(obs, mapPos, endMapNode.position, self.weightContainer)
+            # DebugHelper.drawDangerLevel(dangerLevel, endMapNode.position)
+            sumDangerLevel += dangerLevel
+
+        return sumDangerLevel
+
+    def flee(self, obs: Observation, mapPos: MapPosition) -> (int, int):
         startMapNode, startIsCustom = obs.map.getOrCreateCustomMapNodeOnVector(obs.getPacmanPosition())
 
         minDangerLevel = 99999
@@ -178,7 +186,7 @@ class FinalAgent(IAgent):
                 minDangerLevel = dangerLevel
                 minDangerDirection = neighborContainer.direction
 
-        return minDangerDirection
+        return minDangerDirection, minDangerLevel
 
     def collect(self, obs: Observation):
         pacmanPosition = obs.getPacmanPosition()

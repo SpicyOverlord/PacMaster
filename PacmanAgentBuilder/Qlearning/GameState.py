@@ -8,7 +8,7 @@ from Pacman_Complete.vector import Vector2
 
 
 class GameState:
-    simplifyFactor = 1
+    simplifyFactor = 20
 
     def __init__(self, obs: Observation, moveMade: int = STOP):
         self.moveMade = moveMade

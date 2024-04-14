@@ -24,7 +24,7 @@ class Observation(object):
         self.nodeGroup = gameController.nodes
         self.currentLevel = gameController.level
 
-        self.map = Map(self, gameController.nodes, self.getGhosts())
+        self.map = Map(self, gameController.nodes)
 
     def getLegalMoves(self) -> list[int]:
         """
