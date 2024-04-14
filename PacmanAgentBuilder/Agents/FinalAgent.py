@@ -35,13 +35,13 @@ class FinalAgent(IAgent):
         #         self.calculateDangerLevel(obs, mapPos, mapPos.mapNode2.position, self.weightContainer)
         #     )
 
-        dangerLevel = self.calculateDangerLevel(obs, mapPos, obs.getPacmanPosition(), self.weightContainer)
-        print(dangerLevel)
-
-        return self.flee(obs, mapPos)
-
-
-
+        # dangerLevel = self.calculateDangerLevel(obs, mapPos, obs.getPacmanPosition(), self.weightContainer)
+        # print(dangerLevel)
+        #
+        # return self.flee(obs, mapPos)
+        #
+        #
+        #
 
         # if in danger, flee
         if self.isInDanger(obs, mapPos):
