@@ -204,7 +204,7 @@ def save_snapshots_to_file(snapshots, fileName):
             except Exception as e:
                 pass
 
-    if globalAddCount % 10 == 0:
+    if globalAddCount % 5 == 0:
         # remove duplicate rows every 10 adds
         data = pd.read_csv(filePath)
         beforeCount = len(data)

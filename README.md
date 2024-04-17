@@ -21,12 +21,6 @@ ssh -t root@192.168.1.50 'tmux attach -t pacmanSnapshot3'
 ```shell
 ssh -t root@192.168.1.50 'tmux attach -t pacmanSnapshot4'
 ```
-```shell
-ssh -t root@192.168.1.50 'tmux attach -t pacmanSnapshot5'
-```
-```shell
-ssh -t root@192.168.1.50 'tmux attach -t pacmanSnapshot6'
-```
 
 # Sync
 ### Push to Linux server
