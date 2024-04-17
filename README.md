@@ -21,6 +21,12 @@ ssh -t root@192.168.1.50 'tmux attach -t pacmanSnapshot3'
 ```shell
 ssh -t root@192.168.1.50 'tmux attach -t pacmanSnapshot4'
 ```
+```shell
+ssh -t root@192.168.1.50 'tmux attach -t pacmanSnapshot5'
+```
+```shell
+ssh -t root@192.168.1.50 'tmux attach -t pacmanSnapshot6'
+```
 
 # Sync
 ### Push to Linux server
@@ -34,7 +40,7 @@ ssh -t root@192.168.1.50 'cd /root/PacMaster; git pull'
 rsync -avz --progress root@192.168.1.50:/root/PacMaster/Tournaments/ /Users/frederik/Home/Python/PacMaster/Tournaments
 ```
 
-### Copy Snapshop data to local machine
+### Copy gamestate data to local machine
 ```shell
 rsync -avz --progress root@192.168.1.50:/root/PacMaster/Data/ /Users/frederik/Home/Python/PacMaster/Data
 ```

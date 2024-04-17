@@ -211,7 +211,8 @@ class TournamentRunner:
                 agentClass=agentClass,
                 weightContainer=member,
                 gameCount=gameCount,
-                lockDeltaTime=True
+                lockDeltaTime=True,
+                disableVisuals=True
             )
         except Exception as e:
             print(f"An error occurred during fitness evaluation: {e}")

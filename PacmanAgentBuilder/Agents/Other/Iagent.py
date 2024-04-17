@@ -21,6 +21,9 @@ class IAgent(ABC):
         else:
             self.weightContainer = weightContainer
 
+        self.yes = 0
+        self.no = 0
+
     @staticmethod
     def getBestWeightContainer() -> WeightContainer:
         return None

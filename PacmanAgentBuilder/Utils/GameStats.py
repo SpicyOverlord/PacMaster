@@ -7,6 +7,7 @@ class GameStats(object):
     This class is used to store the statistics of a game.
     """
     def __init__(self, game: GameController, agent: IAgent):
+        self.agent = agent
         self.actionsTaken = agent.actionsTaken
         self.score = game.score
         self.levelsCompleted = game.level
