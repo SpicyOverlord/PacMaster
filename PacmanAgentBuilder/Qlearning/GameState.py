@@ -23,7 +23,7 @@ class GameState:
         self.currentLevel = obs.currentLevel
         self.gameEnded = 0
 
-        if WeightContainer is None:
+        if weights is None:
             return
 
         self.weightContainer = weights
