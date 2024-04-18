@@ -11,7 +11,7 @@ import pandas as pd
 
 from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
-
+import gc
 
 def roundVector(vector: Vector2) -> Vector2:
     """
@@ -214,6 +214,7 @@ def save_snapshots_to_file(snapshots, fileName):
         globalAddedCount = 0
         print(f"\n\nNew file created: {filePath}")
 
+    gc.collect()
 
     # if globalAddsCount % 5 == 0:
     #     # remove duplicate rows every 10 adds
