@@ -154,20 +154,21 @@ def directionToVector(direction: int) -> Vector2:
 
 globalStartTime = time.time()
 globalStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-globalAddCount = 0
+globalFileStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+globalAddedCount = 0
 
 
 def save_snapshots_to_file(snapshots, fileName):
     global globalStartDate
+    global globalFileStartDate
     global globalStartTime
-    global globalAddCount
-    globalAddCount += 1
+    global globalAddedCount
 
     directory = 'Data'
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    filePath = f'{directory}/{fileName}_{globalStartDate}.csv'
+    filePath = f'{directory}/{fileName}_{globalFileStartDate}.csv'
     header = [
         'current_level_layout',
         'pacman_x', 'pacman_y',
@@ -204,22 +205,33 @@ def save_snapshots_to_file(snapshots, fileName):
             except Exception as e:
                 pass
 
-    if globalAddCount % 5 == 0:
-        # remove duplicate rows every 10 adds
-        data = pd.read_csv(filePath)
-        beforeCount = len(data)
-        data = data.drop_duplicates()
-        afterCount = len(data)
+    globalAddedCount += len(snapshots)
 
-        print(
-            f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - "
-            f"Game snapshots: {len(snapshots)} - "
-            f"{beforeCount} -> {afterCount} ({beforeCount - afterCount})")
+    print(f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - Game snapshots: {len(snapshots)} - total: {globalAddedCount}")
 
-        data.to_csv(filePath, index=False)
+    if globalAddedCount > 5000000:
+        globalFileStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        globalAddedCount = 0
+        print(f"\n\nNew file created: {filePath}")
 
-        # if the file gets too large, create a new file
-        if afterCount > 100000:
-            globalStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    else:
-        print(f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - Game snapshots: {len(snapshots)}")
+
+    # if globalAddsCount % 5 == 0:
+    #     # remove duplicate rows every 10 adds
+    #     data = pd.read_csv(filePath)
+    #     beforeCount = len(data)
+    #     data = data.drop_duplicates()
+    #     afterCount = len(data)
+    #
+    #     print(
+    #         f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - "
+    #         f"Game snapshots: {len(snapshots)} - "
+    #         f"{beforeCount} -> {afterCount} ({beforeCount - afterCount})"
+    #     )
+    #
+    #     data.to_csv(filePath, index=False)
+    #
+    #     # if the file gets too large, create a new file
+    #     if afterCount > 100000:
+    #         globalStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    # else:
+    #     print(f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - Game snapshots: {len(snapshots)}")
