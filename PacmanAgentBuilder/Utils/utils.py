@@ -219,7 +219,7 @@ def save_snapshots_to_file(snapshots, fileName):
         data.to_csv(filePath, index=False)
 
         # if the file gets too large, create a new file
-        if afterCount > 200000:
+        if afterCount > 100000:
             globalStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     else:
         print(f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - Game snapshots: {len(snapshots)}")
