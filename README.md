@@ -10,16 +10,16 @@ ssh -t root@192.168.1.50 'tmux attach -t pacmantour'
 ```
 ### Connect to Tmux Snapshot Sessions
 ```shell
-ssh -t root@192.168.1.50 'tmux attach -t pacmanSnapshot1'
+ssh -t root@192.168.1.50 'tmux attach -t pacmanDataCollector1'
 ```
 ```shell
-ssh -t root@192.168.1.50 'tmux attach -t pacmanSnapshot2'
+ssh -t root@192.168.1.50 'tmux attach -t pacmanDataCollector2'
 ```
 ```shell
-ssh -t root@192.168.1.50 'tmux attach -t pacmanSnapshot3'
+ssh -t root@192.168.1.50 'tmux attach -t pacmanDataCollector3'
 ```
 ```shell
-ssh -t root@192.168.1.50 'tmux attach -t pacmanSnapshot4'
+ssh -t root@192.168.1.50 'tmux attach -t pacmanDataCollector4'
 ```
 
 # Sync
