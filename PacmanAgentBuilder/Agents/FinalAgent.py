@@ -52,7 +52,7 @@ class FinalAgent(IAgent):
 
         if move != STOP:
             snapshot = GameState(obs, move)
-            self.snapshots.append(snapshot)
+            self.gameStates.append(snapshot)
 
         return move
 

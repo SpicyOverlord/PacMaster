@@ -214,6 +214,7 @@ def save_snapshots_to_file(snapshots, fileName):
         globalAddedCount = 0
         print(f"\n\nNew file created: {filePath}")
 
+    snapshots = []
     gc.collect()
 
     # if globalAddsCount % 5 == 0:
@@ -225,7 +226,7 @@ def save_snapshots_to_file(snapshots, fileName):
     #
     #     print(
     #         f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - "
-    #         f"Game snapshots: {len(snapshots)} - "
+    #         f"Game gameStates: {len(gameStates)} - "
     #         f"{beforeCount} -> {afterCount} ({beforeCount - afterCount})"
     #     )
     #
@@ -235,4 +236,4 @@ def save_snapshots_to_file(snapshots, fileName):
     #     if afterCount > 100000:
     #         globalStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     # else:
-    #     print(f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - Game snapshots: {len(snapshots)}")
+    #     print(f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - Game gameStates: {len(gameStates)}")
