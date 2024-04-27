@@ -26,7 +26,7 @@ class Text(object):
         self.access_file_with_retry(fontpath)
 
     def access_file_with_retry(self, fontpath, num_retries=20, delay=1):
-        retried = False
+        print(os.getcwd())
         for i in range(num_retries):
             try:
                 # Replace this with the actual operation you're performing on the file
@@ -34,13 +34,9 @@ class Text(object):
             except FileNotFoundError:
                 if i < num_retries - 1:  # i is zero indexed
                     time.sleep(delay)
-                    retried = True
                     print("Caught FileNotFoundError, retrying... (attempt %d/%d)" % (i + 1, num_retries), end=" - ")
                 else:
                     raise
-
-        if retried:
-            print()
 
 
     def createLabel(self):
