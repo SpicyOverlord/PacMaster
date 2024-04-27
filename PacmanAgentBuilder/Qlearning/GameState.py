@@ -1,9 +1,10 @@
+import base64
 from typing import List
 
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Qlearning.GameStateData import GameStateData
 from PacmanAgentBuilder.Utils.observation import Observation
-from PacmanAgentBuilder.Utils.utils import isInCenterArea
+from PacmanAgentBuilder.Utils.utils import isInCenterArea, getHash
 from Pacman_Complete.constants import FREIGHT, SPAWN, UP, DOWN, LEFT, RIGHT, STOP
 from Pacman_Complete.vector import Vector2
 
@@ -14,6 +15,7 @@ class GameState:
     def __init__(self, obs: Observation, moveMade: int = STOP, weights: WeightContainer = None):
         self.moveMade = moveMade
         self.pacmanPos = self.simplifyVector(obs.getPacmanPosition())
+        self.remainingLives = obs.getRemainingLives()
         self.nearest5PelletPosition = obs.getNearestXPelletPosition(5)
         self.ghostPosArray = [self.simplifyVector(ghost.position) for ghost in obs.getGhosts()]
         self.ghostDirectionArray = [ghost.direction for ghost in obs.getGhosts()]
@@ -70,38 +72,47 @@ class GameState:
         self.GhostDistanceValue = closestGhostValue + closeGhostValue + ghostsDangerValue
 
     def equal(self, other: "GameState") -> bool:
-        return self.pacmanPos == other.pacmanPos and self.ghostPosArray == other.ghostPosArray
+        return getHash(self.getInputArray()) == getHash(other.getInputArray())
+        # return self.pacmanPos == other.pacmanPos and self.ghostPosArray == other.ghostPosArray
 
-    def calculateGameStateScore(self, lastGameState: "GameState") -> (int, int):
+    def calculateReward(self, lastGameState: "GameState") -> int:
         gameStateScore = 0
 
         # finished level
         if self.currentLevel > lastGameState.currentLevel:
-            gameStateScore += 1 + self.weightContainer.get('nextLevelScore')
+            gameStateScore += self.weightContainer.get('nextLevelReward')
 
         # pellets
         if self.pelletCount < lastGameState.pelletCount:
-            gameStateScore += 1 + self.weightContainer.get('eatPelletScore')
+            gameStateScore += self.weightContainer.get('eatPelletReward')
         elif self.pelletDistanceValue < lastGameState.pelletDistanceValue:
-            gameStateScore += 1 + self.weightContainer.get('pelletDistanceScore')
+            gameStateScore += self.weightContainer.get('pelletDistanceReward')
 
         # ghosts
         if (self.weightContainer.get(
                 'ghostDistanceThreshold') < self.GhostDistanceValue < lastGameState.GhostDistanceValue):
-            gameStateScore -= 1 + self.weightContainer.get('ghostDistanceScore')
+            gameStateScore -= self.weightContainer.get('ghostDistancePenalty')
         if self.weightContainer.get(
                 'nearestGhostDistanceThreshold') < self.nearestGhostDistance < lastGameState.nearestGhostDistance:
-            gameStateScore -= 1 + self.weightContainer.get('nearestGhostDistanceScore')
+            gameStateScore -= self.weightContainer.get('nearestGhostDistancePenalty')
+
+        if self.remainingLives < lastGameState.remainingLives:
+            gameStateScore -= self.weightContainer.get('deathPenalty')
+
+        gameStateScore -= self.weightContainer.get('basePenalty')
 
         return gameStateScore
 
     def setGameEnded(self):
         self.gameEnded = 1
 
-    def getInputArray(self) -> List[int]:
-        return self.getArray()[:-1]
+    def setMadeMove(self, move: int):
+        self.moveMade = move
 
-    def getArray(self) -> List[int]:
+    def getInputArray(self) -> List[int]:
+        return self.getList()[:-2]
+
+    def getList(self) -> List[int]:
         gameState = []
 
         gameState.append(self.currentLevel % 2)
@@ -133,7 +144,7 @@ class GameState:
             gameState.append(ghostDirection)
 
         for position in self.nearest5PelletPosition:
-            simpleNearestPelletPos = position
+            simpleNearestPelletPos = self.simplifyVector(position)
             gameState.append(simpleNearestPelletPos.x)
             gameState.append(simpleNearestPelletPos.y)
 
@@ -152,7 +163,7 @@ class GameState:
         return gameState
 
     def toGameStateData(self) -> GameStateData:
-        return GameStateData(self.getArray())
+        return GameStateData(self.getList())
 
     @staticmethod
     def simplifyVector(vector: Vector2) -> Vector2:
@@ -179,3 +190,8 @@ class GameState:
             return [0, 0, 0, 0]
 
         raise Exception(f"Direction '{direction}' not recognized")
+
+    def getHash(self) -> str:
+        lst = self.getInputArray()
+
+        return getHash(lst)

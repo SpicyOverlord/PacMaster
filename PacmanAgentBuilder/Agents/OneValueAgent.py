@@ -26,7 +26,7 @@ class OneValueAgent(IAgent):
         else:
             print(gameState.pacmanPos, self.lastGameState.pacmanPos)
 
-            gameStateScore = gameState.calculateGameStateScore(self.lastGameState)
+            gameStateScore = gameState.calculateReward(self.lastGameState)
             correct = gameStateScore > 0
 
             if correct:

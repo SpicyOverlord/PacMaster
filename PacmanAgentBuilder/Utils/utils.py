@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import csv
 import os
 import random
@@ -12,6 +13,7 @@ import pandas as pd
 from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
 import gc
+
 
 def roundVector(vector: Vector2) -> Vector2:
     """
@@ -152,6 +154,41 @@ def directionToVector(direction: int) -> Vector2:
     raise Exception(f"Direction '{direction}' not recognized")
 
 
+def getHash(lst: List[int]) -> str:
+    h = 17
+    for j in range(len(lst)):
+        h = h * 19 + lst[j]
+
+    # base 64
+    num_bytes = h.to_bytes((h.bit_length() + 7) // 8, 'big')
+    base64_str = base64.b64encode(num_bytes)
+    return base64_str.decode()
+
+
+def directionToIndex(direction: int) -> int:
+    if direction == UP:
+        return 0
+    if direction == DOWN:
+        return 1
+    if direction == LEFT:
+        return 2
+    if direction == RIGHT:
+        return 3
+    return -1
+
+
+def indexToDirection(index: int) -> int:
+    if index == 0:
+        return UP
+    if index == 1:
+        return DOWN
+    if index == 2:
+        return LEFT
+    if index == 3:
+        return RIGHT
+    return STOP
+
+
 globalStartTime = time.time()
 globalStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 globalFileStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -200,14 +237,15 @@ def save_snapshots_to_file(snapshots, fileName):
                 continue
 
             try:
-                snapshotArray = snapshot.getArray()
+                snapshotArray = snapshot.getList()
                 writer.writerow(snapshotArray)
             except Exception as e:
                 pass
 
     globalAddedCount += len(snapshots)
 
-    print(f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - Game snapshots: {len(snapshots)} - total: {globalAddedCount}")
+    print(
+        f" - RunTime: [{secondsToTime(time.time() - globalStartTime)}] - Game snapshots: {len(snapshots)} - total: {globalAddedCount}")
 
     if globalAddedCount > 5000000:
         globalFileStartDate = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")

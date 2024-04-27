@@ -32,7 +32,7 @@ class FinalAgentWithRewardFunction(IAgent):
             pass
             # print("SKIPPING")
         else:
-            gameStateScore = gameState.calculateGameStateScore(self.lastGameState)
+            gameStateScore = gameState.calculateReward(self.lastGameState)
             correct = gameStateScore > 0
 
             if correct:
