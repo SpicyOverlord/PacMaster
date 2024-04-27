@@ -24,8 +24,8 @@ class Text(object):
         self.createLabel()
 
     def setupFont(self, fontpath):
-        # self.font = pygame.font.Font(fontpath, self.size)
-        self.font = constFont
+        self.font = pygame.font.Font(fontpath, self.size)
+        # self.font = constFont
         # self.access_file_with_retry(fontpath)
 
     def access_file_with_retry(self, fontpath, num_retries=20, delay=1):

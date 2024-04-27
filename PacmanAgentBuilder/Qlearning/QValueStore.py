@@ -16,12 +16,16 @@ class QValueStore:
         self.alpha = 0.7
         self.rho = 0.2
 
-        load = False
+        load = True
         if load:
-            self.gamma = 0
-            self.alpha = 0
-            self.rho = 0
-            self.loadQValuesFromBinary("Data/QLearningData/QValuesGen.bin", fullPath=True)
+            # self.gamma = 0
+            # self.alpha = 0
+            # self.rho = 0
+            self.gamma = 0.75
+            self.alpha = 0.7
+            self.rho = 0.2
+            self.loadQValuesFromBinary("Data/QLearningData/QValuesTemp.bin", fullPath=True)
+            # self.saveQValuesToJSON("Data/QLearningData/QValuesGen.json", fullPath=True)
 
     def decayValues(self, decayRate: float) -> None:
         self.alpha *= decayRate
@@ -47,8 +51,11 @@ class QValueStore:
         qValues = self.getStateQValues(stateHash)
         return qValues.index(max(qValues))
 
-    def saveQValuesToJSON(self, filePath: str) -> None:
-        fullPath = self.addBasePath(filePath)
+    def saveQValuesToJSON(self, filePath: str, fullPath: bool = False) -> None:
+        if fullPath:
+            fullPath = filePath
+        else:
+            fullPath = self.addBasePath(filePath)
 
         if not os.path.exists(os.path.dirname(fullPath)):
             os.makedirs(os.path.dirname(fullPath))
@@ -79,8 +86,11 @@ class QValueStore:
         end_time = time.time()
         print(f" Done! ({round(end_time - start_time, 2)} seconds)")
 
-    def saveQValuesToBinary(self, filePath: str) -> None:
-        fullPath = self.addBasePath(filePath)
+    def saveQValuesToBinary(self, filePath: str, fullPath: bool = False) -> None:
+        if fullPath:
+            fullPath = filePath
+        else:
+            fullPath = self.addBasePath(filePath)
 
         if not os.path.exists(os.path.dirname(fullPath)):
             os.makedirs(os.path.dirname(fullPath))

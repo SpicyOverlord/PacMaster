@@ -90,11 +90,21 @@ def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: We
     for i in range(gameCount):
         if logging:
             print(f"Running game {i + 1}...")
-        gameStat, constStore = runGameWithAgent(agentClass, weightContainer=weightContainer, store=constStore,
-                                                gameSpeed=gameSpeed,
-                                                startLives=startLives, startLevel=startLevel,
-                                                ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled,
-                                                lockDeltaTime=lockDeltaTime, disableVisuals=disableVisuals)
+
+        try:
+            gameStat, constStore = runGameWithAgent(agentClass, weightContainer=weightContainer, store=constStore,
+                                                    gameSpeed=gameSpeed,
+                                                    startLives=startLives, startLevel=startLevel,
+                                                    ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled,
+                                                    lockDeltaTime=lockDeltaTime, disableVisuals=disableVisuals)
+
+        except Exception as e:
+            constStore.loadQValuesFromBinary("Data/QLearningData/QValuesTemp.bin", fullPath=True)
+            print(f"Game {i + 1} failed: {e}\n\n\n\n")
+
+            exit()
+
+
         gameStats.append(gameStat)
         if (i + 1) % decayInterval == 0:
             constStore.decayValues(decayRate)

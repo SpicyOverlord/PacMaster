@@ -11,8 +11,8 @@ from Pacman_Complete.vector import Vector2
 
 
 class IslandCollectorAgent(IAgent):
-    def __init__(self, gameController, weightContainer: WeightContainer = None):
-        super().__init__(gameController, weightContainer=weightContainer)
+    def __init__(self, gameController, weightContainer: WeightContainer = None, store=None):
+        super().__init__(gameController, weightContainer=weightContainer, store=store)
 
     def calculateNextMove(self, obs: Observation):
 

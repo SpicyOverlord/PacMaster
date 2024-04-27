@@ -23,13 +23,13 @@ if __name__ == "__main__":
 
     DebugHelper.enable()
     # --- USED IN THE PRESENTATION ---
-    # rewardFunctionClass = ShowIsInDanger
-    # rewardFunctionClass = ShowDangerLevels
-    # rewardFunctionClass = ShowDangerZone
-    # rewardFunctionClass = ShowGraph
-    # rewardFunctionClass = ShowPathfinding
-    # rewardFunctionClass = ShowFlee
-    # rewardFunctionClass = IslandCollectorAgent
+    # agentClass = ShowIsInDanger
+    # agentClass = ShowDangerLevels
+    # agentClass = ShowDangerZone
+    # agentClass = ShowGraph
+    # agentClass = ShowPathfinding
+    # agentClass = ShowFlee
+    # agentClass = IslandCollectorAgent
 
     # agentClass = FinalAgent
     agentClass = QLearningAgent
