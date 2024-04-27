@@ -7,6 +7,7 @@ from Pacman_Complete.constants import *
 
 
 class Text(object):
+    font = None
     def __init__(self, text, color, x, y, size, time=None, id=None, visible=True):
         self.id = id
         self.text = text
@@ -23,7 +24,10 @@ class Text(object):
 
     def setupFont(self, fontpath):
         # self.font = pygame.font.Font(fontpath, self.size)
-        self.access_file_with_retry(fontpath)
+        if Text.font is None:
+            Text.font = pygame.font.Font(fontpath, self.size)
+        self.font = Text.font
+        # self.access_file_with_retry(fontpath)
 
     def access_file_with_retry(self, fontpath, num_retries=20, delay=1):
         print(os.getcwd())
