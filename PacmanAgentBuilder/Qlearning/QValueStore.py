@@ -22,7 +22,6 @@ class QValueStore:
             self.alpha = 0
             self.rho = 0
             self.loadQValuesFromBinary("Data/QLearningData/QValuesGen.bin", fullPath=True)
-            print("Loaded QValuesGen.bin")
 
     def decayValues(self, decayRate: float) -> None:
         self.alpha *= decayRate

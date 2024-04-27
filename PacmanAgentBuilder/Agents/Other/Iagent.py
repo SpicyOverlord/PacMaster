@@ -25,7 +25,7 @@ class IAgent(ABC):
         self.yes = 0
         self.no = 0
 
-        if store is not None:
+        if store is None:
             self.store = QValueStore()
         else:
             self.store = store
