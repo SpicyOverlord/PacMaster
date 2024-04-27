@@ -58,7 +58,7 @@ def runGameWithAgent(agentClass: type[IAgent], weightContainer: WeightContainer 
 
 
 def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: WeightContainer = None,
-                                   decayRate: float = 0.99, decayInterval: int = 10,
+                                   decayRate: float = 0.99, decayInterval: int = 10, saveInterval: int = 100,
                                    gameCount: int = 50, gameSpeed=1, startLevel: int = 0, startLives=1,
                                    ghostsEnabled: bool = True, freightEnabled: bool = True,
                                    logging=False, lockDeltaTime=False,
@@ -98,6 +98,8 @@ def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: We
         gameStats.append(gameStat)
         if i % decayInterval == 0:
             constStore.decayValues(decayRate)
+        if i % saveInterval == 0:
+            constStore.saveQValuesToJSON(f"qvalues({round(gameStat.combinedScore, 3)}).json")
 
         if logging:
             print(f"Game {i + 1} result: {gameStats[i]}")

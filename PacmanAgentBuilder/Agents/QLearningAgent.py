@@ -28,6 +28,9 @@ class QLearningAgent(IAgent):
         newState.setMadeMove(move)
 
         self.lastGameState = newState
+
+        if move == 3:
+            print("WTF")
         return move
 
     def QLearning(self, obs: Observation, newState: GameState):
