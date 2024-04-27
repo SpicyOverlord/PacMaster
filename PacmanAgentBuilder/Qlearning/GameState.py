@@ -16,7 +16,7 @@ class GameState:
         self.moveMade = moveMade
         self.pacmanPos = self.simplifyVector(obs.getPacmanPosition())
         self.remainingLives = obs.getRemainingLives()
-        self.nearest5PelletPosition = obs.getNearestXPelletPosition(5)
+        self.nearest5PelletPosition = obs.getNearestXPelletPosition(1)
         self.ghostPosArray = [self.simplifyVector(ghost.position) for ghost in obs.getGhosts()]
         self.ghostDirectionArray = [ghost.direction for ghost in obs.getGhosts()]
         self.ghostActiveArray = [0 if ghost.mode.current in [FREIGHT, SPAWN] or isInCenterArea(ghost.position) else 1

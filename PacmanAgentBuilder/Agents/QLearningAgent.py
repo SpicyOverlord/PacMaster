@@ -1,10 +1,12 @@
 from collections import deque
 
+from Data.DataSetJoiner import simplifyVector
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
 from PacmanAgentBuilder.Qlearning.GameState import GameState
 from PacmanAgentBuilder.Qlearning.QValueStore import QValueStore
 from PacmanAgentBuilder.Utils.Map import MapPosition
+from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
 from PacmanAgentBuilder.Utils.observation import Observation
 from PacmanAgentBuilder.Utils.utils import *
 from Pacman_Complete.constants import *
@@ -16,6 +18,7 @@ class QLearningAgent(IAgent):
 
     def __init__(self, gameController, weightContainer: WeightContainer = None, store: QValueStore = None):
         super().__init__(gameController, weightContainer=weightContainer, store=store)
+
 
     def calculateNextMove(self, obs: Observation):
         newState = GameState(obs, weights=self.weightContainer)
@@ -61,9 +64,15 @@ class QLearningAgent(IAgent):
 
         # Get the next move
         if random.random() < self.store.rho:
-            return self.getRandomMove(obs)
+            move = self.getRandomMove(obs)
+            if move == 3:
+                print("wft")
+            return move
         else:
             moveIndex = self.store.getBestAction(newStateHash)
+            move = indexToDirection(moveIndex)
+            if move == 3:
+                print("wft")
             return indexToDirection(moveIndex)
 
     def getRandomMove(self, obs: Observation):
