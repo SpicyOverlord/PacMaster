@@ -5,9 +5,10 @@ import pygame
 from Pacman_Complete.vector import Vector2
 from Pacman_Complete.constants import *
 
+constFont = os.path.join("Pacman_Complete", "PressStart2P-Regular.ttf")
+
 
 class Text(object):
-    font = None
     def __init__(self, text, color, x, y, size, time=None, id=None, visible=True):
         self.id = id
         self.text = text
@@ -24,9 +25,7 @@ class Text(object):
 
     def setupFont(self, fontpath):
         # self.font = pygame.font.Font(fontpath, self.size)
-        if Text.font is None:
-            Text.font = pygame.font.Font(fontpath, self.size)
-        self.font = Text.font
+        self.font = constFont
         # self.access_file_with_retry(fontpath)
 
     def access_file_with_retry(self, fontpath, num_retries=20, delay=1):
@@ -41,7 +40,6 @@ class Text(object):
                     print("Caught FileNotFoundError, retrying... (attempt %d/%d)" % (i + 1, num_retries), end=" - ")
                 else:
                     raise
-
 
     def createLabel(self):
         self.label = self.font.render(self.text, 1, self.color)
