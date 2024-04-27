@@ -12,7 +12,7 @@ from Pacman_Complete.vector import Vector2
 
 
 class QLearningAgent(IAgent):
-    rewards: deque = deque(maxlen=1000)
+    rewards: deque = deque(maxlen=20000)
 
     def __init__(self, gameController, weightContainer: WeightContainer = None, store: QValueStore = None):
         super().__init__(gameController, weightContainer=weightContainer, store=store)
