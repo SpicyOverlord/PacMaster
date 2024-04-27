@@ -32,8 +32,8 @@ class QLearningAgent(IAgent):
 
         self.lastGameState = newState
 
-        if move == 3:
-            print("WTF")
+        # if move == 3:
+        #     print("WTF")
         return move
 
     def QLearning(self, obs: Observation, newState: GameState):
@@ -65,14 +65,14 @@ class QLearningAgent(IAgent):
         # Get the next move
         if random.random() < self.store.rho:
             move = self.getRandomMove(obs)
-            if move == 3:
-                print("wft")
+            # if move == 3:
+            #     print("wft")
             return move
         else:
             moveIndex = self.store.getBestAction(newStateHash)
             move = indexToDirection(moveIndex)
-            if move == 3:
-                print("wft")
+            # if move == 3:
+            #     print("wft")
             return indexToDirection(moveIndex)
 
     def getRandomMove(self, obs: Observation):
