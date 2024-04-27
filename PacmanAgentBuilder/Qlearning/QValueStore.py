@@ -16,6 +16,14 @@ class QValueStore:
         self.alpha = 0.7
         self.rho = 0.2
 
+        load = False
+        if load:
+            self.gamma = 0
+            self.alpha = 0
+            self.rho = 0
+            self.loadQValuesFromBinary("Data/QLearningData/QValuesGen.bin", fullPath=True)
+            print("Loaded QValuesGen.bin")
+
     def decayValues(self, decayRate: float) -> None:
         self.alpha *= decayRate
         self.rho *= decayRate
@@ -56,8 +64,11 @@ class QValueStore:
         time_taken = end_time - start_time
         print(f" Done! ({round(time_taken, 2)} seconds)")
 
-    def loadQValuesFromJSON(self, filePath: str) -> None:
-        fullPath = self.addBasePath(filePath)
+    def loadQValuesFromJSON(self, filePath: str, fullPath: bool = False) -> None:
+        if fullPath:
+            fullPath = filePath
+        else:
+            fullPath = self.addBasePath(filePath)
 
         print(f"Loading json from: '{fullPath}' ...", end="")
         start_time = time.time()
@@ -85,8 +96,11 @@ class QValueStore:
         time_taken = end_time - start_time
         print(f" Done! ({round(time_taken, 2)} seconds)")
 
-    def loadQValuesFromBinary(self, filePath: str) -> None:
-        fullPath = self.addBasePath(filePath)
+    def loadQValuesFromBinary(self, filePath: str, fullPath: bool = False) -> None:
+        if fullPath:
+            fullPath = filePath
+        else:
+            fullPath = self.addBasePath(filePath)
 
         print(f"Loading bin from: '{fullPath}' ...", end="")
         start_time = time.time()

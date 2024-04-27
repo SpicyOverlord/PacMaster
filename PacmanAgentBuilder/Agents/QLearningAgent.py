@@ -92,16 +92,4 @@ class QLearningAgent(IAgent):
         """
         :return: The default weight container for this agent (used in the genetic algorithm to create start population)
         """
-        return WeightContainer({
-            'pelletDistanceDecline': 1,
-            'pelletDistanceScore': 1,
-            'eatPelletScore': 1,
-            'tooCloseThreshold': 1,
-            'tooCloseValue': 1,
-            'ghostDistanceThreshold': 1,
-            'ghostDistanceScore': 1,
-            'nearestGhostDistanceThreshold': 1,
-            'nearestGhostDistanceScore': 1,
-            'nextLevelScore': 100,
-            'deathPenalty': 100,
-        })
+        return None

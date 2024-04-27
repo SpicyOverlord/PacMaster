@@ -38,12 +38,12 @@ if __name__ == "__main__":
     # this will run the agent in 50 games and print the average performance over the 50 games
     stats, store = calculatePerformanceOverXGames(
         agentClass=agentClass,  # Specify the agent to be evaluated.
-        decayRate=0.95,  # The rate at which the alpha and rho values will decay.
+        decayRate=0.90,  # The rate at which the alpha and rho values will decay.
         decayInterval=100,  # The interval at which the alpha and rho values will decay.
         gameCount=2000,  # Number of games the agent will play.
         gameSpeed=1,  # Sets the speed of the game from 0.1 (slow) to 15 (fast).
         startLevel=0,  # Choose the starting level for the agent (0 for level one, 1 for level two, and so on).
-        startLives=1,  # Choose the number of lives the agent will start with.
+        startLives=10,  # Choose the number of lives the agent will start with.
         ghostsEnabled=True,  # Toggle ghosts on or off.
         freightEnabled=True,  # Toggle if the effect of power pellets should be ignored.
         lockDeltaTime=True,  # When enabled, the game will run at the highest possible speed.
