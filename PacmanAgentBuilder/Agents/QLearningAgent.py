@@ -1,6 +1,5 @@
 from collections import deque
 
-from Data.DataSetJoiner import simplifyVector
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
 from PacmanAgentBuilder.Qlearning.GameState import GameState
