@@ -1,4 +1,5 @@
 import os
+import time
 
 import pygame
 from Pacman_Complete.vector import Vector2
@@ -21,7 +22,23 @@ class Text(object):
         self.createLabel()
 
     def setupFont(self, fontpath):
-        self.font = pygame.font.Font(fontpath, self.size)
+        # self.font = pygame.font.Font(fontpath, self.size)
+        self.access_file_with_retry(fontpath)
+
+    def access_file_with_retry(self, fontpath, num_retries=20, delay=1):
+        for i in range(num_retries):
+            try:
+                # Replace this with the actual operation you're performing on the file
+                self.font = pygame.font.Font(fontpath, self.size)
+            except FileNotFoundError:
+                if i < num_retries - 1:  # i is zero indexed
+                    time.sleep(delay)
+                    print("Caught FileNotFoundError, retrying... (attempt %d/%d)" % (i + 1, num_retries), end=" - ")
+                else:
+                    raise
+
+        print()
+
 
     def createLabel(self):
         self.label = self.font.render(self.text, 1, self.color)
