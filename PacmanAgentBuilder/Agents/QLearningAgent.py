@@ -78,11 +78,11 @@ class QLearningAgent(IQAgent):
         return WeightContainer({
             'nearestGhostDistanceThreshold': 200,
             'ghostDistanceThreshold': 100,
+            'tooCloseThreshold': 200,
             'basePenalty': 0.1,
             'pelletDistanceDecline': 1,
             'pelletDistanceReward': 2,
             'eatPelletReward': 5,
-            'tooCloseThreshold': 200,
             'tooCloseValue': 1,
             'ghostDistancePenalty': 3,
             'nearestGhostDistancePenalty': 5,
