@@ -76,18 +76,18 @@ class QLearningAgent(IQAgent):
         :return: The best known weight container for this agent
         """
         return WeightContainer({
-            'basePenalty': 1,
-            'pelletDistanceDecline': 10,
-            'pelletDistanceReward': 20,
-            'eatPelletReward': 50,
-            'tooCloseThreshold': 200,
-            'tooCloseValue': 10,
-            'ghostDistanceThreshold': 10,
-            'ghostDistancePenalty': 30,
             'nearestGhostDistanceThreshold': 200,
-            'nearestGhostDistancePenalty': 50,
-            'nextLevelReward': 500,
-            'deathPenalty': 500,
+            'ghostDistanceThreshold': 100,
+            'basePenalty': 0.1,
+            'pelletDistanceDecline': 1,
+            'pelletDistanceReward': 2,
+            'eatPelletReward': 5,
+            'tooCloseThreshold': 200,
+            'tooCloseValue': 1,
+            'ghostDistancePenalty': 3,
+            'nearestGhostDistancePenalty': 5,
+            'nextLevelReward': 50,
+            'deathPenalty': 50,
         })
 
     @staticmethod
