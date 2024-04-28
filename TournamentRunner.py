@@ -110,10 +110,9 @@ class TournamentRunner:
             # print the learningRates of the generation
             print("\nAgent      Fitness  Avg Lvl Comp  Survived")
             for i in range(len(population)):
-                print("{:<10} {:<8} {:<13} {:<8}".format(
+                print("{:<10} {:<8} {:<8}".format(
                     f"{i + 1} of {len(population)}",
                     population[i].getFitness(),
-                    learningRates[i]['averageLevelsCompleted'],
                     population[i].getGenerationsSurvived()
                 ))
             print(f"Generation took:     {secondsToTime(generationTimeTaken)}")
