@@ -104,7 +104,8 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
             constStore.saveQValuesToBinary(f"qvalues({round(performance['combinedScore'], 3)},{constStore.size()}).bin")
 
         if logging:
-            print(f"Game {i + 1} {round(rewardAverage, 3)}")
+            gameRewardAverage = sum(rewards) / len(rewards)
+            print(f"Game {i + 1} {round(gameRewardAverage, 3)}")
 
     learningRate = GameStats.calculateLearningRate(rewardAverages, gameStats)
 

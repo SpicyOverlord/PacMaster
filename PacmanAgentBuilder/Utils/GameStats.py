@@ -49,7 +49,15 @@ class GameStats(object):
         averageRewardIncrease = sum(rewardIncreases) / len(rewardIncreases)
         print(f"Average Reward Increase: {averageRewardIncrease}")
 
-        learningRate = combinedScore * averageRewardIncrease * 100
+        gameLengths = [gameStat.actionsTaken for gameStat in gameStats]
+
+        lengthIncreases = [
+            (gameLengths[i] - gameLengths[i + 1]) / gameLengths[i] * 100 for
+            i in range(len(gameLengths) - 1)]
+        averageLengthIncrease = sum(lengthIncreases) / len(lengthIncreases)
+        print(f"Average Length Increase: {averageLengthIncrease}")
+
+        learningRate = combinedScore * (averageRewardIncrease*0.5) * averageLengthIncrease * 100
         print(f"Learning Rate: {learningRate}")
         return learningRate
 
