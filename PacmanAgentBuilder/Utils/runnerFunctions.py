@@ -101,7 +101,7 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
             constStore.decayValues(decayRate)
         if (i + 1) % saveInterval == 0:
             performance = GameStats.calculatePerformance(gameStats)
-            constStore.saveQValuesToBinary(f"qvalues({round(performance['combinedScore'], 3)},{constStore.size()}).bin")
+            constStore.saveQValuesToBinary(f"qvalues({round(performance['combinedScore'], 3)},{constStore.size()}).bin", verbose=False)
 
         if logging:
             gameRewardAverage = sum(rewards) / len(rewards)

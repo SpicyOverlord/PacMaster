@@ -76,7 +76,7 @@ class QValueStore:
         end_time = time.time()
         print(f" Done! ({round(end_time - start_time, 2)} seconds)")
 
-    def saveQValuesToBinary(self, filePath: str, fullPath: bool = False) -> None:
+    def saveQValuesToBinary(self, filePath: str, fullPath: bool = False, verbose: bool = True) -> None:
         if fullPath:
             fullPath = filePath
         else:
@@ -85,7 +85,8 @@ class QValueStore:
         if not os.path.exists(os.path.dirname(fullPath)):
             os.makedirs(os.path.dirname(fullPath))
 
-        print(f"Saving bin to: '{fullPath}' ...", end="")
+        if verbose:
+            print(f"Saving bin to: '{fullPath}' ...", end="")
 
         start_time = time.time()
         with open(fullPath, 'wb') as file:
