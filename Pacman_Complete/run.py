@@ -4,6 +4,7 @@ import subprocess
 import pygame
 from pygame.locals import *
 
+from PacmanAgentBuilder.Agents.Other.IQagent import IQAgent
 from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
 from Pacman_Complete.constants import *
 from Pacman_Complete.pacman import Pacman
@@ -87,7 +88,7 @@ class GameController(object):
         self.flashBG = False
         self.background = self.background_norm
 
-    def startGame(self, agent: IAgent = None):
+    def startGame(self, agent: IQAgent = None):
         self.agent = agent
         self.textgroup.hideText()
 

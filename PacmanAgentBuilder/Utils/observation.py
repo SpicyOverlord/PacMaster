@@ -23,6 +23,7 @@ class Observation(object):
         self.pacman = gameController.pacman
         self.nodeGroup = gameController.nodes
         self.currentLevel = gameController.level
+        self.gameController = gameController
 
         self.map = Map(self, gameController.nodes, self.getGhosts())
 
@@ -47,6 +48,12 @@ class Observation(object):
             legalMoves.append(UP)
             legalMoves.append(DOWN)
         return legalMoves
+
+    def getRemainingLives(self):
+        """
+            :return: Returns the remaining lives of Pacman
+        """
+        return self.gameController.lives
 
     def isVectorBetweenVectors(self, vector1: Vector2, vector2: Vector2, middleVector: Vector2) -> bool:
         """

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import csv
 import os
 import random
@@ -10,8 +11,8 @@ from PacmanAgentBuilder.Utils.Snapshot import Snapshot
 from Pacman_Complete.constants import *
 from Pacman_Complete.vector import Vector2
 
-
 global_row_count = 0
+
 
 def roundVector(vector: Vector2) -> Vector2:
     """
@@ -132,40 +133,56 @@ def secondsToTime(seconds) -> str:
     return f"{hours:03}h {minutes:02}m {seconds:02}s"
 
 
-def save_snapshots_to_file(snapshots: List[Snapshot], fileName):
-    directory = 'Data'
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+def directionToIndex(direction: int) -> int:
+    if direction == UP:
+        return 0
+    if direction == DOWN:
+        return 1
+    if direction == LEFT:
+        return 2
+    if direction == RIGHT:
+        return 3
+    return -1
 
-    filename = f'{directory}/{fileName}.csv'
-    header = Snapshot.getParameterNames()
 
-    snapshots[-1].setGameEnded()
-    lastSnapshot = snapshots[-1]
+def indexToDirection(index: int) -> int:
+    if index == 0:
+        return UP
+    if index == 1:
+        return DOWN
+    if index == 2:
+        return LEFT
+    if index == 3:
+        return RIGHT
+    return STOP
 
-    snapshots = [snapshot for snapshot in snapshots if random.random() < 0.05]  # keep ~5% of the snapshots
 
-    if snapshots[-1] != lastSnapshot:
-        snapshots.append(lastSnapshot)
+def directionToVector(direction: int) -> Vector2:
+    """
+    Converts a direction to a vector
+    :param direction: The direction
+    :return: The vector
+    """
+    if direction == UP:
+        return Vector2(0, -1)
+    if direction == DOWN:
+        return Vector2(0, 1)
+    if direction == LEFT:
+        return Vector2(-1, 0)
+    if direction == RIGHT:
+        return Vector2(1, 0)
+    if direction == STOP:
+        return Vector2(0, 0)
 
-    with open(filename, 'a', newline='') as file:
-        writer = csv.writer(file)
+    raise Exception(f"Direction '{direction}' not recognized")
 
-        global global_row_count
-        global_row_count += len(snapshots)
 
-        if os.stat(filename).st_size == 0:  # check if file is empty
-            writer.writerow(header)  # write header
-        else:
-            print(f" - game snapshots: {len(snapshots)} -  Total Snapshots: {global_row_count}")
+def getHash(lst: List[int]) -> str:
+    h = 17
+    for j in range(len(lst)):
+        h = h * 19 + lst[j]
 
-        for snapshot in snapshots:
-            if snapshot is None:
-                continue
-
-            try:
-                snapshotArray = snapshot.getArray()
-                writer.writerow(snapshotArray)
-            except Exception as e:
-                pass
-
+    # base 64
+    num_bytes = h.to_bytes((h.bit_length() + 7) // 8, 'big')
+    base64_str = base64.b64encode(num_bytes)
+    return base64_str.decode()

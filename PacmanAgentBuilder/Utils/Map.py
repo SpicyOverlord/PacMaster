@@ -570,7 +570,7 @@ class Map(object):
                 if endMapNode not in distances or distance < distances[endMapNode]:
                     previousNodes[endMapNode] = currentNode
                     distances[endMapNode] = distance
-                    fromDirections[endMapNode] = getOppositeDirection(endMapNode.getNeighbor(currentNode).direction)
+                    fromDirections[endMapNode] = currentNode.getNeighbor(endMapNode).direction
 
                     heapq.heappush(priorityQueue, (distance, endMapNode))
 

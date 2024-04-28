@@ -1,3 +1,4 @@
+from PacmanAgentBuilder.Agents.Other.IQagent import IQAgent
 from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
 from Pacman_Complete.run import GameController
 
@@ -6,7 +7,7 @@ class GameStats(object):
     """
     This class is used to store the statistics of a game.
     """
-    def __init__(self, game: GameController, agent: IAgent):
+    def __init__(self, game: GameController, agent: IQAgent):
         self.actionsTaken = agent.actionsTaken
         self.score = game.score
         self.levelsCompleted = game.level

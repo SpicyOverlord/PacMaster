@@ -1,15 +1,19 @@
+from collections import deque
+
+from PacmanAgentBuilder.Agents.Other.IQagent import IQAgent
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Agents.Other.Iagent import IAgent
+from PacmanAgentBuilder.Qlearning.QValueStore import QValueStore
 from PacmanAgentBuilder.Utils.GameStats import GameStats
 from PacmanAgentBuilder.Utils.debugHelper import DebugHelper
-from PacmanAgentBuilder.Utils.utils import save_snapshots_to_file
 from Pacman_Complete.run import GameController
 
 
-def runGameWithAgent(agentClass: type[IAgent], weightContainer: WeightContainer = None,
+def runGameWithAgent(agentClass: type[IQAgent], weightContainer: WeightContainer = None,
+                     store: QValueStore = None,
                      gameSpeed=3, startLives=3, startLevel: int = 0,
                      ghostsEnabled: bool = True, freightEnabled: bool = True, lockDeltaTime=False
-                     , disableVisuals=False) -> GameStats:
+                     , disableVisuals=False) -> (GameStats, QValueStore, list[int]):
     """
         Runs a single game with the specified agent.
 
@@ -29,20 +33,27 @@ def runGameWithAgent(agentClass: type[IAgent], weightContainer: WeightContainer 
     game = GameController(gameSpeed=gameSpeed, startLives=startLives,
                           startLevel=startLevel, ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled,
                           lockDeltaTime=lockDeltaTime, disableVisuals=disableVisuals)
-    agent = agentClass(gameController=game, weightContainer=weightContainer)
+    agent = agentClass(gameController=game, weightContainer=weightContainer, store=store)
     game.startGame(agent=agent)
     while True:
         game.update()
         if game.gameOver:
+            # qlearning last update
+            lastState = agent.lastGameState
+            lastStateHash = lastState.getHash()
+            agent.store.updateQValue(
+                lastStateHash,
+                lastState.moveMade,
+                lastState.weightContainer.get('deathPenalty') * 10
+            )
+
             gameStats = GameStats(game, agent)
 
-            if gameStats.levelsCompleted >= 5:
-                print(f"Levels completed: {gameStats.levelsCompleted}", end="")
-                save_snapshots_to_file(agent.snapshots, "Over5Levels")
-            return gameStats
+            return gameStats, store, agent.rewards
 
 
-def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: WeightContainer = None,
+def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: WeightContainer = None,
+                                   decayRate: float = 0.99, decayInterval: int = 10, saveInterval: int = 100,
                                    gameCount: int = 50, gameSpeed=1, startLevel: int = 0, startLives=1,
                                    ghostsEnabled: bool = True, freightEnabled: bool = True,
                                    logging=False, lockDeltaTime=False,
@@ -65,15 +76,31 @@ def calculatePerformanceOverXGames(agentClass: type[IAgent], weightContainer: We
     if lockDeltaTime:
         DebugHelper.disable()
 
+    constStore = QValueStore()
+    # constStore.loadQValuesFromBinary("Data/QLearningData/QValuesTemp.bin", fullPath=True)
+
+    rewardsMoving: deque[int] = deque(maxlen=20000)
     gameStats = []
     for i in range(gameCount):
         if logging:
             print(f"Running game {i + 1}...")
 
-        gameStats.append(runGameWithAgent(agentClass, weightContainer=weightContainer, gameSpeed=gameSpeed,
-                                          startLives=startLives, startLevel=startLevel,
-                                          ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled,
-                                          lockDeltaTime=lockDeltaTime, disableVisuals=disableVisuals))
+        gameStat, store, rewards = runGameWithAgent(agentClass, weightContainer=weightContainer, store=constStore,
+                                                    gameSpeed=gameSpeed,
+                                                    startLives=startLives, startLevel=startLevel,
+                                                    ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled,
+                                                    lockDeltaTime=lockDeltaTime, disableVisuals=disableVisuals)
+        gameStats.append(gameStat)
+        constStore = store
+        for reward in rewards:
+            rewardsMoving.append(reward)
+        print(f"{round(sum(rewardsMoving) / len(rewardsMoving), 3)}")
+
+        if (i + 1) % decayInterval == 0:
+            constStore.decayValues(decayRate)
+        if (i + 1) % saveInterval == 0:
+            performance = GameStats.calculatePerformance(gameStats)
+            constStore.saveQValuesToJSON(f"qvalues({round(performance['combinedScore'], 3)}).json")
 
         if logging:
             print(f"Game {i + 1} result: {gameStats[i]}")
