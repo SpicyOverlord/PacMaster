@@ -59,7 +59,7 @@ class Pacman(Entity):
         #     print(e)
         #     answer = STOP
         if answer is None or answer not in [UP, DOWN, LEFT, RIGHT, STOP]:
-            print(f"Agent did not return a valid direction. returned '{answer}'")
+            # print(f"Agent did not return a valid direction. returned '{answer}'")
             answer = STOP
             # raise Exception(f"Agent did not return a valid direction. returned '{answer}'")
         return answer

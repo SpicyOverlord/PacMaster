@@ -40,25 +40,25 @@ class GameStats(object):
         totalPelletsEaten = [game.totalPelletsEaten for game in gameStats[-int(len(gameStats) * 0.2):]]
         normalizedPelletScores = [pelletsEaten / maxPelletsPerLevel for pelletsEaten in totalPelletsEaten]
         combinedScore = GameStats.calculateTruncatedMean(normalizedPelletScores, 10)
-        print(f"Combined Score: {combinedScore}")
+        # print(f"Combined Score: {combinedScore}")
 
         rewardAverages = rewardAverages[-int(len(rewardAverages) * 0.5):]
         rewardIncreases = [
-            (rewardAverages[i] - rewardAverages[i + 1]) / rewardAverages[i] * 100 for
+            (rewardAverages[i + 1] - rewardAverages[i]) / rewardAverages[i] * 100 for
             i in range(len(rewardAverages) - 1)]
         averageRewardIncrease = sum(rewardIncreases) / len(rewardIncreases)
-        print(f"Average Reward Increase: {averageRewardIncrease}")
+        # print(f"Average Reward Increase: {averageRewardIncrease}")
 
         gameLengths = [gameStat.actionsTaken for gameStat in gameStats]
 
         lengthIncreases = [
-            (gameLengths[i] - gameLengths[i + 1]) / gameLengths[i] * 100 for
+            (gameLengths[i + 1] - gameLengths[i]) / gameLengths[i] * 100 for
             i in range(len(gameLengths) - 1)]
         averageLengthIncrease = sum(lengthIncreases) / len(lengthIncreases)
-        print(f"Average Length Increase: {averageLengthIncrease}")
+        # print(f"Average Length Increase: {averageLengthIncrease}")
 
         learningRate = combinedScore * (averageRewardIncrease*0.5) * averageLengthIncrease * 100
-        print(f"Learning Rate: {learningRate}")
+        # print(f"Learning Rate: {learningRate}")
         return learningRate
 
     @staticmethod

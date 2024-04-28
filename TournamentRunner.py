@@ -229,12 +229,12 @@ if __name__ == "__main__":
     # start a new tournament
     TournamentRunner.startNewTournament(
         agentClass=QLearningAgent,  # Specify the agent to be evaluated.
-        populationSize=24,  # The size of the population.
+        populationSize=12,  # The size of the population.
         freeGenerationCount=10,  # generations to skip before save top x% and starting to decrease the mutation rate.
         generationCount=100,  # The number of generations.
         savePercentage=13,  # The top percentile of the population to save each generation.
         mutationRate=1,  # The start mutation rate.
-        gameCount=100,  # The number of games each agent will play each generation to calculate its fitness.
+        gameCount=30,  # The number of games each agent will play each generation to calculate its fitness.
         cpuCount=6,  # multiprocessing.cpu_count(),
         timeoutSeconds=30 * 60  # The number of seconds to wait for each agent to finish its game before timing out.
     )
