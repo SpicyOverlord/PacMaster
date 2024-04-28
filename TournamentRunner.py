@@ -212,7 +212,7 @@ class TournamentRunner:
                 agentClass=agentClass,
                 weightContainer=member,
                 gameCount=gameCount,
-                saveInterval=gameCount,
+                saveInterval=999999,
                 lockDeltaTime=True
             )
         except Exception as e:
