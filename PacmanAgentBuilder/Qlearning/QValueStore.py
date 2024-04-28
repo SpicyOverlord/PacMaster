@@ -94,7 +94,8 @@ class QValueStore:
         end_time = time.time()
 
         time_taken = end_time - start_time
-        print(f" Done! ({round(time_taken, 2)} seconds)")
+        if verbose:
+            print(f" Done! ({round(time_taken, 2)} seconds)")
 
     def loadQValuesFromBinary(self, filePath: str, fullPath: bool = False) -> None:
         if fullPath:
