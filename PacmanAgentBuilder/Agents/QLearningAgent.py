@@ -77,17 +77,17 @@ class QLearningAgent(IQAgent):
         """
         return WeightContainer({
             'basePenalty': 1,
-            'pelletDistanceDecline': 1,
-            'pelletDistanceReward': 2,
-            'eatPelletReward': 5,
+            'pelletDistanceDecline': 10,
+            'pelletDistanceReward': 20,
+            'eatPelletReward': 50,
             'tooCloseThreshold': 200,
-            'tooCloseValue': 1,
+            'tooCloseValue': 10,
             'ghostDistanceThreshold': 10,
-            'ghostDistancePenalty': 3,
+            'ghostDistancePenalty': 30,
             'nearestGhostDistanceThreshold': 200,
-            'nearestGhostDistancePenalty': 5,
-            'nextLevelReward': 50,
-            'deathPenalty': 50,
+            'nearestGhostDistancePenalty': 50,
+            'nextLevelReward': 500,
+            'deathPenalty': 500,
         })
 
     @staticmethod
@@ -96,7 +96,7 @@ class QLearningAgent(IQAgent):
         :return: The default weight container for this agent (used in the genetic algorithm to create start population)
         """
         return WeightContainer({
-            'basePenalty': 10,
+            'basePenalty': 1,
             'pelletDistanceDecline': 10,
             'pelletDistanceReward': 20,
             'eatPelletReward': 50,
