@@ -57,7 +57,7 @@ class GameStats(object):
         averageLengthIncrease = sum(lengthIncreases) / len(lengthIncreases)
         # print(f"Average Length Increase: {averageLengthIncrease}")
 
-        learningRate = combinedScore * (averageRewardIncrease*0.5) * averageLengthIncrease * 100
+        learningRate = combinedScore * (averageRewardIncrease*0.5) * averageLengthIncrease
         # print(f"Learning Rate: {learningRate}")
         return learningRate
 
@@ -96,7 +96,9 @@ class GameStats(object):
         # basically makes averageEfficiency only change 30% of the combined score
         # combinedScore = weights['efficiency'] * (averageEfficiency + 1) * (weightedAverageBaseScore + weightedAveragePelletScore)
         # combinedScore = weightedAveragePelletScore
-        combinedScore = GameStats.calculateTruncatedMean(normalizedPelletScores, 20)
+        start_index = int(len(normalizedPelletScores) * 0.2)
+        remaining_80_percent_normalizedPelletScores = normalizedPelletScores[start_index:]
+        combinedScore = GameStats.calculateTruncatedMean(remaining_80_percent_normalizedPelletScores, 20)
         combinedScore *= 1 + averageLevelsCompleted * 0.5
 
         # # multiply to make the score higher if the agent reaches higher levels

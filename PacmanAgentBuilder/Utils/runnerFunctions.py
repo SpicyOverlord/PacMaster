@@ -107,9 +107,10 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
             gameRewardAverage = sum(rewards) / len(rewards)
             print(f"Game {i + 1} {round(gameRewardAverage, 3)}")
 
-    learningRate = GameStats.calculateLearningRate(rewardAverages, gameStats)
+    # performance = GameStats.calculateLearningRate(rewardAverages, gameStats)
+    performance = GameStats.calculatePerformance(gameStats)["combinedScore"]
 
     if logging:
-        print(f"learningRate over {gameCount} games: {round(learningRate,3)}")
+        print(f"performance over {gameCount} games: {round(performance,3)}")
 
-    return learningRate
+    return performance
