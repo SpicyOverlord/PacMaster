@@ -15,7 +15,7 @@ if __name__ == "__main__":
         decayRate=0.99,  # The rate at which the alpha and rho values will decay.
         decayInterval=10,  # The interval at which the alpha and rho values will decay.
         saveInterval=200,  # The interval at which the Q-values will be saved to a file.
-        gameCount=100,  # Number of games the agent will play.
+        gameCount=1000,  # Number of games the agent will play.
         gameSpeed=1,  # Sets the speed of the game from 0.1 (slow) to 15 (fast).
         startLevel=0,  # Choose the starting level for the agent (0 for level one, 1 for level two, and so on).
         startLives=5,  # Choose the number of lives the agent will start with.
