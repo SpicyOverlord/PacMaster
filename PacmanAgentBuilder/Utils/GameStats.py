@@ -7,6 +7,7 @@ class GameStats(object):
     """
     This class is used to store the statistics of a game.
     """
+
     def __init__(self, game: GameController, agent: IQAgent):
         self.actionsTaken = agent.actionsTaken
         self.score = game.score
@@ -32,6 +33,25 @@ class GameStats(object):
             "minScore": 0,
             "stdDeviation": 0
         }
+
+    @staticmethod
+    def calculateLearningRate(rewardAverages: list[float], gameStats: list['GameStats']):
+        maxPelletsPerLevel = 240
+        totalPelletsEaten = [game.totalPelletsEaten for game in gameStats[-int(len(gameStats) * 0.2):]]
+        normalizedPelletScores = [pelletsEaten / maxPelletsPerLevel for pelletsEaten in totalPelletsEaten]
+        combinedScore = GameStats.calculateTruncatedMean(normalizedPelletScores, 10)
+        print(f"Combined Score: {combinedScore}")
+
+        rewardAverages = rewardAverages[-int(len(rewardAverages) * 0.5):]
+        rewardIncreases = [
+            (rewardAverages[i] - rewardAverages[i + 1]) / rewardAverages[i] * 100 for
+            i in range(len(rewardAverages) - 1)]
+        averageRewardIncrease = sum(rewardIncreases) / len(rewardIncreases)
+        print(f"Average Reward Increase: {averageRewardIncrease}")
+
+        learningRate = combinedScore * averageRewardIncrease * 100
+        print(f"Learning Rate: {learningRate}")
+        return learningRate
 
     @staticmethod
     def calculatePerformance(gameStats: list['GameStats']):

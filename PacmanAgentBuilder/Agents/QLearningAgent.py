@@ -17,7 +17,6 @@ class QLearningAgent(IQAgent):
     def __init__(self, gameController, weightContainer: WeightContainer = None, store: QValueStore = None):
         super().__init__(gameController, weightContainer=weightContainer, store=store)
 
-
     def calculateNextMove(self, obs: Observation):
         newState = GameState(obs, weights=self.weightContainer)
 
@@ -96,4 +95,17 @@ class QLearningAgent(IQAgent):
         """
         :return: The default weight container for this agent (used in the genetic algorithm to create start population)
         """
-        return None
+        return WeightContainer({
+            'basePenalty': 10,
+            'pelletDistanceDecline': 10,
+            'pelletDistanceReward': 20,
+            'eatPelletReward': 50,
+            'tooCloseThreshold': 200,
+            'tooCloseValue': 10,
+            'ghostDistanceThreshold': 10,
+            'ghostDistancePenalty': 30,
+            'nearestGhostDistanceThreshold': 200,
+            'nearestGhostDistancePenalty': 50,
+            'nextLevelReward': 50,
+            'deathPenalty': 50,
+        })

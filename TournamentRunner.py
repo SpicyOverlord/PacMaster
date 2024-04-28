@@ -4,6 +4,8 @@ import multiprocessing
 import os
 
 from PacmanAgentBuilder.Agents.FinalAgent import FinalAgent
+from PacmanAgentBuilder.Agents.Other.IQagent import IQAgent
+from PacmanAgentBuilder.Agents.QLearningAgent import QLearningAgent
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Utils.GameStats import GameStats
 
@@ -23,7 +25,7 @@ class TournamentRunner:
     """
 
     @staticmethod
-    def startNewTournament(agentClass: type[IAgent], populationSize: int, generationCount: int,
+    def startNewTournament(agentClass: type[IQAgent], populationSize: int, generationCount: int,
                            freeGenerationCount: int, savePercentage: int, mutationRate: float,
                            gameCount: int, cpuCount: int, timeoutSeconds: int):
         """
@@ -81,23 +83,23 @@ class TournamentRunner:
 
             # calculate fitness of population
             start_time = time.time()
-            stats = TournamentRunner.parallelFitnessEvaluation(population, constArgs, timeoutSeconds, cpuCount)
+            learningRates = TournamentRunner.parallelFitnessEvaluation(population, constArgs, timeoutSeconds, cpuCount)
             end_time = time.time()
 
             # add the calculated fitness to each member of the population
             for j in range(len(population)):
                 # if the agent timed out, set its fitness to 0
-                if stats[j] is None:
+                if learningRates[j] is None:
                     population[j].addFitness(0)
                     continue
 
-                population[j].addFitness(stats[j]['combinedScore'])
+                population[j].addFitness(learningRates[j])
 
-            # sort population by fitness (with stats)
-            paired_sorted_lists = sorted(zip(population, stats), key=lambda x: x[0].getFitness(), reverse=True)
-            population, stats = zip(*paired_sorted_lists)
+            # sort population by fitness (with learningRates)
+            paired_sorted_lists = sorted(zip(population, learningRates), key=lambda x: x[0].getFitness(), reverse=True)
+            population, learningRates = zip(*paired_sorted_lists)
             population = list(population)
-            stats = list(stats)
+            learningRates = list(learningRates)
 
             # calculate the time taken to calculate the fitness of the generation
             currentRuntime = time.time() - tournamentStartTime
@@ -105,13 +107,13 @@ class TournamentRunner:
             estimatedSecondsLeft = currentRuntime / progress * (100 - progress)
             generationTimeTaken = end_time - start_time
 
-            # print the stats of the generation
+            # print the learningRates of the generation
             print("\nAgent      Fitness  Avg Lvl Comp  Survived")
             for i in range(len(population)):
                 print("{:<10} {:<8} {:<13} {:<8}".format(
                     f"{i + 1} of {len(population)}",
                     population[i].getFitness(),
-                    stats[i]['averageLevelsCompleted'],
+                    learningRates[i]['averageLevelsCompleted'],
                     population[i].getGenerationsSurvived()
                 ))
             print(f"Generation took:     {secondsToTime(generationTimeTaken)}")
@@ -193,7 +195,7 @@ class TournamentRunner:
             return finished_stats
 
     @staticmethod
-    def fitnessFunctionWrapper(member, args):
+    def fitnessFunctionWrapper(member, args) -> float:
         """
         This method is used to wrap the fitness function, so it can be used in the multiprocessing pool.
         :param member: The member to evaluate.
@@ -207,17 +209,18 @@ class TournamentRunner:
         agentClass = args[0]
         gameCount = args[1]
         try:
-            stats = calculatePerformanceOverXGames(
+            learningRate = calculatePerformanceOverXGames(
                 agentClass=agentClass,
                 weightContainer=member,
                 gameCount=gameCount,
+                saveInterval=gameCount,
                 lockDeltaTime=True
             )
         except Exception as e:
             print(f"An error occurred during fitness evaluation: {e}")
-            stats = GameStats.getEmpty()
+            learningRate = -1
 
-        return stats
+        return learningRate
 
 
 if __name__ == "__main__":
@@ -225,13 +228,13 @@ if __name__ == "__main__":
 
     # start a new tournament
     TournamentRunner.startNewTournament(
-        agentClass=FinalAgent,  # Specify the agent to be evaluated.
+        agentClass=QLearningAgent,  # Specify the agent to be evaluated.
         populationSize=24,  # The size of the population.
         freeGenerationCount=10,  # generations to skip before save top x% and starting to decrease the mutation rate.
         generationCount=100,  # The number of generations.
         savePercentage=13,  # The top percentile of the population to save each generation.
         mutationRate=1,  # The start mutation rate.
-        gameCount=70,  # The number of games each agent will play each generation to calculate its fitness.
+        gameCount=100,  # The number of games each agent will play each generation to calculate its fitness.
         cpuCount=6,  # multiprocessing.cpu_count(),
         timeoutSeconds=30 * 60  # The number of seconds to wait for each agent to finish its game before timing out.
     )

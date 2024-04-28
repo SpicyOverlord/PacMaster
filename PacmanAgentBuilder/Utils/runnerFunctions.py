@@ -53,11 +53,11 @@ def runGameWithAgent(agentClass: type[IQAgent], weightContainer: WeightContainer
 
 
 def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: WeightContainer = None,
-                                   decayRate: float = 0.99, decayInterval: int = 10, saveInterval: int = 100,
+                                   decayRate: float = 0.99, decayInterval: int = 10, saveInterval: int = 10000,
                                    gameCount: int = 50, gameSpeed=1, startLevel: int = 0, startLives=1,
                                    ghostsEnabled: bool = True, freightEnabled: bool = True,
                                    logging=False, lockDeltaTime=False,
-                                   disableVisuals: bool = False):
+                                   disableVisuals: bool = False) -> float:
     """
         Calculates the performance of the specified agent over a number of games.
 
@@ -79,11 +79,10 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
     constStore = QValueStore()
     # constStore.loadQValuesFromBinary("Data/QLearningData/QValuesTemp.bin", fullPath=True)
 
-    rewardsMoving: deque[int] = deque(maxlen=20000)
+    rewardsMoving: deque[int] = deque(maxlen=5000)
+    rewardAverages = []
     gameStats = []
     for i in range(gameCount):
-        if logging:
-            print(f"Running game {i + 1}...")
 
         gameStat, store, rewards = runGameWithAgent(agentClass, weightContainer=weightContainer, store=constStore,
                                                     gameSpeed=gameSpeed,
@@ -92,22 +91,24 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
                                                     lockDeltaTime=lockDeltaTime, disableVisuals=disableVisuals)
         gameStats.append(gameStat)
         constStore = store
+
         for reward in rewards:
             rewardsMoving.append(reward)
-        print(f"{round(sum(rewardsMoving) / len(rewardsMoving), 3)}")
+        rewardAverage = sum(rewardsMoving) / len(rewardsMoving)
+        rewardAverages.append(rewardAverage)
 
         if (i + 1) % decayInterval == 0:
             constStore.decayValues(decayRate)
         if (i + 1) % saveInterval == 0:
             performance = GameStats.calculatePerformance(gameStats)
-            constStore.saveQValuesToJSON(f"qvalues({round(performance['combinedScore'], 3)}).json")
+            constStore.saveQValuesToJSON(f"qvalues({round(performance['combinedScore'], 3)},{constStore.size()}).json")
 
         if logging:
-            print(f"Game {i + 1} result: {gameStats[i]}")
+            print(f"Game {i + 1} {round(rewardAverage, 3)}")
 
-    performance = GameStats.calculatePerformance(gameStats)
+    learningRate = GameStats.calculateLearningRate(rewardAverages, gameStats)
 
     if logging:
-        print(f"Performance over {gameCount} games: {performance}")
+        print(f"learningRate over {gameCount} games: {round(learningRate,3)}")
 
-    return performance
+    return learningRate

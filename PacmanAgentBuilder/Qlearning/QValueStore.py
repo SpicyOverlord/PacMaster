@@ -16,11 +16,12 @@ class QValueStore:
         self.alpha = 0.7
         self.rho = 0.2
 
+    def size(self):
+        return len(self.store)
+
     def decayValues(self, decayRate: float) -> None:
         self.alpha *= decayRate
         self.rho *= decayRate
-
-
 
     def getStateQValues(self, stateHash: str) -> List[int]:
         return self.store.setdefault(stateHash, [0, 0, 0, 0])
