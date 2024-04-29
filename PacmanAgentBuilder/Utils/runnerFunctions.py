@@ -83,7 +83,6 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
     rewardAverages = []
     gameStats = []
     for i in range(gameCount):
-
         gameStat, store, rewards = runGameWithAgent(agentClass, weightContainer=weightContainer, store=constStore,
                                                     gameSpeed=gameSpeed,
                                                     startLives=startLives, startLevel=startLevel,
@@ -101,7 +100,8 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
             constStore.decayValues(decayRate)
         if (i + 1) % saveInterval == 0:
             performance = GameStats.calculatePerformance(gameStats)
-            constStore.saveQValuesToBinary(f"qvalues({round(performance['combinedScore'], 3)},{constStore.size()}).bin", verbose=False)
+            constStore.saveQValuesToBinary(f"qvalues({round(performance['combinedScore'], 3)},{constStore.size()}).bin",
+                                           verbose=False)
 
         if logging:
             gameRewardAverage = sum(rewards) / len(rewards)
@@ -111,6 +111,6 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
     performance = GameStats.calculatePerformance(gameStats)["combinedScore"]
 
     if logging:
-        print(f"performance over {gameCount} games: {round(performance,3)}")
+        print(f"performance over {gameCount} games: {round(performance, 3)}")
 
     return performance

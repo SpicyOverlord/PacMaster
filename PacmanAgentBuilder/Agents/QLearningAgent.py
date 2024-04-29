@@ -20,15 +20,15 @@ class QLearningAgent(IQAgent):
     def __init__(self, gameController, weightContainer: WeightContainer = None, store: QValueStore = None):
         super().__init__(gameController, weightContainer=weightContainer, store=store)
 
-        self.startRoute = [Vector2(120, 520), Vector2(120, 580), Vector2(20, 580),
-                           Vector2(20, 640), Vector2(520, 640), Vector2(520, 580),
-                           Vector2(420, 580), Vector2(420, 520), Vector2(240, 520),
-                           Vector2(240, 460), Vector2(180, 460), Vector2(180, 340),
-                           Vector2(120, 340), Vector2(120, 160), Vector2(360, 160),
-                           Vector2(360, 220), Vector2(300, 220), Vector2(300, 280),
-                           Vector2(360, 280), Vector2(360, 400), Vector2(180, 400),
-                           Vector2(180, 340), Vector2(120, 340)]
-        self.currentTarget = self.startRoute[0]
+        # self.startRoute = [Vector2(120, 520), Vector2(120, 580), Vector2(20, 580),
+        #                    Vector2(20, 640), Vector2(520, 640), Vector2(520, 580),
+        #                    Vector2(420, 580), Vector2(420, 520), Vector2(240, 520),
+        #                    Vector2(240, 460), Vector2(180, 460), Vector2(180, 340),
+        #                    Vector2(120, 340), Vector2(120, 160), Vector2(360, 160),
+        #                    Vector2(360, 220), Vector2(300, 220), Vector2(300, 280),
+        #                    Vector2(360, 280), Vector2(360, 400), Vector2(180, 400),
+        #                    Vector2(180, 340), Vector2(120, 340)]
+        # self.currentTarget = self.startRoute[0]
 
 
     def calculateNextMove(self, obs: Observation):
