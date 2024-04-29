@@ -79,7 +79,7 @@ class GameState:
 
         # finished level
         if self.currentLevel > lastGameState.currentLevel:
-            gameStateScore += self.weightContainer.get('nextLevelReward')
+            gameStateScore += 100
 
         # pellets
         if self.pelletCount < lastGameState.pelletCount:
@@ -96,7 +96,7 @@ class GameState:
             gameStateScore -= self.weightContainer.get('nearestGhostDistancePenalty')
 
         if self.remainingLives < lastGameState.remainingLives:
-            gameStateScore -= self.weightContainer.get('deathPenalty')
+            gameStateScore -= 100
 
         gameStateScore -= self.weightContainer.get('basePenalty')
 

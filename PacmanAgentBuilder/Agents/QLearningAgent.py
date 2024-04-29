@@ -76,20 +76,17 @@ class QLearningAgent(IQAgent):
         :return: The best known weight container for this agent
         """
         return WeightContainer({
-            'nearestGhostDistanceThreshold': 200,
-            'ghostDistanceThreshold': 100,
-            'tooCloseThreshold': 200,
-            'basePenalty': 0.1*10,
-            'pelletDistanceDecline': 1*10,
-            'pelletDistanceReward': 2*10,
-            'eatPelletReward': 5*10,
-            'tooCloseValue': 1*10,
-            'ghostDistancePenalty': 3*10,
-            'nearestGhostDistancePenalty': 5*10,
-            'nextLevelReward': 50*10,
-            'deathPenalty': 50*10,
+            'nearestGhostDistanceThreshold': 4.46521,
+            'ghostDistanceThreshold': 0.6382,
+            'tooCloseThreshold': 1361.46979,
+            'basePenalty': 5.49032,
+            'pelletDistanceDecline': 3.46962,
+            'pelletDistanceReward': 22.61115,
+            'eatPelletReward': 68.21019,
+            'tooCloseValue': 67.01752,
+            'ghostDistancePenalty': 6.06404,
+            'nearestGhostDistancePenalty': 3.5819,
         })
-
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
         """
@@ -100,12 +97,10 @@ class QLearningAgent(IQAgent):
             'pelletDistanceDecline': 10,
             'pelletDistanceReward': 20,
             'eatPelletReward': 50,
-            'tooCloseThreshold': 200,
+            'tooCloseThreshold': 1000,
             'tooCloseValue': 10,
             'ghostDistanceThreshold': 10,
             'ghostDistancePenalty': 30,
             'nearestGhostDistanceThreshold': 200,
             'nearestGhostDistancePenalty': 50,
-            'nextLevelReward': 50,
-            'deathPenalty': 50,
         })
