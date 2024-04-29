@@ -77,7 +77,7 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
         DebugHelper.disable()
 
     constStore = QValueStore()
-    # constStore.loadQValuesFromBinary("Data/QLearningData/QValuesTemp.bin", fullPath=True)
+    # constStore.loadQValuesFromBinary("QLearningData/qvalues.bin", fullPath=True, verbose=True)
 
     rewardsMoving: deque[int] = deque(maxlen=5000)
     rewardAverages = []

@@ -15,7 +15,7 @@ class QValueStore:
 
         self.gamma = 0.75  # discount factor
         self.alpha = 0.7  # learning rate
-        self.rho = 0.2  # exploration rate
+        # self.rho = 0.2  # exploration rate
         # self.rho = 0
 
     def size(self):
@@ -43,10 +43,8 @@ class QValueStore:
         lastQValue = self.getQValue(lastStateHash, lastActionIndex)
         newStateMaxQValue = self.getMaxQValue(newStateHash)
 
-        # newReward = (1 - self.alpha + 0.01) * lastQValue + self.alpha * (
-        #         reward + self.gamma * newStateMaxQValue)
-        newReward = (1 - self.alpha) * lastQValue + self.alpha * (
-                reward + self.gamma * newStateMaxQValue)
+        newReward = (1 - self.alpha + 0.01) * lastQValue + self.alpha * (reward + self.gamma * newStateMaxQValue)
+        # newReward = (1 - self.alpha) * lastQValue + self.alpha * (reward + self.gamma * newStateMaxQValue)
 
         self.setQValue(lastStateHash, lastActionIndex, newReward)
 
@@ -57,7 +55,7 @@ class QValueStore:
         maxQValue = max(qValues)
         return qValues.index(maxQValue), maxQValue
 
-    def saveQValuesToJSON(self, filePath: str, fullPath: bool = False) -> None:
+    def saveQValuesToJSON(self, filePath: str, fullPath: bool = False, verbose: bool = True) -> None:
         if fullPath:
             fullPath = filePath
         else:
@@ -66,7 +64,8 @@ class QValueStore:
         if not os.path.exists(os.path.dirname(fullPath)):
             os.makedirs(os.path.dirname(fullPath))
 
-        print(f"Saving json to: '{fullPath}' ...", end="")
+        if verbose:
+            print(f"Saving json to: '{fullPath}' ...", end="")
 
         start_time = time.time()
         with open(fullPath, 'w') as file:
@@ -74,15 +73,17 @@ class QValueStore:
         end_time = time.time()
 
         time_taken = end_time - start_time
-        print(f" Done! ({round(time_taken, 2)} seconds)")
+        if verbose:
+            print(f" Done! ({round(time_taken, 2)} seconds)")
 
-    def loadQValuesFromJSON(self, filePath: str, fullPath: bool = False) -> None:
+    def loadQValuesFromJSON(self, filePath: str, fullPath: bool = False, verbose: bool = True) -> None:
         if fullPath:
             fullPath = filePath
         else:
             fullPath = self.addBasePath(filePath)
 
-        print(f"Loading json from: '{fullPath}' ...", end="")
+        if verbose:
+            print(f"Loading json from: '{fullPath}' ...", end="")
         start_time = time.time()
         try:
             with open(fullPath, 'r') as file:
@@ -90,7 +91,8 @@ class QValueStore:
         except FileNotFoundError:
             print(f"No existing JSON file found at {fullPath}. Starting with an empty Q-value store.")
         end_time = time.time()
-        print(f" Done! ({round(end_time - start_time, 2)} seconds)")
+        if verbose:
+            print(f" Done! ({round(end_time - start_time, 2)} seconds)")
 
     def saveQValuesToBinary(self, filePath: str, fullPath: bool = False, verbose: bool = True) -> None:
         if fullPath:
@@ -113,13 +115,14 @@ class QValueStore:
         if verbose:
             print(f" Done! ({round(time_taken, 2)} seconds)")
 
-    def loadQValuesFromBinary(self, filePath: str, fullPath: bool = False) -> None:
+    def loadQValuesFromBinary(self, filePath: str, fullPath: bool = False, verbose: bool = True) -> None:
         if fullPath:
             fullPath = filePath
         else:
             fullPath = self.addBasePath(filePath)
 
-        print(f"Loading bin from: '{fullPath}' ...", end="")
+        if verbose:
+            print(f"Loading bin from: '{fullPath}' ...", end="")
         start_time = time.time()
         try:
             with open(fullPath, 'rb') as file:
@@ -127,7 +130,8 @@ class QValueStore:
         except FileNotFoundError:
             print(f"No existing binary file found at {fullPath}. Starting with an empty Q-value store.")
         end_time = time.time()
-        print(f" Done! ({round(end_time - start_time, 2)} seconds)")
+        if verbose:
+            print(f" Done! ({round(end_time - start_time, 2)} seconds)")
 
     # def saveQValuesToCompressedBinary(self, filePath: str, chunk_size: int = 10000) -> None:
     #     fullPath = self.addBasePath(filePath)
