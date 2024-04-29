@@ -21,6 +21,12 @@ ssh -t root@192.168.1.50 'tmux attach -t pacmanQLearn3'
 ```shell
 ssh -t root@192.168.1.50 'tmux attach -t pacmanQLearn4'
 ```
+```shell
+ssh -t root@192.168.1.50 'tmux attach -t pacmanQLearn5'
+```
+```shell
+ssh -t root@192.168.1.50 'tmux attach -t pacmanQLearn6'
+```
 
 # Sync
 ### Push to Linux server

@@ -1,5 +1,8 @@
 from collections import deque
 
+import pygame
+from pygame import K_UP, K_DOWN, K_LEFT, K_RIGHT
+
 from PacmanAgentBuilder.Agents.Other.IQagent import IQAgent
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Qlearning.GameState import GameState
@@ -22,11 +25,23 @@ class QLearningAgent(IQAgent):
 
         if self.lastGameState is not None:
             if newState.equal(self.lastGameState):
-                return self.lastGameState.moveMade
+                if self.lastGameState.moveMade in obs.getLegalMoves():
+                    return self.lastGameState.moveMade
 
         move = self.QLearning(obs, newState)
-        newState.setMadeMove(move)
 
+        # supervised learning (human input)
+        key_pressed = pygame.key.get_pressed()
+        if key_pressed[K_UP]:
+            move = UP
+        if key_pressed[K_DOWN]:
+            move = DOWN
+        if key_pressed[K_LEFT]:
+            move = LEFT
+        if key_pressed[K_RIGHT]:
+            move = RIGHT
+
+        newState.setMadeMove(move)
         self.lastGameState = newState
 
         # if move == 3:
@@ -87,6 +102,7 @@ class QLearningAgent(IQAgent):
             'ghostDistancePenalty': 6.06404,
             'nearestGhostDistancePenalty': 3.5819,
         })
+
     @staticmethod
     def getDefaultWeightContainer() -> WeightContainer:
         """
