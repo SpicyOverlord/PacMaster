@@ -3,7 +3,7 @@ from typing import List
 
 from PacmanAgentBuilder.Genetics.WeightContainer import WeightContainer
 from PacmanAgentBuilder.Utils.observation import Observation
-from PacmanAgentBuilder.Utils.utils import isInCenterArea, getHash
+from PacmanAgentBuilder.Utils.utils import isInCenterArea, getHash, manhattanDistance
 from Pacman_Complete.constants import FREIGHT, SPAWN, UP, DOWN, LEFT, RIGHT, STOP
 from Pacman_Complete.vector import Vector2
 
@@ -14,9 +14,11 @@ class GameState:
     def __init__(self, obs: Observation, moveMade: int = STOP, weights: WeightContainer = None):
         self.moveMade = moveMade
         self.pacmanPos = self.simplifyVector(obs.getPacmanPosition())
+        self.pacmanPosReal = obs.getPacmanPosition()
         self.remainingLives = obs.getRemainingLives()
-        self.nearest5PelletPosition = obs.getNearestXPelletPosition(1)
+        self.nearestXPelletPosition = obs.getNearestXPelletPosition(1)
         self.ghostPosArray = [self.simplifyVector(ghost.position) for ghost in obs.getGhosts()]
+        self.ghostPosArrayReal = [ghost.position for ghost in obs.getGhosts()]
         self.ghostDirectionArray = [ghost.direction for ghost in obs.getGhosts()]
         self.ghostActiveArray = [0 if ghost.mode.current in [FREIGHT, SPAWN] or isInCenterArea(ghost.position) else 1
                                  for ghost in obs.getGhosts()]
@@ -36,16 +38,18 @@ class GameState:
         self.pelletCount = len(obs.getPelletPositions())
 
         self.pelletDistanceValue = 0
-        for index, pellet in enumerate(self.nearest5PelletPosition):
+        for index, pellet in enumerate(self.nearestXPelletPosition):
             distanceWeight = 1 / ((index + 1) / weights.get('pelletDistanceDecline'))
-            self.pelletDistanceValue += distanceWeight * obs.map.calculateDistance(pellet, self.pacmanPos)
+            # pelletDistance = distanceWeight * obs.map.calculateDistance(pellet, self.pacmanPosReal)
+            pelletDistance = manhattanDistance(pellet, self.pacmanPosReal)
+            self.pelletDistanceValue += distanceWeight * pelletDistance
 
         self.nearestGhostDistance = 9999
-        for ghostPos in self.ghostPosArray:
+        for ghostPos in self.ghostPosArrayReal:
             if ghostPos.x == 0 and ghostPos.y == 0:
                 continue
 
-            distance = obs.map.calculateDistance(ghostPos, self.pacmanPos)
+            distance = obs.map.calculateDistance(ghostPos, self.pacmanPosReal)
             if distance < self.nearestGhostDistance:
                 self.nearestGhostDistance = distance
 
@@ -57,7 +61,7 @@ class GameState:
             # ignore ghost if it is not dangerous
             if ghost.mode.current in (FREIGHT, SPAWN) or isInCenterArea(ghost.position):
                 continue
-            ghostPath, ghostDistance = obs.map.calculateGhostPath(ghost=ghost, endVector=self.pacmanPos)
+            ghostPath, ghostDistance = obs.map.calculateGhostPath(ghost=ghost, endVector=self.pacmanPosReal)
             # ignore ghost if it can't reach position (this normally only happens if the ghost is in the start area)
             if len(ghostPath) == 0:
                 continue
@@ -84,7 +88,8 @@ class GameState:
         # pellets
         if self.pelletCount < lastGameState.pelletCount:
             gameStateScore += self.weightContainer.get('eatPelletReward')
-        elif self.pelletDistanceValue < lastGameState.pelletDistanceValue:
+        elif (self.pelletDistanceValue < lastGameState.pelletDistanceValue and
+              self.nearestXPelletPosition[0] == lastGameState.nearestXPelletPosition[0]):
             gameStateScore += self.weightContainer.get('pelletDistanceReward')
 
         # ghosts
@@ -142,7 +147,7 @@ class GameState:
             ghostDirection = sortedGhostDirectionArray[i]
             gameState.append(ghostDirection)
 
-        for position in self.nearest5PelletPosition:
+        for position in self.nearestXPelletPosition:
             simpleNearestPelletPos = self.simplifyVector(position)
             gameState.append(simpleNearestPelletPos.x)
             gameState.append(simpleNearestPelletPos.y)
@@ -187,7 +192,7 @@ class GameState:
 
         raise Exception(f"Direction '{direction}' not recognized")
 
-    def getHash(self) -> str:
+    def getHash(self) -> int:
         lst = self.getInputArray()
 
         return getHash(lst)

@@ -177,12 +177,25 @@ def directionToVector(direction: int) -> Vector2:
     raise Exception(f"Direction '{direction}' not recognized")
 
 
-def getHash(lst: List[int]) -> str:
-    h = 17
+def getHash(lst: List[int]) -> int:
+
+    h = 97
     for j in range(len(lst)):
-        h = h * 19 + lst[j]
+        value = lst[j]
+        if value in [UP, DOWN, LEFT, RIGHT]:
+            value = directionToIndex(value)
+        h = h * 7 + value
 
     # base 64
-    num_bytes = h.to_bytes((h.bit_length() + 7) // 8, 'big')
-    base64_str = base64.b64encode(num_bytes)
-    return base64_str.decode()
+    # num_bytes = h.to_bytes((h.bit_length() + 7) // 8, 'big')
+    # base64_str = base64.b64encode(num_bytes)
+    #
+    # hashStr = base64_str.decode()
+
+    hashStr = h
+    # if lst[1] == 5 and lst[2] == 13:
+    #     print("UP", hashStr, hash(hashStr))
+    # if lst[1] == 12 and lst[2] == 22:
+    #     print("LEFT", hashStr, hash(hashStr))
+
+    return hashStr

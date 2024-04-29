@@ -41,7 +41,7 @@ def runGameWithAgent(agentClass: type[IQAgent], weightContainer: WeightContainer
             # qlearning last move update (death)
             lastState = agent.lastGameState
             lastStateHash = lastState.getHash()
-            agent.store.updateQValue(
+            agent.store.setQValue(
                 lastStateHash,
                 lastState.moveMade,
                 -100

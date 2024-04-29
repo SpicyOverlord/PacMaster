@@ -1,9 +1,10 @@
-import gzip
 import json
 import os
 import pickle
 import time
 from typing import List
+
+UNKNOWN_POSITION = -12.3456789
 
 
 class QValueStore:
@@ -12,9 +13,10 @@ class QValueStore:
     def __init__(self):
         self.store = {}
 
-        self.gamma = 0.75
-        self.alpha = 0.7
-        self.rho = 0.2
+        self.gamma = 0.75  # discount factor
+        self.alpha = 0.7  # learning rate
+        self.rho = 0.2  # exploration rate
+        # self.rho = 0
 
     def size(self):
         return len(self.store)
@@ -23,23 +25,35 @@ class QValueStore:
         self.alpha *= decayRate
         self.rho *= decayRate
 
-    def getStateQValues(self, stateHash: str) -> List[int]:
-        return self.store.setdefault(stateHash, [0, 0, 0, 0])
+    def getQValues(self, stateHash: int) -> List[float]:
+        return self.store.setdefault(stateHash, [UNKNOWN_POSITION, UNKNOWN_POSITION, UNKNOWN_POSITION, UNKNOWN_POSITION])
 
-    def getStateQValue(self, stateHash: str, madeMove: int) -> int:
-        return self.getStateQValues(stateHash)[madeMove]
+    def getQValue(self, stateHash: int, madeMove: int) -> float:
+        return self.getQValues(stateHash)[madeMove]
 
-    def getMaxStateQValue(self, stateHash: str) -> int:
-        return max(self.getStateQValues(stateHash))
+    def getMaxQValue(self, stateHash: int) -> float:
+        return max(self.getQValues(stateHash))
 
-    def updateQValue(self, stateHash: str, actionIndex: int, value: int) -> None:
+    def setQValue(self, stateHash: int, actionIndex: int, reward: float) -> None:
         if stateHash not in self.store:
-            self.store[stateHash] = [0, 0, 0, 0]
-        self.store[stateHash][actionIndex] = value
+            self.store[stateHash] = [UNKNOWN_POSITION, UNKNOWN_POSITION, UNKNOWN_POSITION, UNKNOWN_POSITION]
+        self.store[stateHash][actionIndex] = reward
 
-    def getBestAction(self, stateHash: str) -> int:
-        qValues = self.getStateQValues(stateHash)
-        return qValues.index(max(qValues))
+    def updateQValue(self, lastStateHash: int, lastActionIndex: int, newStateHash: int, reward: float) -> float:
+        lastQValue = self.getQValue(lastStateHash, lastActionIndex)
+        newStateMaxQValue = self.getMaxQValue(newStateHash)
+
+        newReward = (1 - self.alpha + 0.01) * lastQValue + self.alpha * (
+                reward + self.gamma * newStateMaxQValue)
+
+        self.setQValue(lastStateHash, lastActionIndex, newReward)
+
+        return newReward
+
+    def getBestMove(self, stateHash: int) -> (int, float):
+        qValues = self.getQValues(stateHash)
+        maxQValue = max(qValues)
+        return qValues.index(maxQValue), maxQValue
 
     def saveQValuesToJSON(self, filePath: str, fullPath: bool = False) -> None:
         if fullPath:
