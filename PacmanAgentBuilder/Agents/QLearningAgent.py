@@ -216,7 +216,6 @@ class QLearningAgent(IQAgent):
         # movingRho = 0
         if random.random() < movingRho:
             move = self.getRandomMove(obs)
-            print("RANDOM MOVE")
             return move
         else:
             qValues = self.store.getQValues(newStateHash)
