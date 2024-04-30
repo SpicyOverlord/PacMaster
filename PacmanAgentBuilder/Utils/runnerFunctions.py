@@ -47,7 +47,7 @@ def runGameWithAgent(agentClass: type[IQAgent], weightContainer: WeightContainer
                 -10000
             )
 
-            print(agent.newPositionCount)
+            # print(agent.newPositionCount)
 
             gameStats = GameStats(game, agent)
 
