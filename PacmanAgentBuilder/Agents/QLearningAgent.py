@@ -143,7 +143,7 @@ class QLearningAgent(IQAgent):
         move = self.QLearning(obs, newState)
 
         # supervised learning (human input)
-        move = self.getDirection(obs, self.currentRoute[self.currentTarget])
+        # move = self.getDirection(obs, self.currentRoute[self.currentTarget])
 
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_UP]:
