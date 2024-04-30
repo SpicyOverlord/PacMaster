@@ -18,7 +18,7 @@ class QValueStore:
         self.baseAlpha = 0.7  # learning rate
         # self.baseRho = 0.2  # exploration rate
 
-        self.baseRho = 0
+        self.baseRho = 1
 
 
     def size(self):
