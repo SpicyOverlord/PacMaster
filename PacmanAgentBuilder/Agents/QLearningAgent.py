@@ -69,8 +69,9 @@ class QLearningAgent(IQAgent):
             Vector2(240, 220), Vector2(300, 220), Vector2(300, 140), Vector2(360, 140), Vector2(360, 200),
             Vector2(360, 280), Vector2(360, 360), Vector2(420, 360), Vector2(420, 460),
 
-            Vector2(420, 360), Vector2(420, 460), Vector2(480, 460), Vector2(480, 520), Vector2(420, 520), Vector2(420, 580), Vector2(420, 520), Vector2(480, 520), Vector2(550, 520),
-            Vector2(60, 520), Vector2(120, 520), Vector2(120, 580), Vector2(120, 640),Vector2(120, 580),
+            Vector2(420, 360), Vector2(420, 460), Vector2(480, 460), Vector2(480, 520), Vector2(420, 520),
+            Vector2(420, 580), Vector2(420, 520), Vector2(480, 520), Vector2(550, 520),
+            Vector2(60, 520), Vector2(120, 520), Vector2(120, 580), Vector2(120, 640), Vector2(120, 580),
 
             Vector2(180, 580), Vector2(240, 580), Vector2(240, 640), Vector2(300, 640), Vector2(300, 580),
             Vector2(360, 580), Vector2(420, 580), Vector2(420, 520), Vector2(480, 520), Vector2(480, 460),
@@ -81,9 +82,8 @@ class QLearningAgent(IQAgent):
             Vector2(120, 140), Vector2(20, 140), Vector2(20, 260), Vector2(80, 260), Vector2(120, 260),
             Vector2(120, 320), Vector2(120, 360), Vector2(120, 460), Vector2(60, 460), Vector2(60, 520),
             Vector2(60, 580), Vector2(20, 580), Vector2(20, 640), Vector2(120, 640), Vector2(240, 640),
-            Vector2(300, 640), Vector2(420, 640), Vector2(520, 640), Vector2(520, 580), Vector2(480, 580),Vector2(480, 520),
-
-
+            Vector2(300, 640), Vector2(420, 640), Vector2(520, 640), Vector2(520, 580), Vector2(480, 580),
+            Vector2(480, 520),
 
         ]
 
@@ -96,7 +96,7 @@ class QLearningAgent(IQAgent):
     def calculateNextMove(self, obs: Observation):
         newState = GameState(obs, weights=self.weightContainer)
 
-        if self.gameController.level >= 20:
+        if self.gameController.level >= 6:
             self.lastGameState = newState
             return LEFT
 
@@ -112,7 +112,7 @@ class QLearningAgent(IQAgent):
                 self.currentRoute = self.startRoute2
 
         # if self.currentTarget == -1 or self.currentTarget > len(self.currentRoute)-5:
-        #     sleep(0.04)
+        # sleep(0.02)
 
         # DebugHelper.enable()
         # DebugHelper.drawMap(obs)
@@ -143,8 +143,7 @@ class QLearningAgent(IQAgent):
         move = self.QLearning(obs, newState)
 
         # supervised learning (human input)
-        # DebugHelper.drawDot(self.startRoute1[self.currentTarget], 3, DebugHelper.RED)
-        move = self.getDirection(obs, self.currentRoute[self.currentTarget])
+        # move = self.getDirection(obs, self.currentRoute[self.currentTarget])
 
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_UP]:
@@ -203,20 +202,25 @@ class QLearningAgent(IQAgent):
             self.rewards.append(newReward)
 
         # Get the next move
-        if random.random() < self.store.rho:
+        movingRho = self.store.baseRho - self.store.getVisitedCount(newStateHash) * (self.store.baseRho * (1 / self.store.maxQValueUpdates))
+        if random.random() < movingRho:
             move = self.getRandomMove(obs)
+            # print("RANDOM MOVE")
             return move
         else:
             qValues = self.store.getQValues(newStateHash)
             maxQValue = max(qValues)
+            # print(maxQValue)
             if maxQValue == UNKNOWN_POSITION:
                 # print("UNKNOWN POSITION!")
                 unknownMoves = []
                 for i in range(4):
                     if qValues[i] == UNKNOWN_POSITION:
                         unknownMoves.append(i)
+                # print("RANDOM MOVE")
                 moveIndex = random.choice(unknownMoves)
             else:
+                # print("KNOWN POSITION!")
                 moveIndex = qValues.index(maxQValue)
                 # print(f"known position! ({maxQValue}  ,  {moveIndex})")
 
@@ -239,8 +243,9 @@ class QLearningAgent(IQAgent):
             'basePenalty': 9.12306,
             'pelletDistanceDecline': 0.01093,
             'pelletDistanceReward': 34.41305,
+            'pelletDistancePenalty': 34.41305,
             'eatPelletReward': 239.7079,
-            'tooCloseValue': 32.61317,
+            'tooCloseValue': 7.61317,
             'ghostDistancePenalty': 6.98339,
             'nearestGhostDistancePenalty': 0.01724,
         })
@@ -251,14 +256,15 @@ class QLearningAgent(IQAgent):
         :return: The default weight container for this agent (used in the genetic algorithm to create start population)
         """
         return WeightContainer({
-            'basePenalty': 1,
-            'pelletDistanceDecline': 10,
-            'pelletDistanceReward': 20,
-            'eatPelletReward': 50,
+            'nearestGhostDistanceThreshold': 1000,
+            'ghostDistanceThreshold': 1000,
             'tooCloseThreshold': 1000,
-            'tooCloseValue': 10,
-            'ghostDistanceThreshold': 10,
-            'ghostDistancePenalty': 30,
-            'nearestGhostDistanceThreshold': 200,
-            'nearestGhostDistancePenalty': 50,
+            'basePenalty': 10,
+            'pelletDistanceDecline': 1,
+            'pelletDistanceReward': 20,
+            'pelletDistancePenalty': 20,
+            'eatPelletReward': 100,
+            'tooCloseValue': 5,
+            'ghostDistancePenalty': 5,
+            'nearestGhostDistancePenalty': 5,
         })

@@ -44,7 +44,7 @@ def runGameWithAgent(agentClass: type[IQAgent], weightContainer: WeightContainer
             agent.store.setQValue(
                 lastStateHash,
                 lastState.moveMade,
-                -100
+                -10000
             )
 
             gameStats = GameStats(game, agent)
@@ -53,7 +53,7 @@ def runGameWithAgent(agentClass: type[IQAgent], weightContainer: WeightContainer
 
 
 def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: WeightContainer = None,
-                                   decayRate: float = 0.99, decayInterval: int = 10, saveInterval: int = 10000,
+                                   saveInterval: int = 10000,
                                    gameCount: int = 50, gameSpeed=1, startLevel: int = 0, startLives=1,
                                    ghostsEnabled: bool = True, freightEnabled: bool = True,
                                    logging=False, lockDeltaTime=False,
@@ -96,8 +96,6 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
         rewardAverage = sum(rewardsMoving) / len(rewardsMoving)
         rewardAverages.append(rewardAverage)
 
-        if (i + 1) % decayInterval == 0:
-            constStore.decayValues(decayRate)
         if (i + 1) % saveInterval == 0:
             performance = GameStats.calculatePerformance(gameStats)
             constStore.saveQValuesToBinary(f"qvalues({round(performance['combinedScore'], 3)},{constStore.size()}).bin",

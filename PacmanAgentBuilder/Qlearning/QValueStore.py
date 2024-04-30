@@ -4,7 +4,8 @@ import pickle
 import time
 from typing import List
 
-UNKNOWN_POSITION = -12.3456789
+UNKNOWN_POSITION = -23.456789
+DEFAULT_VALUE = [UNKNOWN_POSITION, UNKNOWN_POSITION, UNKNOWN_POSITION, UNKNOWN_POSITION, 0]
 
 
 class QValueStore:
@@ -14,37 +15,63 @@ class QValueStore:
         self.store = {}
 
         self.gamma = 0.75  # discount factor
-        self.alpha = 0.7  # learning rate
-        # self.rho = 0.2  # exploration rate
-        self.rho = 0
+        self.baseAlpha = 0.7  # learning rate
+        self.baseRho = 0.2  # exploration rate
+
+        self.maxQValueUpdates = 10
+        # self.baseRho = 0
 
     def size(self):
         return len(self.store)
 
     def decayValues(self, decayRate: float) -> None:
-        self.alpha *= decayRate
-        self.rho *= decayRate
+        self.baseAlpha *= decayRate
+
+    def getVisitedCount(self, stateHash: int) -> int:
+        return self.store.setdefault(stateHash, DEFAULT_VALUE.copy())[4]
+
+    def incrementVisitedCount(self, stateHash: int) -> None:
+        self.store[stateHash][4] += 1
 
     def getQValues(self, stateHash: int) -> List[float]:
-        return self.store.setdefault(stateHash, [UNKNOWN_POSITION, UNKNOWN_POSITION, UNKNOWN_POSITION, UNKNOWN_POSITION])
+        return self.store.setdefault(stateHash, DEFAULT_VALUE.copy())[0:4]
 
-    def getQValue(self, stateHash: int, madeMove: int) -> float:
-        return self.getQValues(stateHash)[madeMove]
+    def getQValue(self, stateHash: int, moveIndex: int) -> float:
+        if moveIndex > 3:
+            raise Exception(f"Invalid action index: {moveIndex}")
+        return self.getQValues(stateHash)[moveIndex]
 
     def getMaxQValue(self, stateHash: int) -> float:
-        return max(self.getQValues(stateHash))
+        maxValue = max([qValue if qValue != UNKNOWN_POSITION else -99999 for qValue in self.getQValues(stateHash)])
+        if maxValue == -99999:
+            return UNKNOWN_POSITION
+        return maxValue
 
-    def setQValue(self, stateHash: int, actionIndex: int, reward: float) -> None:
+    def setQValue(self, stateHash: int, moveIndex: int, reward: float) -> None:
+        if moveIndex > 3:
+            raise Exception(f"Invalid action index: {moveIndex}")
+
         if stateHash not in self.store:
-            self.store[stateHash] = [UNKNOWN_POSITION, UNKNOWN_POSITION, UNKNOWN_POSITION, UNKNOWN_POSITION]
-        self.store[stateHash][actionIndex] = reward
+            self.store[stateHash] = DEFAULT_VALUE.copy()
+
+        self.incrementVisitedCount(stateHash)
+
+        self.store[stateHash][moveIndex] = reward
 
     def updateQValue(self, lastStateHash: int, lastActionIndex: int, newStateHash: int, reward: float) -> float:
+        if lastActionIndex > 3:
+            raise Exception(f"Invalid action index: {lastActionIndex}")
+
         lastQValue = self.getQValue(lastStateHash, lastActionIndex)
         newStateMaxQValue = self.getMaxQValue(newStateHash)
+        visitedCount = self.getVisitedCount(lastStateHash)
 
-        newReward = (1 - self.alpha + 0.05) * lastQValue + self.alpha * (reward + self.gamma * newStateMaxQValue)
-        # newReward = (1 - self.alpha) * lastQValue + self.alpha * (reward + self.gamma * newStateMaxQValue)
+        # if reward > 0:
+        #     movingAlpha = max(self.baseAlpha - visitedCount * (self.baseAlpha * (1 / self.maxQValueUpdates)), 0.2)
+        # else:
+        #     movingAlpha = self.baseAlpha
+        # newReward = (1 - movingAlpha) * lastQValue + movingAlpha * (reward + self.gamma * newStateMaxQValue)
+        newReward = (1 - self.baseAlpha) * lastQValue + self.baseAlpha * (reward + self.gamma * newStateMaxQValue)
 
         self.setQValue(lastStateHash, lastActionIndex, newReward)
 

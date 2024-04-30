@@ -91,6 +91,8 @@ class GameState:
         elif (self.pelletDistanceValue < lastGameState.pelletDistanceValue and
               self.nearestXPelletPosition[0] == lastGameState.nearestXPelletPosition[0]):
             gameStateScore += self.weightContainer.get('pelletDistanceReward')
+        else:
+            gameStateScore -= self.weightContainer.get('pelletDistancePenalty')
 
         # ghosts
         if (self.weightContainer.get(
@@ -100,8 +102,9 @@ class GameState:
                 'nearestGhostDistanceThreshold') < self.nearestGhostDistance < lastGameState.nearestGhostDistance:
             gameStateScore -= self.weightContainer.get('nearestGhostDistancePenalty')
 
+        # lost life
         if self.remainingLives < lastGameState.remainingLives:
-            gameStateScore -= 100
+            gameStateScore -= 10000
 
         gameStateScore -= self.weightContainer.get('basePenalty')
 
