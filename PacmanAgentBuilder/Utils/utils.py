@@ -187,15 +187,15 @@ def getHash(lst: List[int]) -> int:
         h = h * 7 + value
 
     # base 64
-    # num_bytes = h.to_bytes((h.bit_length() + 7) // 8, 'big')
-    # base64_str = base64.b64encode(num_bytes)
-    #
-    # hashStr = base64_str.decode()
+    num_bytes = h.to_bytes((h.bit_length() + 7) // 8, 'big')
+    base64_str = base64.b64encode(num_bytes)
 
-    hashStr = h
+    hashStr = base64_str.decode()
+
+    # hashStr = h
     # if lst[1] == 5 and lst[2] == 13:
     #     print("UP", hashStr, hash(hashStr))
     # if lst[1] == 12 and lst[2] == 22:
     #     print("LEFT", hashStr, hash(hashStr))
 
-    return hashStr
+    return hash(hashStr)

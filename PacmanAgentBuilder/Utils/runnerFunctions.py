@@ -47,6 +47,8 @@ def runGameWithAgent(agentClass: type[IQAgent], weightContainer: WeightContainer
                 -10000
             )
 
+            print(agent.newPositionCount)
+
             gameStats = GameStats(game, agent)
 
             return gameStats, store, agent.rewards
@@ -98,12 +100,11 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
 
         if (i + 1) % saveInterval == 0:
             performance = GameStats.calculatePerformance(gameStats)
-            constStore.saveQValuesToBinary(f"qvalues({round(performance['combinedScore'], 3)},{constStore.size()}).bin",
-                                           verbose=False)
+            # constStore.saveQValuesToBinary(f"QLearningData/qvalues.bin", fullPath=True, verbose=False)
 
         if logging:
             gameRewardAverage = sum(rewards) / len(rewards)
-            print(f"Game {i + 1} {round(gameRewardAverage, 3)}")
+            print(f"Game {i + 1} {round(gameRewardAverage, 3)} [{gameStat.levelsCompleted}]")
 
     # performance = GameStats.calculateLearningRate(rewardAverages, gameStats)
     performance = GameStats.calculatePerformance(gameStats)["combinedScore"]

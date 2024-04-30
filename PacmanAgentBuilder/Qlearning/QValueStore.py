@@ -16,10 +16,10 @@ class QValueStore:
 
         self.gamma = 0.75  # discount factor
         self.baseAlpha = 0.7  # learning rate
-        self.baseRho = 0.2  # exploration rate
+        # self.baseRho = 0.2  # exploration rate
 
-        self.maxQValueUpdates = 10
-        # self.baseRho = 0
+        self.baseRho = 0
+
 
     def size(self):
         return len(self.store)
@@ -46,6 +46,7 @@ class QValueStore:
         if maxValue == -99999:
             return UNKNOWN_POSITION
         return maxValue
+        # return max(self.getQValues(stateHash))
 
     def setQValue(self, stateHash: int, moveIndex: int, reward: float) -> None:
         if moveIndex > 3:
@@ -62,7 +63,7 @@ class QValueStore:
         if lastActionIndex > 3:
             raise Exception(f"Invalid action index: {lastActionIndex}")
 
-        lastQValue = self.getQValue(lastStateHash, lastActionIndex)
+        lastQValue = self.getQValue(lastStateHash, lastActionIndex)# + 1000
         newStateMaxQValue = self.getMaxQValue(newStateHash)
         visitedCount = self.getVisitedCount(lastStateHash)
 

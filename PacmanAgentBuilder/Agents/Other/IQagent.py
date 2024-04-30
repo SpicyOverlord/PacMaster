@@ -19,6 +19,9 @@ class IQAgent(ABC):
         self.snapshots = []
         self.rewards = []
 
+        self.newPositionCount = 0
+
+
         if weightContainer is None:
             self.weightContainer = self.getBestWeightContainer()
         else:
