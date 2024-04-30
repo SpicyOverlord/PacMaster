@@ -36,16 +36,54 @@ class QLearningAgent(IQAgent):
             Vector2(520, 160), Vector2(420, 160), Vector2(360, 160), Vector2(300, 160), Vector2(240, 160),
             Vector2(180, 160), Vector2(180, 220), Vector2(240, 220), Vector2(240, 280), Vector2(270.0, 280),
             Vector2(300, 280), Vector2(300, 220), Vector2(360, 220), Vector2(360, 160), Vector2(300, 160),
-            Vector2(240, 160), Vector2(240, 80), Vector2(120, 80), Vector2(120, 160), Vector2(20, 160),Vector2(120, 160),
+            Vector2(240, 160), Vector2(240, 80), Vector2(120, 80), Vector2(120, 160), Vector2(20, 160),
+            Vector2(120, 160),
             Vector2(120, 220), Vector2(120, 340), Vector2(120, 460), Vector2(120, 520), Vector2(180, 520),
             Vector2(240, 520), Vector2(300, 520), Vector2(360, 520), Vector2(420, 520), Vector2(420, 460),
             Vector2(420, 340), Vector2(420, 220), Vector2(420, 160), Vector2(360, 160), Vector2(300, 160),
             Vector2(240, 160), Vector2(180, 160), Vector2(120, 160), Vector2(20, 160), Vector2(20, 220),
             Vector2(120, 220),
-            Vector2(120, 160), Vector2(180, 160), Vector2(240, 160), Vector2(300, 160), Vector2(300, 80), Vector2(420, 80), Vector2(520, 80), Vector2(520, 160), Vector2(420, 160), Vector2(420, 80), Vector2(420, 160), Vector2(420, 220), Vector2(420, 340), Vector2(420, 460), Vector2(520, 460), Vector2(520, 520), Vector2(480, 520), Vector2(480, 580), Vector2(420, 580), Vector2(420, 520), Vector2(360, 520), Vector2(300, 520), Vector2(240, 520), Vector2(180, 520), Vector2(120, 520), Vector2(120, 580), Vector2(60, 580), Vector2(60, 520), Vector2(20, 520), Vector2(20, 460), Vector2(120, 460), Vector2(120, 340), Vector2(120, 220), Vector2(20, 220), Vector2(20, 160), Vector2(20, 80), Vector2(120, 80), Vector2(240, 80)
+            Vector2(120, 160), Vector2(180, 160), Vector2(240, 160), Vector2(300, 160), Vector2(300, 80),
+            Vector2(420, 80), Vector2(520, 80), Vector2(520, 160), Vector2(420, 160), Vector2(420, 80),
+            Vector2(420, 160), Vector2(420, 220), Vector2(420, 340), Vector2(420, 460), Vector2(520, 460),
+            Vector2(520, 520), Vector2(480, 520), Vector2(480, 580), Vector2(420, 580), Vector2(420, 520),
+            Vector2(360, 520), Vector2(300, 520), Vector2(240, 520), Vector2(180, 520), Vector2(120, 520),
+            Vector2(120, 580), Vector2(60, 580), Vector2(60, 520), Vector2(20, 520), Vector2(20, 460),
+            Vector2(120, 460), Vector2(120, 340), Vector2(120, 220), Vector2(20, 220), Vector2(20, 160),
+            Vector2(20, 80), Vector2(120, 80), Vector2(240, 80)
         ]
         self.startRoute2 = [
-            Vector2(180, 520),Vector2(180, 580), Vector2(120, 580), Vector2(120, 520), Vector2(60, 520), Vector2(60, 460), Vector2(120, 460), Vector2(120, 360),
+            Vector2(180, 520), Vector2(180, 580), Vector2(120, 580), Vector2(120, 520), Vector2(60, 520),
+            Vector2(60, 460), Vector2(120, 460), Vector2(120, 360),
+
+            Vector2(120, 320), Vector2(120, 260), Vector2(80, 260),
+            Vector2(80, 200), Vector2(180, 200), Vector2(180, 140), Vector2(180, 80), Vector2(360, 80),
+            Vector2(360, 140), Vector2(360, 200), Vector2(460, 200), Vector2(460, 260), Vector2(420, 260),
+
+            Vector2(420, 320), Vector2(420, 360), Vector2(420, 460),
+            Vector2(320, 460), Vector2(320, 520), Vector2(360, 520), Vector2(360, 580), Vector2(420, 580),
+            Vector2(420, 640), Vector2(300, 640), Vector2(240, 640), Vector2(240, 580), Vector2(180, 580),
+            Vector2(180, 520), Vector2(220, 520), Vector2(220, 460), Vector2(120, 460), Vector2(60, 460),
+            Vector2(60, 380), Vector2(20, 380), Vector2(20, 320), Vector2(120, 320), Vector2(120, 260),
+            Vector2(80, 260), Vector2(80, 200), Vector2(180, 200), Vector2(180, 140), Vector2(240, 140),
+            Vector2(240, 220), Vector2(300, 220), Vector2(300, 140), Vector2(360, 140), Vector2(360, 200),
+            Vector2(360, 280), Vector2(360, 360), Vector2(420, 360), Vector2(420, 460),
+
+            Vector2(420, 360), Vector2(420, 460), Vector2(480, 460), Vector2(480, 520), Vector2(420, 520), Vector2(420, 580), Vector2(420, 520), Vector2(480, 520), Vector2(550, 520),
+            Vector2(60, 520), Vector2(120, 520), Vector2(120, 580), Vector2(120, 640),Vector2(120, 580),
+
+            Vector2(180, 580), Vector2(240, 580), Vector2(240, 640), Vector2(300, 640), Vector2(300, 580),
+            Vector2(360, 580), Vector2(420, 580), Vector2(420, 520), Vector2(480, 520), Vector2(480, 460),
+            Vector2(480, 380), Vector2(520, 380), Vector2(520, 320), Vector2(420, 320), Vector2(420, 260),
+            Vector2(460, 260), Vector2(520, 260), Vector2(520, 140), Vector2(420, 140), Vector2(360, 140),
+
+            Vector2(360, 80), Vector2(180, 80), Vector2(180, 140),
+            Vector2(120, 140), Vector2(20, 140), Vector2(20, 260), Vector2(80, 260), Vector2(120, 260),
+            Vector2(120, 320), Vector2(120, 360), Vector2(120, 460), Vector2(60, 460), Vector2(60, 520),
+            Vector2(60, 580), Vector2(20, 580), Vector2(20, 640), Vector2(120, 640), Vector2(240, 640),
+            Vector2(300, 640), Vector2(420, 640), Vector2(520, 640), Vector2(520, 580), Vector2(480, 580),Vector2(480, 520),
+
+
 
         ]
 
@@ -56,6 +94,12 @@ class QLearningAgent(IQAgent):
         self.currentLevel = 0
 
     def calculateNextMove(self, obs: Observation):
+        newState = GameState(obs, weights=self.weightContainer)
+
+        if self.gameController.level >= 20:
+            self.lastGameState = newState
+            return LEFT
+
         if obs.gameController.level % 2 != self.currentLevel:
             self.currentLevel = obs.gameController.level % 2
             self.currentTarget = 0
@@ -67,12 +111,11 @@ class QLearningAgent(IQAgent):
                 # self.currentTarget = -1
                 self.currentRoute = self.startRoute2
 
-        # if self.currentLevel != 0 or self.currentTarget == -1 or self.currentTarget < 20:
+        # if self.currentTarget == -1 or self.currentTarget > len(self.currentRoute)-5:
         #     sleep(0.04)
 
         # DebugHelper.enable()
         # DebugHelper.drawMap(obs)
-        newState = GameState(obs, weights=self.weightContainer)
 
         if self.currentTarget != -1:
             dist = manhattanDistance(obs.getPacmanPosition(), self.currentRoute[self.currentTarget])
@@ -88,8 +131,8 @@ class QLearningAgent(IQAgent):
         pacmanTarget = obs.getPacmanTargetPosition()
         if manhattanDistance(obs.getPacmanPosition(), pacmanTarget) <= 5 and pacmanTarget != self.pastTarget:
             if self.currentTarget == -1:
-                print(f"Vector2({pacmanTarget.x}, {pacmanTarget.y}), ", end="")
-            self.pastTarget = obs.getPacmanTargetPosition()
+                # print(f"Vector2({pacmanTarget.x}, {pacmanTarget.y}), ", end="")
+                self.pastTarget = obs.getPacmanTargetPosition()
 
         # if self.lastGameState is not None:
         #     if newState.equal(self.lastGameState):
@@ -101,7 +144,7 @@ class QLearningAgent(IQAgent):
 
         # supervised learning (human input)
         # DebugHelper.drawDot(self.startRoute1[self.currentTarget], 3, DebugHelper.RED)
-        move = self.getDirection(obs, self.currentRoute [self.currentTarget])
+        move = self.getDirection(obs, self.currentRoute[self.currentTarget])
 
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_UP]:
@@ -190,16 +233,16 @@ class QLearningAgent(IQAgent):
         :return: The best known weight container for this agent
         """
         return WeightContainer({
-            'nearestGhostDistanceThreshold': 4.46521,
-            'ghostDistanceThreshold': 0.6382,
-            'tooCloseThreshold': 1361.46979,
-            'basePenalty': 0.1,
-            'pelletDistanceDecline': 3.46962,
-            'pelletDistanceReward': 22.61115,
-            'eatPelletReward': 68.21019,
-            'tooCloseValue': 67.01752,
-            'ghostDistancePenalty': 6.06404,
-            'nearestGhostDistancePenalty': 3.5819,
+            'nearestGhostDistanceThreshold': 135.75935,
+            'ghostDistanceThreshold': 153.01581,
+            'tooCloseThreshold': 243.65984,
+            'basePenalty': 9.12306,
+            'pelletDistanceDecline': 0.01093,
+            'pelletDistanceReward': 34.41305,
+            'eatPelletReward': 239.7079,
+            'tooCloseValue': 32.61317,
+            'ghostDistancePenalty': 6.98339,
+            'nearestGhostDistancePenalty': 0.01724,
         })
 
     @staticmethod
