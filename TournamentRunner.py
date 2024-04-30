@@ -231,7 +231,7 @@ if __name__ == "__main__":
         populationSize=20,  # The size of the population.
         freeGenerationCount=10,  # generations to skip before save top x% and starting to decrease the mutation rate.
         generationCount=100,  # The number of generations.
-        savePercentage=15,  # The top percentile of the population to save each generation.
+        savePercentage=10,  # The top percentile of the population to save each generation.
         mutationRate=1,  # The start mutation rate.
         gameCount=100,  # The number of games each agent will play each generation to calculate its fitness.
         cpuCount=5,  # multiprocessing.cpu_count(),
