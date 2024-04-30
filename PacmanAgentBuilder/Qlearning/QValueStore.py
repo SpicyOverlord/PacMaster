@@ -63,7 +63,7 @@ class QValueStore:
         if lastActionIndex > 3:
             raise Exception(f"Invalid action index: {lastActionIndex}")
 
-        lastQValue = self.getQValue(lastStateHash, lastActionIndex)# + 1000
+        lastQValue = self.getQValue(lastStateHash, lastActionIndex) + 100
         newStateMaxQValue = self.getMaxQValue(newStateHash)
         visitedCount = self.getVisitedCount(lastStateHash)
 
