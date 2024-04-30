@@ -43,7 +43,7 @@ class QValueStore:
         lastQValue = self.getQValue(lastStateHash, lastActionIndex)
         newStateMaxQValue = self.getMaxQValue(newStateHash)
 
-        newReward = (1 - self.alpha + 0.01) * lastQValue + self.alpha * (reward + self.gamma * newStateMaxQValue)
+        newReward = (1 - self.alpha + 0.05) * lastQValue + self.alpha * (reward + self.gamma * newStateMaxQValue)
         # newReward = (1 - self.alpha) * lastQValue + self.alpha * (reward + self.gamma * newStateMaxQValue)
 
         self.setQValue(lastStateHash, lastActionIndex, newReward)
