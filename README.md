@@ -45,7 +45,7 @@ rsync -avz --progress root@192.168.1.50:/root/PacMaster/Tournaments/ /Users/fred
 rsync -avz --progress root@192.168.1.50:/root/PacMaster/Data/ /Users/frederik/Home/Python/PacMaster/Data
 ```
 
-### Copy Tournament data to local machine
+### Copy QLearning data to local machine
 ```shell
 rsync -avz --progress root@192.168.1.50:/root/PacMaster/QLearningData/ /Users/frederik/Home/Python/PacMaster/QLearningData/
 ```

@@ -65,7 +65,7 @@ class GameController(object):
         self.background_flash = None
         self.clock = pygame.time.Clock()
         self.fruit = None
-        self.pause = Pause(False)
+        self.pause = Pause(True)
         self.level = startLevel
         self.lives = startLives
         self.score = 0

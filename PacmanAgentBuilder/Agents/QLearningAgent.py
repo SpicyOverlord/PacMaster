@@ -21,90 +21,75 @@ class QLearningAgent(IQAgent):
     def __init__(self, gameController, weightContainer: WeightContainer = None, store: QValueStore = None):
         super().__init__(gameController, weightContainer=weightContainer, store=store)
 
-        self.startRoute = [
-            Vector2(120, 520), Vector2(120, 580), Vector2(20, 580), Vector2(20, 640),
-            Vector2(520, 640), Vector2(520, 580), Vector2(420, 580), Vector2(420, 520),
-            Vector2(240, 520), Vector2(240, 460), Vector2(180, 460), Vector2(180, 340),
-            Vector2(120, 340), Vector2(120, 160), Vector2(360, 160),
-            Vector2(360, 220), Vector2(300, 220), Vector2(300, 280),
-            Vector2(360, 280), Vector2(360, 400), Vector2(180, 400),
-            Vector2(180, 340), Vector2(120, 340), Vector2(120, 340),
-            Vector2(120, 460), Vector2(20, 460), Vector2(20, 520),
-            Vector2(20, 520),
-            Vector2(60, 520),
-            Vector2(60, 580),
-            Vector2(120, 580),
-            Vector2(120, 520),
-            Vector2(180, 520),
-            Vector2(180, 580),
-            Vector2(240, 580),
-            Vector2(240, 640),
-            Vector2(300, 640),
-            Vector2(300, 580),
-            Vector2(360, 580),
-            Vector2(360, 520),
-            Vector2(420, 520),
-            Vector2(420, 580),
-            Vector2(480, 580),
-            Vector2(480, 520),
-            Vector2(520, 520),
-            Vector2(520, 460),
-            Vector2(420, 460),
-            Vector2(420, 520),
-            Vector2(300, 520),
-            Vector2(300, 460),
-            Vector2(420, 460),
-
-
-            Vector2(420, 220),
-
-
-            Vector2(520, 220),
-            Vector2(520, 80),
-            Vector2(300, 80),
-            Vector2(300, 160),
-            Vector2(240, 160),
-            Vector2(240, 80),
-            Vector2(20, 80),
-            Vector2(20, 220),
+        self.startRoute1 = [
+            Vector2(240, 520), Vector2(180, 520), Vector2(120, 520), Vector2(120, 580), Vector2(60, 580),
+            Vector2(20, 580), Vector2(20, 640), Vector2(240, 640), Vector2(300, 640), Vector2(520, 640),
+            Vector2(520, 580), Vector2(480, 580), Vector2(420, 580), Vector2(420, 520), Vector2(360, 520),
+            Vector2(300, 520), Vector2(240, 520), Vector2(240, 460), Vector2(180, 460), Vector2(180, 400),
+            Vector2(180, 340), Vector2(120, 340), Vector2(120, 220), Vector2(120, 160), Vector2(180, 160),
+            Vector2(240, 160), Vector2(300, 160), Vector2(360, 160), Vector2(360, 220), Vector2(300, 220),
+            Vector2(300, 280), Vector2(360, 280), Vector2(360, 340), Vector2(420, 340), Vector2(550, 340),
+            Vector2(120, 340), Vector2(120, 460), Vector2(180, 460), Vector2(240, 460), Vector2(240, 520),
+            Vector2(180, 520), Vector2(180, 580), Vector2(240, 580), Vector2(240, 640), Vector2(300, 640),
+            Vector2(300, 580), Vector2(360, 580), Vector2(360, 520), Vector2(300, 520), Vector2(300, 460),
+            Vector2(360, 460), Vector2(420, 460), Vector2(420, 340), Vector2(420, 220), Vector2(520, 220),
+            Vector2(520, 160), Vector2(420, 160), Vector2(360, 160), Vector2(300, 160), Vector2(240, 160),
+            Vector2(180, 160), Vector2(180, 220), Vector2(240, 220), Vector2(240, 280), Vector2(270.0, 280),
+            Vector2(300, 280), Vector2(300, 220), Vector2(360, 220), Vector2(360, 160), Vector2(300, 160),
+            Vector2(240, 160), Vector2(240, 80), Vector2(120, 80), Vector2(120, 160), Vector2(20, 160),Vector2(120, 160),
+            Vector2(120, 220), Vector2(120, 340), Vector2(120, 460), Vector2(120, 520), Vector2(180, 520),
+            Vector2(240, 520), Vector2(300, 520), Vector2(360, 520), Vector2(420, 520), Vector2(420, 460),
+            Vector2(420, 340), Vector2(420, 220), Vector2(420, 160), Vector2(360, 160), Vector2(300, 160),
+            Vector2(240, 160), Vector2(180, 160), Vector2(120, 160), Vector2(20, 160), Vector2(20, 220),
             Vector2(120, 220),
-            Vector2(120, 160),
-            Vector2(20, 160),
-            Vector2(20, 80),
-            Vector2(120, 80),
-            Vector2(120, 160),
-            Vector2(180, 160),
-            Vector2(180, 220),
-            Vector2(240, 220),
-            Vector2(240, 280),
-            Vector2(300, 280),
-            Vector2(300, 220),
-            Vector2(360, 220),
-            Vector2(360, 160),
-            Vector2(520, 160),
-            Vector2(420, 160),
-            Vector2(420, 80),
-            Vector2(420, 220),
-            # Vector2(,),Vector2(,),
+            Vector2(120, 160), Vector2(180, 160), Vector2(240, 160), Vector2(300, 160), Vector2(300, 80), Vector2(420, 80), Vector2(520, 80), Vector2(520, 160), Vector2(420, 160), Vector2(420, 80), Vector2(420, 160), Vector2(420, 220), Vector2(420, 340), Vector2(420, 460), Vector2(520, 460), Vector2(520, 520), Vector2(480, 520), Vector2(480, 580), Vector2(420, 580), Vector2(420, 520), Vector2(360, 520), Vector2(300, 520), Vector2(240, 520), Vector2(180, 520), Vector2(120, 520), Vector2(120, 580), Vector2(60, 580), Vector2(60, 520), Vector2(20, 520), Vector2(20, 460), Vector2(120, 460), Vector2(120, 340), Vector2(120, 220), Vector2(20, 220), Vector2(20, 160), Vector2(20, 80), Vector2(120, 80), Vector2(240, 80)
         ]
+        self.startRoute2 = [
+            Vector2(180, 520),Vector2(180, 580), Vector2(120, 580), Vector2(120, 520), Vector2(60, 520), Vector2(60, 460), Vector2(120, 460), Vector2(120, 360),
+
+        ]
+
+        self.currentRoute = self.startRoute1
         self.currentTarget = 0
+        self.pastTarget = Vector2(-999, -999)
+
+        self.currentLevel = 0
 
     def calculateNextMove(self, obs: Observation):
-        # sleep(0.01)
+        if obs.gameController.level % 2 != self.currentLevel:
+            self.currentLevel = obs.gameController.level % 2
+            self.currentTarget = 0
+            self.pastTarget = Vector2(-999, -999)
+
+            if self.currentLevel == 0:
+                self.currentRoute = self.startRoute1
+            else:
+                # self.currentTarget = -1
+                self.currentRoute = self.startRoute2
+
+        # if self.currentLevel != 0 or self.currentTarget == -1 or self.currentTarget < 20:
+        #     sleep(0.04)
+
         # DebugHelper.enable()
         # DebugHelper.drawMap(obs)
         newState = GameState(obs, weights=self.weightContainer)
 
         if self.currentTarget != -1:
-            dist = manhattanDistance(obs.getPacmanPosition(), self.startRoute[self.currentTarget])
+            dist = manhattanDistance(obs.getPacmanPosition(), self.currentRoute[self.currentTarget])
             if dist <= 10:
                 self.currentTarget += 1
-                # print(f"new target: {self.startRoute[self.currentTarget]}")
+                # print(f"new target: {self.startRoute1[self.currentTarget]}")
 
-                if self.currentTarget == len(self.startRoute) - 1:
+                if self.currentTarget == len(self.currentRoute) - 1:
                     self.currentTarget = -1
                     # print("finished route")
                     # DebugHelper.pauseGame()
+
+        pacmanTarget = obs.getPacmanTargetPosition()
+        if manhattanDistance(obs.getPacmanPosition(), pacmanTarget) <= 5 and pacmanTarget != self.pastTarget:
+            if self.currentTarget == -1:
+                print(f"Vector2({pacmanTarget.x}, {pacmanTarget.y}), ", end="")
+            self.pastTarget = obs.getPacmanTargetPosition()
 
         # if self.lastGameState is not None:
         #     if newState.equal(self.lastGameState):
@@ -115,18 +100,20 @@ class QLearningAgent(IQAgent):
         move = self.QLearning(obs, newState)
 
         # supervised learning (human input)
-        # DebugHelper.drawDot(self.startRoute[self.currentTarget], 3, DebugHelper.RED)
-        move = self.getDirection(obs, self.startRoute[self.currentTarget])
+        # DebugHelper.drawDot(self.startRoute1[self.currentTarget], 3, DebugHelper.RED)
+        move = self.getDirection(obs, self.currentRoute [self.currentTarget])
 
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_UP]:
             move = UP
-        if key_pressed[K_DOWN]:
+        elif key_pressed[K_DOWN]:
             move = DOWN
-        if key_pressed[K_LEFT]:
+        elif key_pressed[K_LEFT]:
             move = LEFT
-        if key_pressed[K_RIGHT]:
+        elif key_pressed[K_RIGHT]:
             move = RIGHT
+        # else:
+        #     move = STOP
 
         newState.setMadeMove(move)
         self.lastGameState = newState
