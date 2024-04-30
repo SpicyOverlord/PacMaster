@@ -96,9 +96,9 @@ class QLearningAgent(IQAgent):
     def calculateNextMove(self, obs: Observation):
         newState = GameState(obs, weights=self.weightContainer)
 
-        if self.gameController.level >= 6:
+        if self.gameController.level >= 10:
             self.lastGameState = newState
-            return LEFT
+            return UP
 
         if obs.gameController.level % 2 != self.currentLevel:
             self.currentLevel = obs.gameController.level % 2
@@ -143,7 +143,7 @@ class QLearningAgent(IQAgent):
         move = self.QLearning(obs, newState)
 
         # supervised learning (human input)
-        # move = self.getDirection(obs, self.currentRoute[self.currentTarget])
+        move = self.getDirection(obs, self.currentRoute[self.currentTarget])
 
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_UP]:
@@ -202,7 +202,7 @@ class QLearningAgent(IQAgent):
             self.rewards.append(newReward)
 
         # Get the next move
-        movingRho = self.store.baseRho - self.store.getVisitedCount(newStateHash) * (self.store.baseRho * (1 / self.store.maxQValueUpdates))
+        movingRho = max(self.store.baseRho - self.store.getVisitedCount(newStateHash) * (self.store.baseRho * (1 / 100)),0.05)
         if random.random() < movingRho:
             move = self.getRandomMove(obs)
             # print("RANDOM MOVE")
