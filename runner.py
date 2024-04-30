@@ -18,8 +18,8 @@ if __name__ == "__main__":
         startLevel=0,  # Choose the starting level for the agent (0 for level one, 1 for level two, and so on).
         startLives=1,  # Choose the number of lives the agent will start with.
         ghostsEnabled=True,  # Toggle ghosts on or off.
-        freightEnabled=False,  # Toggle if the effect of power pellets should be ignored.
+        freightEnabled=True,  # Toggle if the effect of power pellets should be ignored.
         lockDeltaTime=True,  # When enabled, the game will run at the highest possible speed.
         logging=True,  # Toggle the logging of game-related information to the console while the agent is playing.
-        disableVisuals=False  # Toggle the visuals of the game.
+        disableVisuals=True  # Toggle the visuals of the game.
     )
