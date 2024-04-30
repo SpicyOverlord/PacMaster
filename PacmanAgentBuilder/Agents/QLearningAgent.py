@@ -202,7 +202,7 @@ class QLearningAgent(IQAgent):
             self.rewards.append(newReward)
 
         # Get the next move
-        movingRho = max(self.store.baseRho - self.store.getVisitedCount(newStateHash) * (self.store.baseRho * (1 / 100)),0.05)
+        movingRho = max(self.store.baseRho - self.store.getVisitedCount(newStateHash) * (self.store.baseRho * (1 / 100)),0.01)
         if random.random() < movingRho:
             move = self.getRandomMove(obs)
             # print("RANDOM MOVE")
