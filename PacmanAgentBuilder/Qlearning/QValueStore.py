@@ -70,6 +70,7 @@ class QValueStore:
         lastQValue = self.getQValue(lastStateHash, lastActionIndex) + 1000
         newStateMaxQValue = self.getMaxQValue(newStateHash)
 
+        # an attempt to create a moving alpha, didn't really improve the learning of the agent
         # visitedCount = self.getVisitedCount(lastStateHash)
         # if reward > 0:
         #     movingAlpha = max(self.baseAlpha - visitedCount * (self.baseAlpha * (1 / self.maxQValueUpdates)), 0.2)
