@@ -16,7 +16,7 @@ if __name__ == "__main__":
         gameCount=5,  # Number of games the agent will play.
         gameSpeed=2,  # Sets the speed of the game from 0.1 (slow) to 15 (fast).
         startLevel=0,  # Choose the starting level for the agent (0 for level one, 1 for level two, and so on).
-        startLives=1,  # Choose the number of lives the agent will start with.
+        startLives=5,  # Choose the number of lives the agent will start with.
         ghostsEnabled=True,  # Toggle ghosts on or off.
         freightEnabled=True,  # Toggle if the effect of power pellets should be ignored.
         lockDeltaTime=True,  # When enabled, the game will run at the highest possible speed.

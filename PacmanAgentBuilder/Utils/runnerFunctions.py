@@ -39,8 +39,8 @@ def runGameWithAgent(agentClass: type[IQAgent], weightContainer: WeightContainer
         game.update()
         if game.gameOver:
             # qlearning last move update (death)
-            lastState = agent.lastGameState
-            lastStateHash = lastState.getHash()
+            # lastState = agent.lastGameState
+            # lastStateHash = lastState.getHash()
             # agent.store.setQValue(
             #     lastStateHash,
             #     lastState.moveMade,
@@ -79,7 +79,8 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
         DebugHelper.disable()
 
     constStore = QValueStore()
-    print("\nLoading the QTable takes around 1 min.\nThe game will be pause when it is finished. Click space when you want to see the agent play.")
+    print(
+        "\nLoading the QTable takes around 1 min.\nThe game will be pause when it is finished. Click space when you want to see the agent play.")
     constStore.loadQValuesFromBinary("QLearningData/QValues.bin", fullPath=True, verbose=True)
     print()
 
@@ -109,7 +110,7 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
             performance = GameStats.calculatePerformance(gameStats[-100:])
             gameRewardAverage = sum(rewards) / len(rewards) if len(rewards) > 0 else 0
             print(
-                f"Game {i + 1}  SCORE:{performance['baseScore']}  AVG:{round(gameRewardAverage, 3)}  LVL:{gameStat.levelsCompleted}")
+                f"Game {i + 1}  SCORE:{performance['baseScore']}   AVG REWARD:{round(gameRewardAverage, 3)}   LVL:{gameStat.levelsCompleted}")
 
     # performance = GameStats.calculateLearningRate(rewardAverages, gameStats)
     performance = GameStats.calculatePerformance(gameStats)["combinedScore"]

@@ -62,7 +62,7 @@ class QLearningAgent(IQAgent):
             self.rewards.append(newReward)
 
         # moving rho is setting rho based on how many times the agent has seen that position.
-        # the more time it has encountered a position, the less likely it is to explore
+        # the more times the agent has encountered a position, the less likely it is to explore
         # movingRho = max(self.store.baseRho - self.store.getVisitedCount(newStateHash) * (self.store.baseRho * (1 / 200)),0.0)
         movingRho = 0
 
