@@ -9,17 +9,16 @@ DEFAULT_VALUE = [UNKNOWN_POSITION, UNKNOWN_POSITION, UNKNOWN_POSITION, UNKNOWN_P
 
 
 class QValueStore:
-    basePath = "QLearningData/"
+    basePath = "QLearningData"
 
     def __init__(self):
         self.store = {}
 
         self.gamma = 0.75  # discount factor
         self.baseAlpha = 0.7  # learning rate
-        # self.baseRho = 0.2  # exploration rate
+        self.baseRho = 0.2  # exploration rate
 
-        self.baseRho = 0.1
-
+        self.locked = True
 
     def size(self):
         return len(self.store)
@@ -31,6 +30,8 @@ class QValueStore:
         return self.store.setdefault(stateHash, DEFAULT_VALUE.copy())[4]
 
     def incrementVisitedCount(self, stateHash: int) -> None:
+        if self.locked:
+            return
         self.store[stateHash][4] += 1
 
     def getQValues(self, stateHash: int) -> List[float]:
@@ -49,6 +50,9 @@ class QValueStore:
         # return max(self.getQValues(stateHash))
 
     def setQValue(self, stateHash: int, moveIndex: int, reward: float) -> None:
+        if self.locked:
+            return
+
         if moveIndex > 3:
             raise Exception(f"Invalid action index: {moveIndex}")
 
@@ -63,15 +67,16 @@ class QValueStore:
         if lastActionIndex > 3:
             raise Exception(f"Invalid action index: {lastActionIndex}")
 
-        lastQValue = self.getQValue(lastStateHash, lastActionIndex) + 100
+        lastQValue = self.getQValue(lastStateHash, lastActionIndex) + 1000
         newStateMaxQValue = self.getMaxQValue(newStateHash)
-        visitedCount = self.getVisitedCount(lastStateHash)
 
+        # visitedCount = self.getVisitedCount(lastStateHash)
         # if reward > 0:
         #     movingAlpha = max(self.baseAlpha - visitedCount * (self.baseAlpha * (1 / self.maxQValueUpdates)), 0.2)
         # else:
         #     movingAlpha = self.baseAlpha
         # newReward = (1 - movingAlpha) * lastQValue + movingAlpha * (reward + self.gamma * newStateMaxQValue)
+
         newReward = (1 - self.baseAlpha) * lastQValue + self.baseAlpha * (reward + self.gamma * newStateMaxQValue)
 
         self.setQValue(lastStateHash, lastActionIndex, newReward)
@@ -82,45 +87,6 @@ class QValueStore:
         qValues = self.getQValues(stateHash)
         maxQValue = max(qValues)
         return qValues.index(maxQValue), maxQValue
-
-    def saveQValuesToJSON(self, filePath: str, fullPath: bool = False, verbose: bool = True) -> None:
-        if fullPath:
-            fullPath = filePath
-        else:
-            fullPath = self.addBasePath(filePath)
-
-        if not os.path.exists(os.path.dirname(fullPath)):
-            os.makedirs(os.path.dirname(fullPath))
-
-        if verbose:
-            print(f"Saving json to: '{fullPath}' ...", end="")
-
-        start_time = time.time()
-        with open(fullPath, 'w') as file:
-            json.dump(self.store, file)
-        end_time = time.time()
-
-        time_taken = end_time - start_time
-        if verbose:
-            print(f" Done! ({round(time_taken, 2)} seconds)")
-
-    def loadQValuesFromJSON(self, filePath: str, fullPath: bool = False, verbose: bool = True) -> None:
-        if fullPath:
-            fullPath = filePath
-        else:
-            fullPath = self.addBasePath(filePath)
-
-        if verbose:
-            print(f"Loading json from: '{fullPath}' ...", end="")
-        start_time = time.time()
-        try:
-            with open(fullPath, 'r') as file:
-                self.store = json.load(file)
-        except FileNotFoundError:
-            print(f"No existing JSON file found at {fullPath}. Starting with an empty Q-value store.")
-        end_time = time.time()
-        if verbose:
-            print(f" Done! ({round(end_time - start_time, 2)} seconds)")
 
     def saveQValuesToBinary(self, filePath: str, fullPath: bool = False, verbose: bool = True) -> None:
         if fullPath:
@@ -193,4 +159,4 @@ class QValueStore:
     #         print(f"No existing compressed binary file found at {fullPath}. Starting with an empty Q-value store.")
 
     def addBasePath(self, path: str) -> str:
-        return self.basePath + path
+        return os.path.join(self.basePath, path)

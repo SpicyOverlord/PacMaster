@@ -41,11 +41,11 @@ def runGameWithAgent(agentClass: type[IQAgent], weightContainer: WeightContainer
             # qlearning last move update (death)
             lastState = agent.lastGameState
             lastStateHash = lastState.getHash()
-            agent.store.setQValue(
-                lastStateHash,
-                lastState.moveMade,
-                -100
-            )
+            # agent.store.setQValue(
+            #     lastStateHash,
+            #     lastState.moveMade,
+            #     -100
+            # )
 
             # print(agent.newPositionCount)
 
@@ -79,7 +79,9 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
         DebugHelper.disable()
 
     constStore = QValueStore()
-    # constStore.loadQValuesFromBinary("QLearningData/qvalues-test.bin", fullPath=True, verbose=True)
+    print("\nLoading the QTable takes around 1 min.\nThe game will be pause when it is finished. Click space when you want to see the agent play.")
+    constStore.loadQValuesFromBinary("QLearningData/QValues.bin", fullPath=True, verbose=True)
+    print()
 
     rewardsMoving: deque[int] = deque(maxlen=5000)
     rewardAverages = []
@@ -95,17 +97,19 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
 
         for reward in rewards:
             rewardsMoving.append(reward)
-        rewardAverage = sum(rewardsMoving) / len(rewardsMoving)
+        rewardAverage = sum(rewardsMoving) / len(rewardsMoving) if len(rewardsMoving) > 0 else 0
         rewardAverages.append(rewardAverage)
 
-        if (i + 1) % saveInterval == 0:
+        if (i + 1) % saveInterval == 0 and not constStore.locked:
             performance = GameStats.calculatePerformance(gameStats[-100:])
-            constStore.saveQValuesToBinary(f"QLearningData/qvalues({round(performance['combinedScore'],3)}).bin", fullPath=True, verbose=False)
+            constStore.saveQValuesToBinary(f"QLearningData/qvalues({round(performance['combinedScore'], 3)}).bin",
+                                           fullPath=True, verbose=False)
 
         if logging:
             performance = GameStats.calculatePerformance(gameStats[-100:])
-            gameRewardAverage = sum(rewards) / len(rewards)
-            print(f"Game {i + 1}  SCORE:{performance['combinedScore']}  AVG:{round(gameRewardAverage, 3)}  LVL:{gameStat.levelsCompleted}")
+            gameRewardAverage = sum(rewards) / len(rewards) if len(rewards) > 0 else 0
+            print(
+                f"Game {i + 1}  SCORE:{performance['baseScore']}  AVG:{round(gameRewardAverage, 3)}  LVL:{gameStat.levelsCompleted}")
 
     # performance = GameStats.calculateLearningRate(rewardAverages, gameStats)
     performance = GameStats.calculatePerformance(gameStats)["combinedScore"]

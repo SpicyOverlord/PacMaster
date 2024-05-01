@@ -152,7 +152,7 @@ class QLearningAgent(IQAgent):
 
         move = self.QLearning(obs, newState)
         # supervised learning (human input)
-        if self.gameController.level < 1000:
+        if self.gameController.level < 5:
             move = self.getDirection(obs, self.currentRoute[self.currentTarget])
 
         # print(directionToString(move))
@@ -166,8 +166,6 @@ class QLearningAgent(IQAgent):
             move = LEFT
         elif key_pressed[K_RIGHT]:
             move = RIGHT
-        # else:
-        #     move = STOP
 
         newState.setMadeMove(move)
         self.lastGameState = newState
@@ -214,8 +212,8 @@ class QLearningAgent(IQAgent):
             self.rewards.append(newReward)
 
         # Get the next move
-        movingRho = max(self.store.baseRho - self.store.getVisitedCount(newStateHash) * (self.store.baseRho * (1 / 20)),0.0)
-        # movingRho = 0
+        # movingRho = max(self.store.baseRho - self.store.getVisitedCount(newStateHash) * (self.store.baseRho * (1 / 20)),0.0)
+        movingRho = 0
         if random.random() < movingRho:
             move = self.getRandomMove(obs)
             return move
