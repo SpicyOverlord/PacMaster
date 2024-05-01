@@ -197,5 +197,4 @@ class GameState:
 
     def getHash(self) -> int:
         lst = self.getInputArray()
-
         return getHash(lst)

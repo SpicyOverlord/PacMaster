@@ -95,6 +95,8 @@ class QLearningAgent(IQAgent):
 
 
     def calculateNextMove(self, obs: Observation):
+        # sleep(0.02)
+
         # DebugHelper.enable()
         # DebugHelper.drawMap(obs)
 
@@ -124,7 +126,6 @@ class QLearningAgent(IQAgent):
                 self.currentRoute = self.startRoute2
 
         # if self.currentTarget == -1 or self.currentTarget > len(self.currentRoute)-5:
-        # sleep(0.2)
 
         if self.currentTarget != -1:
             dist = manhattanDistance(obs.getPacmanPosition(), self.currentRoute[self.currentTarget])
@@ -150,10 +151,11 @@ class QLearningAgent(IQAgent):
         #             # return self.lastGameState.moveMade
 
         move = self.QLearning(obs, newState)
-
         # supervised learning (human input)
         if self.gameController.level < 1000:
             move = self.getDirection(obs, self.currentRoute[self.currentTarget])
+
+        # print(directionToString(move))
 
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_UP]:
@@ -212,8 +214,8 @@ class QLearningAgent(IQAgent):
             self.rewards.append(newReward)
 
         # Get the next move
-        # movingRho = max(self.store.baseRho - self.store.getVisitedCount(newStateHash) * (self.store.baseRho * (1 / 20)),0.0)
-        movingRho = 0
+        movingRho = max(self.store.baseRho - self.store.getVisitedCount(newStateHash) * (self.store.baseRho * (1 / 20)),0.0)
+        # movingRho = 0
         if random.random() < movingRho:
             move = self.getRandomMove(obs)
             return move
@@ -223,7 +225,7 @@ class QLearningAgent(IQAgent):
             # print(maxQValue)
             if maxQValue == UNKNOWN_POSITION:
                 self.newPositionCount += 1
-                return obs.pacman.direction
+                # return obs.pacman.direction
 
                 unknownMoves = []
                 for i in range(4):

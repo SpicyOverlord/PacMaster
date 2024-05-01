@@ -83,6 +83,8 @@ def directionToString(direction: int):
         return "LEFT"
     if direction == RIGHT:
         return "RIGHT"
+    if direction == STOP:
+        return "STOP"
 
     raise Exception(f"Direction '{direction}' not recognized")
 
@@ -177,25 +179,49 @@ def directionToVector(direction: int) -> Vector2:
     raise Exception(f"Direction '{direction}' not recognized")
 
 
-def getHash(lst: List[int]) -> int:
+# def getHash(lst: List[int]) -> int:
+#
+#     h = 97
+#     for j in range(len(lst)):
+#         value = lst[j]
+#         if value in [UP, DOWN, LEFT, RIGHT]:
+#             value = directionToIndex(value)
+#         h = h * 7 + value
+#
+#     # base 64
+#     # num_bytes = h.to_bytes((h.bit_length() + 7) // 8, 'big')
+#     # base64_str = base64.b64encode(num_bytes)
+#     #
+#     # hashStr = base64_str.decode()
+#
+#     # hashStr = h
+#     # if lst[1] == 5 and lst[2] == 13:
+#     #     print("UP", hashStr, hash(hashStr))
+#     # if lst[1] == 12 and lst[2] == 22:
+#     #     print("LEFT", hashStr, hash(hashStr))
+#
+#     return h
 
-    h = 97
-    for j in range(len(lst)):
-        value = lst[j]
+# def getHash(lst: List[int]) -> int:
+#     h = 97
+#     max_int = 2**31 - 1  # Maximum integer size for a 32-bit integer
+#     for j in range(len(lst)):
+#         value = lst[j]
+#         if value in [UP, DOWN, LEFT, RIGHT]:
+#             value = directionToIndex(value)
+#         h = (h * 7 + value) % max_int  # Use modulo operation to ensure h is less than max_int
+#     return h
+
+def getHash(lst: List[int]) -> int:
+    # Fowler–Noll–Vo (FNV) hash function
+    FNV_prime = 0x811C9DC5
+    FNV_offset_basis = 0x01000193
+
+    h = FNV_offset_basis
+    for value in lst:
         if value in [UP, DOWN, LEFT, RIGHT]:
             value = directionToIndex(value)
-        h = h * 7 + value
+        h = (h * FNV_prime) ^ value
+        h = h & 0xFFFFFFFF  # Ensure h is within 32-bit range
 
-    # base 64
-    num_bytes = h.to_bytes((h.bit_length() + 7) // 8, 'big')
-    base64_str = base64.b64encode(num_bytes)
-
-    hashStr = base64_str.decode()
-
-    # hashStr = h
-    # if lst[1] == 5 and lst[2] == 13:
-    #     print("UP", hashStr, hash(hashStr))
-    # if lst[1] == 12 and lst[2] == 22:
-    #     print("LEFT", hashStr, hash(hashStr))
-
-    return hash(hashStr)
+    return h
