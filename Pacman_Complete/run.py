@@ -66,7 +66,7 @@ class GameController(object):
         self.background_flash = None
         self.clock = pygame.time.Clock()
         self.fruit = None
-        self.pause = Pause(False)
+        self.pause = Pause(True)
         self.level = startLevel
         self.lives = startLives
         self.score = 0
@@ -122,7 +122,7 @@ class GameController(object):
         if self.lockDeltaTime:
             # dt = 0.034
             dt = 0.04
-            sleep(0.03)
+            # sleep(0.03)
         else:
             dt = self.clock.tick(30 * self.gameSpeed) / (1000.0 / self.gameSpeed)
 
