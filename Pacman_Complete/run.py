@@ -28,7 +28,6 @@ class GameController(object):
             startLevel: int = 0,
             ghostsEnabled: bool = True,
             freightEnabled: bool = True,
-            lockDeltaTime: bool = False,
             disableVisuals: bool = False
     ):
         if disableVisuals:
@@ -55,7 +54,7 @@ class GameController(object):
         self.gameOver = False
         self.ghostsEnabled = ghostsEnabled
         self.freightEnabled = freightEnabled
-        self.lockDeltaTime = lockDeltaTime
+        self.lockDeltaTime = True
         self.startLevel = startLevel
 
         self.screen = pygame.display.set_mode(SCREENSIZE, 0, 32)
@@ -122,7 +121,7 @@ class GameController(object):
         if self.lockDeltaTime:
             # dt = 0.034
             dt = 0.04
-            # sleep(0.03)
+            sleep(0.03)
         else:
             dt = self.clock.tick(30 * self.gameSpeed) / (1000.0 / self.gameSpeed)
 

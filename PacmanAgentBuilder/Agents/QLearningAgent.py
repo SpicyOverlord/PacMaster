@@ -26,19 +26,7 @@ class QLearningAgent(IQAgent):
             return STOP
 
         newState = GameState(obs, weights=self.weightContainer)
-
         move = self.QLearning(obs, newState)
-
-        # supervised learning (human input)
-        # key_pressed = pygame.key.get_pressed()
-        # if key_pressed[K_UP]:
-        #     move = UP
-        # elif key_pressed[K_DOWN]:
-        #     move = DOWN
-        # elif key_pressed[K_LEFT]:
-        #     move = LEFT
-        # elif key_pressed[K_RIGHT]:
-        #     move = RIGHT
 
         # update game state with made move
         newState.setMadeMove(move)

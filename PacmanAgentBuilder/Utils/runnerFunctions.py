@@ -12,7 +12,7 @@ from Pacman_Complete.run import GameController
 def runGameWithAgent(agentClass: type[IQAgent], weightContainer: WeightContainer = None,
                      store: QValueStore = None,
                      gameSpeed=3, startLives=3, startLevel: int = 0,
-                     ghostsEnabled: bool = True, freightEnabled: bool = True, lockDeltaTime=False
+                     ghostsEnabled: bool = True, freightEnabled: bool = True
                      , disableVisuals=False) -> (GameStats, QValueStore, list[int]):
     """
         Runs a single game with the specified agent.
@@ -32,7 +32,7 @@ def runGameWithAgent(agentClass: type[IQAgent], weightContainer: WeightContainer
 
     game = GameController(gameSpeed=gameSpeed, startLives=startLives,
                           startLevel=startLevel, ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled,
-                          lockDeltaTime=lockDeltaTime, disableVisuals=disableVisuals)
+                           disableVisuals=disableVisuals)
     agent = agentClass(gameController=game, weightContainer=weightContainer, store=store)
     game.startGame(agent=agent)
     while True:
@@ -58,7 +58,7 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
                                    saveInterval: int = 10000,
                                    gameCount: int = 50, gameSpeed=1, startLevel: int = 0, startLives=1,
                                    ghostsEnabled: bool = True, freightEnabled: bool = True,
-                                   logging=False, lockDeltaTime=False,
+                                   logging=False,
                                    disableVisuals: bool = False) -> float:
     """
         Calculates the performance of the specified agent over a number of games.
@@ -75,14 +75,14 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
         :param logging: Toggle the logging of game-related information to the console while the agent is playing.
         :return: Performance object containing the performance of the agent over the specified number of games.
         """
-    if lockDeltaTime:
-        DebugHelper.disable()
+    DebugHelper.disable()
 
     constStore = QValueStore()
-    print("\nLoading the QTable takes around 1 min.\n"
-          "The game will be pause when it is finished. Click space to start the agent.\n")
+    print("\nLoading the QTable takes around 2 minutes (1.67GB).\n"
+          "The game will be pause when it has loaded the QTable. Then click space to start the agent.\nThe game will probably have massive lag spikes. I think it is because of the large QTable.\n")
     constStore.loadQValuesFromBinary("QLearningData/QValues.bin", fullPath=True, verbose=True)
     print("\n--- PRESS SPACE TO START THE AGENT ---\n")
+
 
     rewardsMoving: deque[int] = deque(maxlen=5000)
     rewardAverages = []
@@ -92,7 +92,7 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
                                                     gameSpeed=gameSpeed,
                                                     startLives=startLives, startLevel=startLevel,
                                                     ghostsEnabled=ghostsEnabled, freightEnabled=freightEnabled,
-                                                    lockDeltaTime=lockDeltaTime, disableVisuals=disableVisuals)
+                                                    disableVisuals=disableVisuals)
         gameStats.append(gameStat)
         constStore = store
 
@@ -110,7 +110,7 @@ def calculatePerformanceOverXGames(agentClass: type[IQAgent], weightContainer: W
             performance = GameStats.calculatePerformance(gameStats[-100:])
             gameRewardAverage = sum(rewards) / len(rewards) if len(rewards) > 0 else 0
             print(
-                f"Game {i + 1}  SCORE:{performance['averageScore']}   AVG REWARD:{round(gameRewardAverage, 3)}   LVL:{gameStat.levelsCompleted}")
+                f"Game {i + 1}:  Score:{performance['averageScore']}   Levels completed:{gameStat.levelsCompleted}")
 
     # performance = GameStats.calculateLearningRate(rewardAverages, gameStats)
     performance = GameStats.calculatePerformance(gameStats)["combinedScore"]
