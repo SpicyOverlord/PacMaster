@@ -152,7 +152,7 @@ class QLearningAgent(IQAgent):
 
         move = self.QLearning(obs, newState)
         # supervised learning (human input)
-        if self.gameController.level < 5:
+        if self.gameController.level < 50:
             move = self.getDirection(obs, self.currentRoute[self.currentTarget])
 
         # print(directionToString(move))
