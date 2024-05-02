@@ -1,3 +1,27 @@
+# Frederik B. (frbb@itu.dk)
+
+---
+
+# 5 Minute presentation:
+> https://drive.google.com/file/d/1lQ5iYVe0KQHBBjeMQgUEvDjMGf1XIuAQ/view?usp=drive_link
+
+For better quality, watch the mp4 file in the folder.
+# To run my agent run the following command:
+```shell
+python3 runner.py
+```
+You can also run the normal run.py file in the Pacman_Complete folder, but it might not work.
+
+# Paths to code:
+### My QLearning agent code
+> PacmanAgentBuilder/Agents/QLearningAgent.py
+
+> PacmanAgentBuilder/Qlearning/QValueStore.py
+### Genetic algorithm (modified for QLearning reward functions)
+> TournamentRunner.py
+
+---
+
 # Connect
 ### Connect to Server
 ```shell
